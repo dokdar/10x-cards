@@ -1,94 +1,106 @@
-# 10x Astro Starter
+# 10xCards
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+10xCards is a web application designed to streamline the creation of educational flashcards using Artificial Intelligence. It allows users to generate high-quality flashcards from provided text and integrates them with a spaced repetition algorithm to make learning more efficient and accessible.
+
+## Table of Contents
+
+- [Tech Stack](#tech-stack)
+- [Getting Started Locally](#getting-started-locally)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+| Category      | Technology                                                              |
+|---------------|-------------------------------------------------------------------------|
+| **Frontend**  | Astro 5, React 19, TypeScript 5, Tailwind CSS 4, Shadcn/UI              |
+| **Backend**   | Supabase (PostgreSQL, BaaS, Authentication)                             |
+| **AI**        | OpenRouter.ai (Access to OpenAI, Anthropic, Google models)              |
+| **CI/CD & Hosting** | GitHub Actions, DigitalOcean (Docker)                               |
 
-## Prerequisites
+## Getting Started Locally
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+To get a local copy up and running, follow these simple steps.
 
-## Getting Started
+### Prerequisites
 
-1. Clone the repository:
+- Node.js `22.14.0`
+- npm (Node Package Manager)
 
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
+### Installation
 
-2. Install dependencies:
+1.  **Clone the repository:**
+    ```sh
+    git clone https://github.com/your-username/10x-cards.git
+    cd 10x-cards
+    ```
 
-```bash
-npm install
-```
+2.  **Set the Node.js version:**
+    If you are using `nvm` (Node Version Manager), run the following command to use the correct Node.js version:
+    ```sh
+    nvm use
+    ```
 
-3. Run the development server:
+3.  **Install NPM packages:**
+    ```sh
+    npm install
+    ```
 
-```bash
-npm run dev
-```
+4.  **Set up environment variables:**
+    Create a `.env` file in the root of the project and add the necessary environment variables for Supabase and OpenRouter. You can use the `.env.example` file as a template.
+    ```env
+    # .env
+    SUPABASE_URL=your_supabase_url
+    SUPABASE_ANON_KEY=your_supabase_anon_key
+    OPENROUTER_API_KEY=your_openrouter_api_key
+    ```
 
-4. Build for production:
-
-```bash
-npm run build
-```
+5.  **Run the development server:**
+    ```sh
+    npm run dev
+    ```
+    The application will be available at `http://localhost:3000`.
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+In the project directory, you can run the following commands:
 
-## Project Structure
+| Script       | Description                                  |
+|--------------|----------------------------------------------|
+| `npm run dev`    | Runs the app in development mode.            |
+| `npm run build`  | Builds the app for production.               |
+| `npm run preview`| Previews the production build locally.       |
+| `npm run lint`   | Lints the codebase using ESLint.             |
+| `npm run lint:fix`| Fixes linting errors automatically.          |
+| `npm run format` | Formats the code using Prettier.             |
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+## Project Scope
 
-## AI Development Support
+### In Scope (MVP)
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+-   **User Authentication:** Secure user registration and login via email and password.
+-   **AI Flashcard Generation:** Generate flashcards from user-provided text (1,000-10,000 characters).
+-   **Manual CRUD:** Manually create, read, update, and delete flashcards.
+-   **Flashcard Management:** View all flashcards with simple pagination and text-based search.
+-   **Spaced Repetition:** Integration with an open-source library for spaced repetition.
+-   **Platform:** The application will be available as a web version only.
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
+### Out of Scope (Post-MVP)
 
-### Cursor IDE
+-   Advanced spaced repetition algorithms (e.g., custom SuperMemo-style implementation).
+-   Importing files (PDF, DOCX, etc.).
+-   Social features like sharing flashcard decks.
+-   Integrations with external educational platforms.
+-   Mobile applications (iOS, Android).
+-   Monetization and subscription systems.
+-   Third-party authentication providers (Google, Facebook, etc.).
 
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
+## Project Status
 
-### GitHub Copilot
-
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+The project is currently in the **MVP development phase**.
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
