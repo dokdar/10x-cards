@@ -4,13 +4,13 @@ Niniejszy dokument opisuje schemat bazy danych PostgreSQL dla aplikacji 10xCards
 
 ## 1. Lista tabel
 
-### Schemat: `app`
+### Schemat: `public`
 
-Wszystkie tabele, funkcje i typy danych specyficzne dla aplikacji znajdują się w schemacie `app`, aby zapewnić izolację od schematów systemowych i rozszerzeń Supabase.
+Wszystkie tabele aplikacji znajdują się w schemacie `public` (standardowym dla Supabase), co zapewnia prawidłową współpracę z Supabase JS Client.
 
 ---
 
-### Tabela: `app.flashcards`
+### Tabela: `public.flashcards`
 
 Przechowuje fiszki stworzone przez użytkowników.
 
@@ -18,7 +18,7 @@ Przechowuje fiszki stworzone przez użytkowników.
 | --------------- | ------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `id`            | `uuid`        | `PRIMARY KEY`, `DEFAULT gen_random_uuid()`                                      | Unikalny identyfikator fiszki.                                                              |
 | `user_id`       | `uuid`        | `NOT NULL`, `FOREIGN KEY REFERENCES auth.users(id) ON DELETE CASCADE`           | Identyfikator użytkownika, do którego należy fiszka.                                        |
-| `generation_id` | `uuid`        | `NULL`, `FOREIGN KEY REFERENCES app.generations(id) ON DELETE SET NULL`         | Opcjonalny identyfikator sesji AI, która wygenerowała fiszkę.                               |
+| `generation_id` | `uuid`        | `NULL`, `FOREIGN KEY REFERENCES public.generations(id) ON DELETE SET NULL`      | Opcjonalny identyfikator sesji AI, która wygenerowała fiszkę.                               |
 | `front`         | `VARCHAR(200)`| `NOT NULL`                                                                      | Treść przedniej strony fiszki.                                                              |
 | `back`          | `VARCHAR(500)`| `NOT NULL`                                                                      | Treść tylnej strony fiszki.                                                                 |
 | `source`        | `VARCHAR(20)` | `NOT NULL`, `CHECK (source IN ('ai-full', 'ai-edited', 'manual'))`              | Źródło pochodzenia fiszki.                                                                  |
@@ -27,7 +27,7 @@ Przechowuje fiszki stworzone przez użytkowników.
 
 ---
 
-### Tabela: `app.generations`
+### Tabela: `public.generations`
 
 Loguje metadane pomyślnych sesji generowania fiszek przez AI w celu zbierania metryk.
 
@@ -35,7 +35,7 @@ Loguje metadane pomyślnych sesji generowania fiszek przez AI w celu zbierania m
 | ---------------------------- | --------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | `id`                         | `uuid`          | `PRIMARY KEY`, `DEFAULT gen_random_uuid()`                                     | Unikalny identyfikator sesji generowania.                                                                     |
 | `user_id`                    | `uuid`          | `NOT NULL`, `FOREIGN KEY REFERENCES auth.users(id) ON DELETE CASCADE`          | Identyfikator użytkownika, który zainicjował generowanie.                                                     |
-| `model`                      | `VARCHAR(100)`  | `NOT NULL`                                                                     | Nazwa modelu AI użytego do generowania.                                                                       |
+| `model`                      | `VARCHAR(100)`  | `NULL`                                                                         | Nazwa modelu AI użytego do generowania.                                                                       |
 | `source_text_hash`           | `VARCHAR(100)`  | `NOT NULL`                                                                     | Skrót (hash) tekstu źródłowego, używany do identyfikacji unikalności tekstu bez przechowywania go.            |
 | `source_text_length`         | `INTEGER`       | `NOT NULL, CHECK (source_text_length >= 1000 AND source_text_length <= 10000)` | Długość (liczba znaków) tekstu źródłowego.                                                                    |
 | `generated_count`            | `INTEGER`       | `NOT NULL`                                                                     | Całkowita liczba fiszek-kandydatów wygenerowanych przez AI.                                                   |
@@ -48,7 +48,7 @@ Loguje metadane pomyślnych sesji generowania fiszek przez AI w celu zbierania m
 
 ---
 
-### Tabela: `app.generation_error_logs`
+### Tabela: `public.generation_error_logs`
 
 Loguje informacje o nieudanych próbach generowania fiszek przez AI w celach diagnostycznych.
 
@@ -67,11 +67,11 @@ Loguje informacje o nieudanych próbach generowania fiszek przez AI w celach dia
 
 ### Funkcje i Triggery
 
-Funkcja pomocnicza i trigger do automatycznej aktualizacji kolumny `updated_at`.
+Funkcja pomocnicza i triggery do automatycznej aktualizacji kolumny `updated_at`.
 
 ```sql
 -- Funkcja aktualizująca kolumnę updated_at
-CREATE OR REPLACE FUNCTION app.handle_updated_at()
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = now();
@@ -79,19 +79,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger dla tabeli app.flashcards
+-- Trigger dla tabeli public.flashcards
 CREATE TRIGGER on_flashcard_update
-BEFORE UPDATE ON app.flashcards
+BEFORE UPDATE ON public.flashcards
 FOR EACH ROW
-EXECUTE PROCEDURE app.handle_updated_at();
+EXECUTE PROCEDURE public.handle_updated_at();
+
+-- Trigger dla tabeli public.generations
+CREATE TRIGGER on_generation_update
+BEFORE UPDATE ON public.generations
+FOR EACH ROW
+EXECUTE PROCEDURE public.handle_updated_at();
 ```
 
 ## 2. Relacje między tabelami
 
--   **`auth.users` <-> `app.flashcards` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele fiszek. Usunięcie użytkownika powoduje usunięcie wszystkich jego fiszek (`ON DELETE CASCADE`).
--   **`auth.users` <-> `app.generations` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele logów generacji. Usunięcie użytkownika powoduje usunięcie wszystkich jego logów (`ON DELETE CASCADE`).
--   **`auth.users` <-> `app.generation_error_logs` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele logów błędów. Usunięcie użytkownika powoduje usunięcie wszystkich jego logów błędów (`ON DELETE CASCADE`).
--   **`app.generations` <-> `app.flashcards` (Jeden-do-wielu)**: Jedna sesja generowania może stworzyć wiele fiszek. Usunięcie logu generacji nie usuwa fiszek, a jedynie zeruje pole `generation_id` w powiązanych fiszkach (`ON DELETE SET NULL`).
+-   **`auth.users` <-> `public.flashcards` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele fiszek. Usunięcie użytkownika powoduje usunięcie wszystkich jego fiszek (`ON DELETE CASCADE`).
+-   **`auth.users` <-> `public.generations` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele logów generacji. Usunięcie użytkownika powoduje usunięcie wszystkich jego logów (`ON DELETE CASCADE`).
+-   **`auth.users` <-> `public.generation_error_logs` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele logów błędów. Usunięcie użytkownika powoduje usunięcie wszystkich jego logów błędów (`ON DELETE CASCADE`).
+-   **`public.generations` <-> `public.flashcards` (Jeden-do-wielu)**: Jedna sesja generowania może stworzyć wiele fiszek. Usunięcie logu generacji nie usuwa fiszek, a jedynie zeruje pole `generation_id` w powiązanych fiszkach (`ON DELETE SET NULL`).
 
 ## 3. Indeksy
 
@@ -99,84 +105,86 @@ Podstawowe indeksy zostaną utworzone na kluczach obcych w celu poprawy wydajno�
 
 ```sql
 -- Indeks dla klucza obcego user_id w tabeli flashcards
-CREATE INDEX idx_flashcards_user_id ON app.flashcards(user_id);
+CREATE INDEX idx_flashcards_user_id ON public.flashcards(user_id);
 
 -- Indeks dla klucza obcego generation_id w tabeli flashcards
-CREATE INDEX idx_flashcards_generation_id ON app.flashcards(generation_id);
+CREATE INDEX idx_flashcards_generation_id ON public.flashcards(generation_id);
 
 -- Indeks dla klucza obcego user_id w tabeli generations
-CREATE INDEX idx_generations_user_id ON app.generations(user_id);
+CREATE INDEX idx_generations_user_id ON public.generations(user_id);
 
 -- Indeks dla klucza obcego user_id w tabeli generation_error_logs
-CREATE INDEX idx_generation_error_logs_user_id ON app.generation_error_logs(user_id);
+CREATE INDEX idx_generation_error_logs_user_id ON public.generation_error_logs(user_id);
 ```
 
 ## 4. Zasady bezpieczeństwa (Row-Level Security)
 
-RLS zostanie włączone dla wszystkich tabel w schemacie `app`, aby zapewnić ścisłą izolację danych między użytkownikami. Funkcja `auth.uid()` z Supabase Auth jest używana do identyfikacji zalogowanego użytkownika.
+RLS zostanie włączone dla wszystkich tabel w schemacie `public`, aby zapewnić ścisłą izolację danych między użytkownikami. Funkcja `auth.uid()` z Supabase Auth jest używana do identyfikacji zalogowanego użytkownika.
 
-### Tabela `app.flashcards`
+### Tabela `public.flashcards`
 
 ```sql
 -- Włączenie RLS
-ALTER TABLE app.flashcards ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.flashcards ENABLE ROW LEVEL SECURITY;
 
 -- Polityka SELECT: Użytkownicy mogą widzieć tylko swoje fiszki.
-CREATE POLICY "Allow select for own flashcards" ON app.flashcards
+CREATE POLICY "Allow select for own flashcards" ON public.flashcards
 FOR SELECT USING (auth.uid() = user_id);
 
 -- Polityka INSERT: Użytkownicy mogą dodawać fiszki tylko we własnym imieniu.
-CREATE POLICY "Allow insert for own flashcards" ON app.flashcards
+CREATE POLICY "Allow insert for own flashcards" ON public.flashcards
 FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Polityka UPDATE: Użytkownicy mogą aktualizować tylko swoje fiszki.
-CREATE POLICY "Allow update for own flashcards" ON app.flashcards
+CREATE POLICY "Allow update for own flashcards" ON public.flashcards
 FOR UPDATE USING (auth.uid() = user_id);
 
 -- Polityka DELETE: Użytkownicy mogą usuwać tylko swoje fiszki.
-CREATE POLICY "Allow delete for own flashcards" ON app.flashcards
+CREATE POLICY "Allow delete for own flashcards" ON public.flashcards
 FOR DELETE USING (auth.uid() = user_id);
 ```
 
-### Tabela `app.generations`
+### Tabela `public.generations`
 
 ```sql
 -- Włączenie RLS
-ALTER TABLE app.generations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.generations ENABLE ROW LEVEL SECURITY;
 
 -- Polityka SELECT: Użytkownicy mogą widzieć tylko swoje logi generacji.
-CREATE POLICY "Allow select for own generation logs" ON app.generations
+CREATE POLICY "Allow select for own generation logs" ON public.generations
 FOR SELECT USING (auth.uid() = user_id);
 
 -- Polityka INSERT: Użytkownicy mogą dodawać logi generacji tylko we własnym imieniu.
-CREATE POLICY "Allow insert for own generation logs" ON app.generations
+CREATE POLICY "Allow insert for own generation logs" ON public.generations
 FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- Polityka UPDATE: Tabela jest "append-only", więc brak polityki UPDATE.
+-- Polityka UPDATE: Użytkownicy mogą aktualizować tylko swoje logi generacji (np. po review sesji).
+CREATE POLICY "Allow update for own generation logs" ON public.generations
+FOR UPDATE USING (auth.uid() = user_id);
 
 -- Polityka DELETE: Użytkownicy mogą usuwać swoje logi generacji.
-CREATE POLICY "Allow delete for own generation logs" ON app.generations
+CREATE POLICY "Allow delete for own generation logs" ON public.generations
 FOR DELETE USING (auth.uid() = user_id);
 ```
 
-### Tabela `app.generation_error_logs`
+### Tabela `public.generation_error_logs`
 
 ```sql
 -- Włączenie RLS
-ALTER TABLE app.generation_error_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.generation_error_logs ENABLE ROW LEVEL SECURITY;
 
 -- Polityka SELECT: Użytkownicy mogą widzieć tylko swoje logi błędów.
-CREATE POLICY "Allow select for own error logs" ON app.generation_error_logs
+CREATE POLICY "Allow select for own error logs" ON public.generation_error_logs
 FOR SELECT USING (auth.uid() = user_id);
 
 -- Polityka INSERT: Użytkownicy mogą dodawać logi błędów tylko we własnym imieniu.
-CREATE POLICY "Allow insert for own error logs" ON app.generation_error_logs
+CREATE POLICY "Allow insert for own error logs" ON public.generation_error_logs
 FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Polityka UPDATE: Tabela jest "append-only", więc brak polityki UPDATE.
 
 -- Polityka DELETE: Użytkownicy mogą usuwać swoje logi błędów.
-CREATE POLICY "Allow delete for own error logs" ON app.generation_error_logs
+CREATE POLICY "Allow delete for own error logs" ON public.generation_error_logs
 FOR DELETE USING (auth.uid() = user_id);
 ```
 

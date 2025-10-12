@@ -10,8 +10,9 @@ export const generateFlashcardsSchema = z.object({
     .max(10000, 'Source text must not exceed 10000 characters'),
   model: z
     .string()
-    .min(1, 'Model identifier is required')
-    .regex(/^[\w\/-]+$/, 'Invalid model identifier format'),
+    .min(1, 'Model identifier cannot be empty')
+    .regex(/^[\w\/-]+$/, 'Invalid model identifier format')
+    .optional(),
 });
 
 /**

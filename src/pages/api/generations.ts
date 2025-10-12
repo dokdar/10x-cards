@@ -30,58 +30,105 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const validatedData = generateFlashcardsSchema.parse(body);
 
     const { source_text, model: requestModel } = validatedData;
-    model = requestModel;
+    model = requestModel ?? null;
 
     // 2. Prepare data - generate hash and measure length
     sourceTextHash = HashingService.generateHash(source_text);
     sourceTextLength = source_text.length;
 
-    // 3. Call AI service to generate flashcards
-    const aiService = createAIGenerationService();
-    const generationResult = await aiService.generateFlashcards({
-      sourceText: source_text,
-      model,
-    });
-
-    // 4. Save generation metadata to database
-    const dbService = new GenerationDatabaseService(locals.supabase);
-    const generation = await dbService.createGeneration({
-      user_id: DEFAULT_USER_ID,
-      model,
+    // MOCK: Return example data instead of calling AI and database
+    const mockResponse: GenerationResponse = {
+      generation_id: 'mock-generation-id-123',
+      model: model,
       source_text_hash: sourceTextHash,
       source_text_length: sourceTextLength,
-      generated_count: generationResult.candidates.length,
-      rejected_count: 0, // Initially no rejections
-      generation_duration: generationResult.duration,
-    });
-
-    // 5. Build and return response
-    const response: GenerationResponse = {
-      generation_id: generation.id,
-      model: generation.model,
-      source_text_hash: generation.source_text_hash,
-      source_text_length: generation.source_text_length,
-      generated_count: generation.generated_count,
-      rejected_count: generation.rejected_count,
-      generation_duration: generation.generation_duration,
-      created_at: generation.created_at,
-      candidates: generationResult.candidates,
+      generated_count: 3,
+      rejected_count: 0,
+      generation_duration: 2500,
+      created_at: new Date().toISOString(),
+      candidates: [
+        {
+          front: 'What is TypeScript?',
+          back: 'TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.',
+          source: 'ai-full'
+        },
+        {
+          front: 'What are the benefits of using Astro?',
+          back: 'Astro provides faster page loads with less JavaScript, automatic code splitting, and support for multiple UI frameworks.',
+          source: 'ai-full'
+        },
+        {
+          front: 'What is Supabase?',
+          back: 'Supabase is an open-source Firebase alternative that provides authentication, database, storage, and real-time subscriptions.',
+          source: 'ai-full'
+        }
+      ]
     };
 
-    return createJsonResponse(response, HTTP_STATUS.OK);
-  } catch (error) {
-    // Log error to database
-    await logGenerationError({
-      error,
-      userId: DEFAULT_USER_ID,
-      model,
-      sourceTextHash,
-      sourceTextLength,
-      supabase: locals.supabase,
-    });
+    return createJsonResponse(mockResponse, HTTP_STATUS.OK);
 
-    // Return appropriate error response
+    // ORIGINAL CODE (commented out for mocking):
+    // // 3. Generate flashcards
+    // let generationResult: { candidates: any[]; duration: number };
+    //
+    // if (model) {
+    //   // Use AI to generate flashcards
+    //   const aiService = createAIGenerationService();
+    //   generationResult = await aiService.generateFlashcards({
+    //     sourceText: source_text,
+    //     model: model,
+    //   });
+    // } else {
+    //   // No model provided - return empty candidates list
+    //   generationResult = {
+    //     candidates: [],
+    //     duration: 0,
+    //   };
+    // }
+    //
+    // // 4. Save generation metadata to database
+    // const dbService = new GenerationDatabaseService(locals.supabase);
+    // const generation = await dbService.createGeneration({
+    //   user_id: DEFAULT_USER_ID,
+    //   model,
+    //   source_text_hash: sourceTextHash,
+    //   source_text_length: sourceTextLength,
+    //   generated_count: generationResult.candidates.length,
+    //   rejected_count: 0, // Initially no rejections
+    //   generation_duration: generationResult.duration,
+    // });
+    //
+    // // 5. Build and return response
+    // const response: GenerationResponse = {
+    //   generation_id: generation.id,
+    //   model: generation.model,
+    //   source_text_hash: generation.source_text_hash,
+    //   source_text_length: generation.source_text_length,
+    //   generated_count: generation.generated_count,
+    //   rejected_count: generation.rejected_count,
+    //   generation_duration: generation.generation_duration,
+    //   created_at: generation.created_at,
+    //   candidates: generationResult.candidates,
+    // };
+    //
+    // return createJsonResponse(response, HTTP_STATUS.OK);
+  } catch (error) {
+    // MOCK: Simplified error handling (no database logging)
     return handleErrorResponse(error);
+
+    // ORIGINAL CODE (commented out for mocking):
+    // // Log error to database
+    // await logGenerationError({
+    //   error,
+    //   userId: DEFAULT_USER_ID,
+    //   model,
+    //   sourceTextHash,
+    //   sourceTextLength,
+    //   supabase: locals.supabase,
+    // });
+    //
+    // // Return appropriate error response
+    // return handleErrorResponse(error);
   }
 };
 

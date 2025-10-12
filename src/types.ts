@@ -9,7 +9,7 @@
 export type FlashcardSource = 'ai-full' | 'ai-edited' | 'manual';
 
 /**
- * Base flashcard entity type corresponding to app.flashcards table
+ * Base flashcard entity type corresponding to public.flashcards table
  */
 export interface FlashcardEntity {
   id: string;
@@ -23,12 +23,12 @@ export interface FlashcardEntity {
 }
 
 /**
- * Base generation entity type corresponding to app.generations table
+ * Base generation entity type corresponding to public.generations table
  */
 export interface GenerationEntity {
   id: string;
   user_id: string;
-  model: string;
+  model: string | null;
   source_text_hash: string;
   source_text_length: number;
   generated_count: number;
@@ -41,7 +41,7 @@ export interface GenerationEntity {
 }
 
 /**
- * Base generation error log entity type corresponding to app.generation_error_logs table
+ * Base generation error log entity type corresponding to public.generation_error_logs table
  */
 export interface GenerationErrorLogEntity {
   id: string;
@@ -93,7 +93,7 @@ export interface FlashcardsListResponse {
 export interface FlashcardCandidate {
   front: string;
   back: string;
-  source_fragment: string;
+  source: FlashcardSource;
 }
 
 /**
@@ -101,7 +101,7 @@ export interface FlashcardCandidate {
  */
 export interface GenerationResponse {
   generation_id: string;
-  model: string;
+  model: string | null;
   source_text_hash: string;
   source_text_length: number;
   generated_count: number;
@@ -144,7 +144,7 @@ export interface UpdateFlashcardCommand {
  */
 export interface GenerateFlashcardsCommand {
   source_text: string;
-  model: string;
+  model?: string;
 }
 
 /**

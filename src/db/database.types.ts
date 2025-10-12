@@ -7,7 +7,32 @@ export type Json =
   | Json[]
 
 export type Database = {
-  app: {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  public: {
     Tables: {
       flashcards: {
         Row: {
@@ -91,7 +116,7 @@ export type Database = {
           generated_count: number
           generation_duration: number
           id: string
-          model: string
+          model: string | null
           rejected_count: number
           source_text_hash: string
           source_text_length: number
@@ -105,7 +130,7 @@ export type Database = {
           generated_count: number
           generation_duration: number
           id?: string
-          model: string
+          model?: string | null
           rejected_count: number
           source_text_hash: string
           source_text_length: number
@@ -119,7 +144,7 @@ export type Database = {
           generated_count?: number
           generation_duration?: number
           id?: string
-          model?: string
+          model?: string | null
           rejected_count?: number
           source_text_hash?: string
           source_text_length?: number
@@ -262,7 +287,10 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  app: {
+  graphql_public: {
+    Enums: {},
+  },
+  public: {
     Enums: {},
   },
 } as const

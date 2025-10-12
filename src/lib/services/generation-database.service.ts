@@ -9,7 +9,7 @@ import type {
  */
 export interface CreateGenerationData {
   user_id: string;
-  model: string;
+  model: string | null;
   source_text_hash: string;
   source_text_length: number;
   generated_count: number;
@@ -42,7 +42,6 @@ export class GenerationDatabaseService {
     data: CreateGenerationData,
   ): Promise<GenerationEntity> {
     const { data: generation, error } = await this.supabase
-      .schema('app')
       .from('generations')
       .insert({
         user_id: data.user_id,
@@ -76,7 +75,6 @@ export class GenerationDatabaseService {
     data: CreateGenerationErrorData,
   ): Promise<GenerationErrorLogEntity> {
     const { data: errorLog, error } = await this.supabase
-      .schema('app')
       .from('generation_error_logs')
       .insert({
         user_id: data.user_id,
@@ -108,7 +106,6 @@ export class GenerationDatabaseService {
     userId: string,
   ): Promise<GenerationEntity | null> {
     const { data, error } = await this.supabase
-      .schema('app')
       .from('generations')
       .select('*')
       .eq('id', generationId)
@@ -138,7 +135,6 @@ export class GenerationDatabaseService {
     },
   ): Promise<GenerationEntity> {
     const { data, error } = await this.supabase
-      .schema('app')
       .from('generations')
       .update({
         accepted_unedited_count: counts.accepted_unedited_count,

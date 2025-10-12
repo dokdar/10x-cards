@@ -10,4 +10,4 @@ export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKe
 export type SupabaseClient = typeof supabaseClient;
 
 // Mock user ID for development (before authentication is implemented)
-export const DEFAULT_USER_ID = 'db5156e8-8a81-4f6c-96a3-949393498804';
+export const DEFAULT_USER_ID = 'e4824122-fd84-4836-939b-115b5d2e578b';

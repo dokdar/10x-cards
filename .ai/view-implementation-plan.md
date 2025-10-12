@@ -30,8 +30,8 @@ Endpoint `POST /generations` umożliwia użytkownikom generowanie kandydatów na
 - `GenerateFlashcardsCommand`: Struktura danych żądania z polami `source_text` i `model`
 
 ### Response Types  
-- `GenerationResponse`: **Wymaga rozszerzenia** - aktualnie zawiera tylko `generation_id`, `generated_count`, `generation_duration` i `candidates`, ale powinien zawierać również `model`, `source_text_hash`, `source_text_length`, `rejected_count`, `created_at`
-- `FlashcardCandidate`: Pojedynczy kandydat z polami `front`, `back`, `source_fragment`
+- `GenerationResponse`: Zawiera pełne dane generacji: `generation_id`, `model`, `source_text_hash`, `source_text_length`, `generated_count`, `rejected_count`, `generation_duration`, `created_at`, oraz listę `candidates`
+- `FlashcardCandidate`: Pojedynczy kandydat z polami `front`, `back`, `source`
 
 ### Database Types
 - `GenerationEntity`: Encja do logowania metadanych pomyślnych generacji
@@ -58,7 +58,7 @@ Endpoint `POST /generations` umożliwia użytkownikom generowanie kandydatów na
     {
       "front": "AI Candidate 1 Front",
       "back": "AI Candidate 1 Back", 
-      "source_fragment": "...kontekst z tekstu źródłowego dla kandydata 1..."
+      "source": "ai-full"
     }
   ]
 }

@@ -182,24 +182,30 @@ This document outlines the design for the REST API for the 10xCards application,
       "model": "openai/gpt-4o"
     }
     ```
+    **Note**: The `model` field is optional. If not provided, defaults to `openai/gpt-4o`.
 -   **Success Response**:
     -   **Code**: `200 OK`
     -   **Payload**:
         ```json
         {
           "generation_id": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d",
+          "model": "openai/gpt-4o",
+          "source_text_hash": "sha256:a1b2c3d4e5f6...",
+          "source_text_length": 5847,
           "generated_count": 2,
+          "rejected_count": 0,
           "generation_duration": 15234,
+          "created_at": "2024-10-12T14:30:00.000Z",
           "candidates": [
             {
               "front": "AI Candidate 1 Front",
               "back": "AI Candidate 1 Back",
-              "source_fragment": "...context from the source text for candidate 1..."
+              "source": "ai-full"
             },
             {
               "front": "AI Candidate 2 Front",
               "back": "AI Candidate 2 Back",
-              "source_fragment": "...context from the source text for candidate 2..."
+              "source": "ai-full"
             }
           ]
         }
@@ -230,7 +236,7 @@ This document outlines the design for the REST API for the 10xCards application,
     -   **Payload**: The updated generation log object.
         ```json
         {
-          "id": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d",
+          "generation_id": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d",
           "model": "openai/gpt-4o",
           "source_text_hash": "a1b2c3d4e5f6...",
           "source_text_length": 5432,
@@ -275,7 +281,7 @@ Validation will be performed at the API layer before any database operations. A 
     -   `generation_id`: Optional, string, max 255 characters. Only required if `source` is `ai-full` or `ai-edited`.
 -   **Generations**:
     -   `source_text`: Required, string, min 1,000 and max 10,000 characters.
-    -   `model`: Required, string.
+    -   `model`: Optional, string. If not provided, defaults to `openai/gpt-4o`.
 
 ### Business Logic
 
