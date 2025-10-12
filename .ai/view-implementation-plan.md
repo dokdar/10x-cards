@@ -10,13 +10,13 @@ Endpoint `POST /generations` umożliwia użytkownikom generowanie kandydatów na
 - **Struktura URL**: `/api/generations`
 - **Parametry**:
   - **Wymagane**: 
-    - `sourceText` (string): Tekst źródłowy o długości 1000-10000 znaków
+    - `source_text` (string): Tekst źródłowy o długości 1000-10000 znaków
     - `model` (string): Identyfikator modelu AI (np. "openai/gpt-4o")
   - **Opcjonalne**: brak
 - **Request Body**:
   ```json
   {
-    "sourceText": "Długi tekst między 1000 a 10000 znaków...",
+    "source_text": "Długi tekst między 1000 a 10000 znaków...",
     "model": "openai/gpt-4o"
   }
   ```
