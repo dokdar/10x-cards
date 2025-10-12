@@ -22,3 +22,13 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# temp files
+*.temp
+*.tmp
+*.temp.md
+*.temp.txt
+*.temp.json
+*.temp.yaml
+*.temp.yml
+*.temp.xml
