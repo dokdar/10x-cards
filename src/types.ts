@@ -13,13 +13,13 @@ export type FlashcardSource = 'ai-full' | 'ai-edited' | 'manual';
  */
 export interface FlashcardEntity {
   id: string;
-  userId: string;
-  generationId: string | null;
+  user_id: string;
+  generation_id: string | null;
   front: string;
   back: string;
   source: FlashcardSource;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 /**
@@ -27,17 +27,17 @@ export interface FlashcardEntity {
  */
 export interface GenerationEntity {
   id: string;
-  userId: string;
+  user_id: string;
   model: string;
-  sourceTextHash: string;
-  sourceTextLength: number;
-  generatedCount: number;
-  acceptedUneditedCount: number | null;
-  acceptedEditedCount: number | null;
-  rejectedCount: number;
-  generationDuration: number;
-  createdAt: string;
-  updatedAt: string;
+  source_text_hash: string;
+  source_text_length: number;
+  generated_count: number;
+  accepted_unedited_count: number | null;
+  accepted_edited_count: number | null;
+  rejected_count: number;
+  generation_duration: number;
+  created_at: string;
+  updated_at: string;
 }
 
 /**
@@ -45,13 +45,13 @@ export interface GenerationEntity {
  */
 export interface GenerationErrorLogEntity {
   id: string;
-  userId: string;
+  user_id: string;
   model: string | null;
-  sourceTextHash: string | null;
-  sourceTextLength: number | null;
-  errorCode: string | null;
-  errorMessage: string;
-  createdAt: string;
+  source_text_hash: string | null;
+  source_text_length: number | null;
+  error_code: string | null;
+  error_message: string;
+  created_at: string;
 }
 
 // =============================================================================
@@ -62,20 +62,20 @@ export interface GenerationErrorLogEntity {
 /**
  * Flashcard DTO for API responses - excludes sensitive user_id field
  */
-export type FlashcardDTO = Omit<FlashcardEntity, 'userId'>;
+export type FlashcardDTO = Omit<FlashcardEntity, 'user_id'>;
 
 /**
  * Generation log DTO for API responses - excludes sensitive user_id field
  */
-export type GenerationLogDTO = Omit<GenerationEntity, 'userId'>;
+export type GenerationLogDTO = Omit<GenerationEntity, 'user_id'>;
 
 /**
  * Pagination metadata for list responses
  */
 export interface PaginationInfo {
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
+  total_items: number;
+  total_pages: number;
+  current_page: number;
   limit: number;
 }
 
@@ -93,16 +93,21 @@ export interface FlashcardsListResponse {
 export interface FlashcardCandidate {
   front: string;
   back: string;
-  sourceFragment: string;
+  source_fragment: string;
 }
 
 /**
  * Response for AI generation endpoint
  */
 export interface GenerationResponse {
-  generationId: string;
-  generatedCount: number;
-  generationDuration: number;
+  generation_id: string;
+  model: string;
+  source_text_hash: string;
+  source_text_length: number;
+  generated_count: number;
+  rejected_count: number;
+  generation_duration: number;
+  created_at: string;
   candidates: FlashcardCandidate[];
 }
 
@@ -118,7 +123,7 @@ export interface CreateFlashcardCommand {
   front: string;
   back: string;
   source: FlashcardSource;
-  generationId?: string | null;
+  generation_id?: string | null;
 }
 
 /**
@@ -138,7 +143,7 @@ export interface UpdateFlashcardCommand {
  * Command for generating flashcards using AI
  */
 export interface GenerateFlashcardsCommand {
-  sourceText: string;
+  source_text: string;
   model: string;
 }
 
@@ -146,9 +151,9 @@ export interface GenerateFlashcardsCommand {
  * Command for updating generation log with review session results
  */
 export interface UpdateGenerationCommand {
-  acceptedUneditedCount: number;
-  acceptedEditedCount: number;
-  rejectedCount: number;
+  accepted_unedited_count: number;
+  accepted_edited_count: number;
+  rejected_count: number;
 }
 
 // =============================================================================
@@ -176,7 +181,7 @@ export interface ValidationError {
  * API error response with validation details
  */
 export interface ValidationApiError extends ApiError {
-  validationErrors: ValidationError[];
+  validation_errors: ValidationError[];
 }
 
 // =============================================================================

@@ -33,15 +33,15 @@ This document outlines the design for the REST API for the 10xCards application,
               "front": "What is REST?",
               "back": "Representational State Transfer is an architectural style for designing networked applications.",
               "source": "manual",
-              "generationId": null,
-              "createdAt": "2024-10-12T10:00:00Z",
-              "updatedAt": "2024-10-12T10:00:00Z"
+              "generation_id": null,
+              "created_at": "2024-10-12T10:00:00Z",
+              "updated_at": "2024-10-12T10:00:00Z"
             }
           ],
           "pagination": {
-            "totalItems": 1,
-            "totalPages": 1,
-            "currentPage": 1,
+            "total_items": 1,
+            "total_pages": 1,
+            "current_page": 1,
             "limit": 20
           }
         }
@@ -63,7 +63,7 @@ This document outlines the design for the REST API for the 10xCards application,
           "front": "What is Astro?",
           "back": "A web framework for building fast, content-driven websites.",
           "source": "manual",
-          "generationId": null
+          "generation_id": null
         }
         ```
     -   **Bulk**:
@@ -73,13 +73,13 @@ This document outlines the design for the REST API for the 10xCards application,
             "front": "What is Astro?",
             "back": "A web framework...",
             "source": "ai-edited",
-            "generationId": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d"
+            "generation_id": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d"
           },
           {
             "front": "What is React?",
             "back": "A JavaScript library for building user interfaces.",
             "source": "ai-full",
-            "generationId": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d"
+            "generation_id": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d"
           }
         ]
         ```
@@ -93,9 +93,9 @@ This document outlines the design for the REST API for the 10xCards application,
             "front": "What is Astro?",
             "back": "A web framework for building fast, content-driven websites.",
             "source": "manual",
-            "generationId": null,
-            "createdAt": "2024-10-12T11:00:00Z",
-            "updatedAt": "2024-10-12T11:00:00Z"
+            "generation_id": null,
+            "created_at": "2024-10-12T11:00:00Z",
+            "updated_at": "2024-10-12T11:00:00Z"
           }
         ]
         ```
@@ -119,9 +119,9 @@ This document outlines the design for the REST API for the 10xCards application,
           "front": "What is REST?",
           "back": "Representational State Transfer is an architectural style for designing networked applications.",
           "source": "manual",
-          "generationId": null,
-          "createdAt": "2024-10-12T10:00:00Z",
-          "updatedAt": "2024-10-12T10:00:00Z"
+          "generation_id": null,
+          "created_at": "2024-10-12T10:00:00Z",
+          "updated_at": "2024-10-12T10:00:00Z"
         }
         ```
 -   **Error Responses**:
@@ -178,7 +178,7 @@ This document outlines the design for the REST API for the 10xCards application,
 -   **Request Body**:
     ```json
     {
-      "sourceText": "A long text between 1,000 and 10,000 characters...",
+      "source_text": "A long text between 1,000 and 10,000 characters...",
       "model": "openai/gpt-4o"
     }
     ```
@@ -187,25 +187,25 @@ This document outlines the design for the REST API for the 10xCards application,
     -   **Payload**:
         ```json
         {
-          "generationId": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d",
-          "generatedCount": 2,
-          "generationDuration": 15234,
+          "generation_id": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d",
+          "generated_count": 2,
+          "generation_duration": 15234,
           "candidates": [
             {
               "front": "AI Candidate 1 Front",
               "back": "AI Candidate 1 Back",
-              "sourceFragment": "...context from the source text for candidate 1..."
+              "source_fragment": "...context from the source text for candidate 1..."
             },
             {
               "front": "AI Candidate 2 Front",
               "back": "AI Candidate 2 Back",
-              "sourceFragment": "...context from the source text for candidate 2..."
+              "source_fragment": "...context from the source text for candidate 2..."
             }
           ]
         }
         ```
 -   **Error Responses**:
-    -   `400 Bad Request`: If `sourceText` validation fails (e.g., length is outside the 1,000-10,000 character range).
+    -   `400 Bad Request`: If `source_text` validation fails (e.g., length is outside the 1,000-10,000 character range).
     -   `401 Unauthorized`: If the user is not authenticated.
     -   `500 Internal Server Error`: For generic server-side errors.
     -   `502 Bad Gateway`: If the external AI service is unavailable or returns an error. The response body should contain a user-friendly error message.
@@ -220,9 +220,9 @@ This document outlines the design for the REST API for the 10xCards application,
 -   **Request Body**:
     ```json
     {
-      "acceptedUneditedCount": 10,
-      "acceptedEditedCount": 5,
-      "rejectedCount": 3
+      "accepted_unedited_count": 10,
+      "accepted_edited_count": 5,
+      "rejected_count": 3
     }
     ```
 -   **Success Response**:
@@ -232,15 +232,15 @@ This document outlines the design for the REST API for the 10xCards application,
         {
           "id": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d",
           "model": "openai/gpt-4o",
-          "sourceTextHash": "a1b2c3d4e5f6...",
-          "sourceTextLength": 5432,
-          "generatedCount": 18,
-          "acceptedUneditedCount": 10,
-          "acceptedEditedCount": 5,
-          "rejectedCount": 3,
-          "generationDuration": 15234,
-          "createdAt": "2024-10-12T12:00:00Z",
-          "updatedAt": "2024-10-12T12:05:00Z"
+          "source_text_hash": "a1b2c3d4e5f6...",
+          "source_text_length": 5432,
+          "generated_count": 18,
+          "accepted_unedited_count": 10,
+          "accepted_edited_count": 5,
+          "rejected_count": 3,
+          "generation_duration": 15234,
+          "created_at": "2024-10-12T12:00:00Z",
+          "updated_at": "2024-10-12T12:05:00Z"
         }
         ```
 -   **Error Responses**:
@@ -272,16 +272,16 @@ Validation will be performed at the API layer before any database operations. A 
     -   `front`: Required, string, max 200 characters.
     -   `back`: Required, string, max 500 characters.
     -   `source`: Required, must be one of `ai-full`, `ai-edited`, or `manual`.
-    -   `generationId`: Optional, string, max 255 characters. Only required if `source` is `ai-full` or `ai-edited`.
+    -   `generation_id`: Optional, string, max 255 characters. Only required if `source` is `ai-full` or `ai-edited`.
 -   **Generations**:
-    -   `sourceText`: Required, string, min 1,000 and max 10,000 characters.
+    -   `source_text`: Required, string, min 1,000 and max 10,000 characters.
     -   `model`: Required, string.
 
 ### Business Logic
 
 -   **Data Isolation**: Enforced by Supabase's RLS policies, as described in the Authentication section. The API design relies on this mechanism for security.
 -   **AI Generation**: The `POST /generations` endpoint encapsulates the entire business logic for this feature. It is responsible for:
-    1.  Validating the input `sourceText`.
+    1.  Validating the input `source_text`.
     2.  Creating a hash of the text for logging.
     3.  Calling the external AI service via OpenRouter.
     4.  Parsing the AI's response to create flashcard candidates.
@@ -289,6 +289,6 @@ Validation will be performed at the API layer before any database operations. A 
     6.  On failure, logging the error details to the `app.generation_error_logs` table.
     7.  Returning the candidates or a relevant error to the client.
 -   **Generation Review**: The `PATCH /generations/{id}` endpoint handles the business logic for finalizing a review session. It validates that:
-    1.  `acceptedUneditedCount`, `acceptedEditedCount`, and `rejectedCount` are all non-negative integers.
+    1.  `accepted_unedited_count`, `accepted_edited_count`, and `rejected_count` are all non-negative integers.
     2.  The sum of these three counts equals the `generated_count` stored for that specific generation, ensuring data integrity.
 -   **Bulk Operations**: The `POST /flashcards` endpoint's ability to accept an array of objects implements the bulk insert requirement (FR-004), allowing the client to save multiple reviewed flashcards in a single network request.
