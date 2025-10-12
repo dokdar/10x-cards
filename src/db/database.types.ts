@@ -7,34 +7,127 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
+  app: {
     Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
+      flashcards: {
+        Row: {
+          back: string
+          created_at: string
+          front: string
+          generation_id: string | null
+          id: string
+          source: string
+          updated_at: string
+          user_id: string
         }
-        Returns: Json
+        Insert: {
+          back: string
+          created_at?: string
+          front: string
+          generation_id?: string | null
+          id?: string
+          source: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          back?: string
+          created_at?: string
+          front?: string
+          generation_id?: string | null
+          id?: string
+          source?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flashcards_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-  public: {
-    Tables: {
-      [_ in never]: never
+      generation_error_logs: {
+        Row: {
+          created_at: string
+          error_code: string | null
+          error_message: string
+          id: string
+          model: string | null
+          source_text_hash: string | null
+          source_text_length: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_code?: string | null
+          error_message: string
+          id?: string
+          model?: string | null
+          source_text_hash?: string | null
+          source_text_length?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          error_code?: string | null
+          error_message?: string
+          id?: string
+          model?: string | null
+          source_text_hash?: string | null
+          source_text_length?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      generations: {
+        Row: {
+          accepted_edited_count: number | null
+          accepted_unedited_count: number | null
+          created_at: string
+          generated_count: number
+          generation_duration: number
+          id: string
+          model: string
+          rejected_count: number
+          source_text_hash: string
+          source_text_length: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accepted_edited_count?: number | null
+          accepted_unedited_count?: number | null
+          created_at?: string
+          generated_count: number
+          generation_duration: number
+          id?: string
+          model: string
+          rejected_count: number
+          source_text_hash: string
+          source_text_length: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accepted_edited_count?: number | null
+          accepted_unedited_count?: number | null
+          created_at?: string
+          generated_count?: number
+          generation_duration?: number
+          id?: string
+          model?: string
+          rejected_count?: number
+          source_text_hash?: string
+          source_text_length?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -169,10 +262,7 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
-  public: {
+  app: {
     Enums: {},
   },
 } as const

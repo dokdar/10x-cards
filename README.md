@@ -49,12 +49,20 @@ To get a local copy up and running, follow these simple steps.
     ```
 
 4.  **Set up environment variables:**
-    Create a `.env` file in the root of the project and add the necessary environment variables for Supabase and OpenRouter. You can use the `.env.example` file as a template.
+    Create a `.env` file in the root of the project and add the necessary environment variables for Supabase and OpenRouter.
     ```env
     # .env
+    # Supabase Configuration
     SUPABASE_URL=your_supabase_url
-    SUPABASE_ANON_KEY=your_supabase_anon_key
+    SUPABASE_KEY=your_supabase_anon_key
+    
+    # OpenRouter API Configuration
     OPENROUTER_API_KEY=your_openrouter_api_key
+    OPENROUTER_API_URL=https://openrouter.ai/api/v1/chat/completions
+    
+    # AI Generation Settings (optional)
+    AI_GENERATION_TIMEOUT=60000
+    AI_MAX_RETRIES=3
     ```
 
 5.  **Run the development server:**
