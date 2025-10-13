@@ -6,13 +6,14 @@ import { z } from 'zod';
 export const generateFlashcardsSchema = z.object({
   source_text: z
     .string()
-    .min(1000, 'Source text must be at least 1000 characters long')
-    .max(10000, 'Source text must not exceed 10000 characters'),
+    .min(1000, 'Tekst źródłowy musi mieć co najmniej 1000 znaków')
+    .max(10000, 'Tekst źródłowy nie może przekroczyć 10000 znaków'),
   model: z
     .string()
-    .min(1, 'Model identifier cannot be empty')
-    .regex(/^[\w\/-]+$/, 'Invalid model identifier format')
-    .optional(),
+    .min(1, 'Identyfikator modelu nie może być pusty')
+    .regex(/^[\w\/-]+$/, 'Nieprawidłowy format identyfikatora modelu')
+    .optional()
+    .nullable(),
 });
 
 /**

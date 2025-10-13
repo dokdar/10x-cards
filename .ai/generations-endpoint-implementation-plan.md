@@ -1,209 +1,102 @@
 # API Endpoint Implementation Plan: Generate Flashcard Candidates
 
 ## 1. Przegląd punktu końcowego
-
-Endpoint `POST /generations` umożliwia użytkownikom generowanie kandydatów na fiszki przy użyciu sztucznej inteligencji. Użytkownik przesyła tekst źródłowy oraz wybiera model AI, a system zwraca listę wygenerowanych kandydatów na fiszki wraz z metadanymi sesji generowania. Endpoint integruje się z zewnętrzną usługą AI (OpenRouter) i loguje informacje o sesji do celów analitycznych.
+Ten punkt końcowy inicjuje proces generowania fiszek przy użyciu sztucznej inteligencji. Otrzymuje tekst źródłowy od użytkownika, komunikuje się z zewnętrzną usługą AI w celu wygenerowania propozycji fiszek, loguje metadane dotyczące próby generacji i zwraca listę kandydatów do przejrzenia przez użytkownika.
 
 ## 2. Szczegóły żądania
-
-- **Metoda HTTP**: `POST`
-- **Struktura URL**: `/api/generations`
-- **Parametry**:
-  - **Wymagane**: 
-    - `source_text` (string): Tekst źródłowy o długości 1000-10000 znaków
-    - `model` (string): Identyfikator modelu AI (np. "openai/gpt-4o")
-  - **Opcjonalne**: brak
-- **Request Body**:
-  ```json
-  {
-    "source_text": "Długi tekst między 1000 a 10000 znaków...",
-    "model": "openai/gpt-4o"
-  }
-  ```
-- **Headers**: 
-  - `Content-Type: application/json`
-  - Authorization header (zarządzany przez middleware)
+-   **Metoda HTTP**: `POST`
+-   **Struktura URL**: `/api/generations`
+-   **Ciało Żądania**:
+    ```json
+    {
+      "source_text": "Długi tekst między 1000 a 10000 znaków...",
+      "model": "openai/gpt-4o"
+    }
+    ```
+-   **Parametry**:
+    -   **Wymagane**: `source_text` (string, min: 1000, max: 10000)
+    -   **Opcjonalne**: `model` (string, domyślnie: `openai/gpt-4o`)
 
 ## 3. Wykorzystywane typy
-
-### Request Types
-- `GenerateFlashcardsCommand`: Struktura danych żądania z polami `source_text` i `model`
-
-### Response Types  
-- `GenerationResponse`: Zawiera pełne dane generacji: `generation_id`, `model`, `source_text_hash`, `source_text_length`, `generated_count`, `rejected_count`, `generation_duration`, `created_at`, oraz listę `candidates`
-- `FlashcardCandidate`: Pojedynczy kandydat z polami `front`, `back`, `source`
-
-### Database Types
-- `GenerationEntity`: Encja do logowania metadanych pomyślnych generacji
-- `GenerationErrorLogEntity`: Encja do logowania błędów generacji
-
-### Error Types
-- `ApiError`: Standardowa struktura błędu API
-- `ValidationApiError`: Błąd z detalami walidacji
+-   **Request Command**: `GenerateFlashcardsCommand`
+-   **Success Response DTO**: `GenerationResponse`
+-   **AI Interaction Candidate**: `FlashcardCandidate`
+-   **Database Entities**: `GenerationEntity`, `GenerationErrorLogEntity`
+-   **Error Responses**: `ApiError`, `ValidationApiError`
 
 ## 4. Szczegóły odpowiedzi
-
-### Sukces (200 OK)
-```json
-{
-  "generation_id": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d",
-  "model": "openai/gpt-4o",
-  "source_text_hash": "sha256:a1b2c3d4e5f6...",
-  "source_text_length": 5847,
-  "generated_count": 2,
-  "rejected_count": 0,
-  "generation_duration": 15234,
-  "created_at": "2024-10-12T14:30:00.000Z",
-  "candidates": [
+-   **Pomyślna odpowiedź (200 OK)**:
+    ```json
     {
-      "front": "AI Candidate 1 Front",
-      "back": "AI Candidate 1 Back", 
-      "source": "ai-full"
+      "generation_id": "c3e4b7a1-8e1d-4f2a-8b8a-1e3d4a5b6c7d",
+      "model": "openai/gpt-4o",
+      "source_text_hash": "md5:a1b2c3d4e5f6...",
+      "source_text_length": 5847,
+      "generated_count": 2,
+      "rejected_count": 0,
+      "generation_duration": 15234,
+      "created_at": "2024-10-12T14:30:00.000Z",
+      "candidates": [
+        { "front": "...", "back": "...", "source": "ai-full" },
+        { "front": "...", "back": "...", "source": "ai-full" }
+      ]
     }
-  ]
-}
-```
-
-### Błędy
-- **400 Bad Request**: Nieprawidłowa walidacja danych wejściowych
-- **401 Unauthorized**: Brak autoryzacji użytkownika
-- **500 Internal Server Error**: Błędy serwera/bazy danych
-- **502 Bad Gateway**: Niedostępność usługi AI
+    ```
+-   **Odpowiedzi błędów**:
+    -   `400 Bad Request`: Nieprawidłowe dane wejściowe.
+    -   `401 Unauthorized`: Użytkownik nie jest uwierzytelniony.
+    -   `500 Internal Server Error`: Wewnętrzny błąd serwera.
+    -   `502 Bad Gateway`: Błąd komunikacji z zewnętrzną usługą AI.
 
 ## 5. Przepływ danych
-
-1. **Walidacja żądania**: Sprawdzenie autoryzacji i walidacja danych wejściowych
-2. **Przygotowanie danych**: Generowanie hash'a tekstu źródłowego, pomiar czasu rozpoczęcia
-3. **Komunikacja z AI**: Wysłanie żądania do OpenRouter API z odpowiednim promptem
-4. **Przetwarzanie odpowiedzi**: Parsowanie odpowiedzi AI i wyodrębnienie kandydatów
-5. **Logowanie metadanych**: Zapis do `app.generations` (sukces) lub `app.generation_error_logs` (błąd)
-6. **Zwrot odpowiedzi**: Przesłanie sformatowanej odpowiedzi do klienta
-
-### Integracje zewnętrzne
-- **OpenRouter API**: Komunikacja z wybranymi modelami AI
-- **Supabase**: Operacje na bazie danych
+1.  Żądanie `POST` trafia do endpointu `/api/generations`.
+2.  Middleware Astro (`src/middleware/index.ts`) weryfikuje sesję użytkownika Supabase. Jeśli jest nieprawidłowa, zwraca `401`.
+3.  Handler endpointu (`src/pages/api/generations.ts`) parsuje i waliduje ciało żądania przy użyciu schemy Zod (`src/lib/validation/generations.schema.ts`). W przypadku błędu zwraca `400`.
+4.  Mierzony jest czas rozpoczęcia operacji.
+5.  `HashingService` oblicza hash `md5` z `source_text`.
+6.  `AiGenerationService` jest wywoływany z `source_text` i `model`.
+    -   Serwis konstruuje odpowiedni prompt systemowy i wysyła zapytanie do zewnętrznego API (np. OpenRouter), ustawiając **timeout na 60 sekund**.
+    -   Oczekuje na odpowiedź i parsuje ją do listy obiektów `FlashcardCandidate`.
+    -   W przypadku błędu komunikacji lub nieprawidłowego formatu odpowiedzi, serwis rzuca wyjątek.
+7.  Mierzony jest czas zakończenia operacji i obliczany jest `generation_duration`.
+8.  `GenerationDatabaseService` jest wywoływany w celu zapisania wyniku w tabeli `app.generations`.
+9.  Endpoint konstruuje odpowiedź `GenerationResponse` i zwraca ją do klienta z kodem `200 OK`.
+10. W przypadku przechwycenia wyjątku (np. z `AiGenerationService`), `GenerationDatabaseService` jest wywoływany w celu zapisania błędu w `app.generation_error_logs`, a do klienta zwracany jest odpowiedni kod błędu (`502` lub `500`).
 
 ## 6. Względy bezpieczeństwa
-
-### Autoryzacja
-- Użycie middleware Astro do weryfikacji autoryzacji użytkownika
-- Wyodrębnienie `user_id` z `context.locals.supabase` i sesji użytkownika
-
-### Walidacja danych
-- Ścisła walidacja długości `source_text` (1000-10000 znaków)
-- Sanityzacja danych przed wysłaniem do AI
-- Walidacja formatu modelu AI
-
-### Ochrona przed nadużyciami
-- Limitowanie rozmiaru request body
-- Potencjalne rate limiting (do rozważenia w przyszłości)
-- Logowanie wszystkich prób generacji dla audytu
+-   **Uwierzytelnianie**: Każde żądanie musi być uwierzytelnione. Middleware Astro będzie odpowiedzialne za weryfikację tokenu JWT Supabase i dołączenie `context.locals.user` oraz `context.locals.supabase`.
+-   **Autoryzacja**: Każdy uwierzytelniony użytkownik może korzystać z tej funkcji. Dostęp do danych jest ograniczony przez RLS (Row-Level Security) w Supabase, zapewniając, że użytkownicy mogą operować tylko na własnych zasobach.
+-   **Walidacja wejścia**: Zod będzie używany do ścisłej walidacji `source_text` i `model`, chroniąc przed nieoczekiwanymi danymi i potencjalnymi atakami.
+-   **Zarządzanie sekretami**: Klucze API do usług AI będą przechowywane jako zmienne środowiskowe po stronie serwera (`import.meta.env`) i nigdy nie będą dostępne dla klienta.
 
 ## 7. Obsługa błędów
-
-### Błędy walidacji (400)
-- Zbyt krótki lub zbyt długi `source_text`
-- Brakujące wymagane pola
-- Nieprawidłowy format danych
-
-### Błędy autoryzacji (401)
-- Brak tokenu autoryzacji
-- Nieważny token użytkownika
-- Wygasła sesja użytkownika
-
-### Błędy komunikacji z AI (502)
-- Timeout komunikacji z OpenRouter
-- Błędy zwracane przez model AI
-- Nieprawidłowa odpowiedź AI (brak wymaganej struktury)
-
-### Błędy serwera (500)
-- Błędy połączenia z bazą danych
-- Błędy podczas logowania metadanych
-- Nieoczekiwane błędy aplikacji
-
-### Strategia logowania błędów
-- Wszystkie błędy AI → `app.generation_error_logs`
-- Błędy aplikacji → standardowe logi serwera
-- Zachowanie kontekstu błędu dla diagnostyki
+| Scenariusz Błędu                                       | Kod Statusu HTTP | Akcja Logowania                                                                          | Komunikat dla Użytkownika                            |
+| ------------------------------------------------------ | ------------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Błąd walidacji `source_text` lub `model`                 | `400 Bad Request`  | Brak logowania w `app.generation_error_logs`.                                          | "Nieprawidłowe dane wejściowe" z szczegółami walidacji. |
+| Brak lub nieprawidłowy token uwierzytelniający        | `401 Unauthorized` | Brak logowania (obsługiwane przez middleware).                                         | "Brak autoryzacji."                                  |
+| Błąd zewnętrznej usługi AI (np. timeout, błąd 5xx)     | `502 Bad Gateway`  | Zapis do `app.generation_error_logs` z kodem błędu i wiadomością z usługi AI. | "Usługa generowania jest tymczasowo niedostępna."    |
+| Nieoczekiwany format odpowiedzi od usługi AI           | `502 Bad Gateway`  | Zapis do `app.generation_error_logs` z informacją o błędzie parsowania.                  | "Wystąpił błąd podczas przetwarzania odpowiedzi AI." |
+| Wewnętrzny błąd serwera (np. błąd bazy danych)          | `500 Internal Server Error` | Zapis do `app.generation_error_logs` z pełnym komunikatem błędu.                       | "Wystąpił nieoczekiwany błąd serwera."               |
 
 ## 8. Rozważania dotyczące wydajności
-
-### Potencjalne wąskie gardła
-- **Czas odpowiedzi AI**: Modele AI mogą potrzebować 10-30 sekund na generację
-- **Rozmiar tekstu źródłowego**: Większe teksty = dłuższe przetwarzanie
-- **Równoczesne żądania**: Limity API OpenRouter
-
-### Strategie optymalizacji
-- **Timeouty**: Ustawienie 60 sekund na czas oczekiwania dla wywołania AI API, inaczej błąd timeout.
-- **Streaming**: Rozważenie streaming response dla długich generacji
-- **Caching**: Potencjalne cache'owanie dla identycznych tekstów źródłowych
-- **Queue system**: Rozważenie systemu kolejek dla dużego ruchu
-
-### Monitoring wydajności
-- Logowanie czasów odpowiedzi AI
-- Monitorowanie częstotliwości błędów 502
-- Śledzenie wykorzystania limitów API
+-   Głównym wąskim gardłem wydajnościowym będzie czas odpowiedzi zewnętrznej usługi AI, który może wynosić od kilku do kilkunastu sekund.
+-   Operacja jest synchroniczna, co oznacza, że klient będzie czekał na pełną odpowiedź.
+-   **Strategie optymalizacji (na przyszłość)**:
+    -   Rozważenie implementacji asynchronicznej z wykorzystaniem WebSockets lub Server-Sent Events, aby informować klienta o postępie bez blokowania interfejsu.
+    -   Implementacja mechanizmu cache'owania po stronie serwera dla zapytań o ten sam `source_text_hash`, aby uniknąć ponownego generowania tych samych fiszek.
 
 ## 9. Etapy wdrożenia
-
-### Faza 1: Przygotowanie infrastruktury
-1. **Rozszerzenie typów w src/types.ts**
-   - Rozszerzenie `GenerationResponse` o brakujące pola: `model`, `source_text_hash`, `source_text_length`, `rejected_count`, `created_at`
-   - Weryfikacja zgodności z polami NOT NULL z tabeli `app.generations`
-
-2. **Stworzenie struktur danych**
-   - Zdefiniowanie validation schema używając Zod
-   - Implementacja typów Request/Response
-
-3. **Konfiguracja środowiska**
-   - Dodanie zmiennych środowiskowych dla OpenRouter API
-   - Konfiguracja limitów czasowych i rozmiarów
-
-### Faza 2: Implementacja core services
-4. **AIGenerationService**
-   - Implementacja komunikacji z OpenRouter API
-   - Obsługa różnych modeli AI
-   - Formatowanie promptów i parsowanie odpowiedzi
-
-5. **HashingService**  
-   - Implementacja funkcji hash dla tekstów źródłowych
-   - Zapewnienie konsystentności hash'owania
-
-6. **DatabaseService extensions**
-   - Metody do zapisu `GenerationEntity`
-   - Metody do zapisu `GenerationErrorLogEntity`
-
-### Faza 3: Implementacja endpointu
-7. **Stworzenie pliku `/src/pages/api/generations.ts`**
-   - Implementacja handler'a POST
-   - Integracja z utworzonymi services
-   - Implementacja walidacji żądań
-
-8. **Middleware integration**
-   - Zapewnienie autoryzacji użytkownika
-   - Walidacja uprawnień dostępu
-
-### Faza 4: Obsługa błędów i logowanie
-9. **Implementacja error handling**
-   - Mapowanie błędów AI na odpowiednie kody HTTP
-   - Logowanie błędów do `generation_error_logs`
-   - User-friendly error messages
-
-10. **Performance monitoring**
-   - Dodanie metryk czasów odpowiedzi
-   - Logowanie wykorzystania API limits
-
-## 10. Checklisty implementacyjne
-
-### Pre-implementation checklist
-- [ ] Zmienne środowiskowe dla OpenRouter API skonfigurowane
-- [ ] Zod schemas dla walidacji utworzone
-- [ ] Database connection potwierdzone
-
-### Implementation checklist  
-- [ ] AIGenerationService implementowany i przetestowany
-- [ ] HashingService implementowany
-- [ ] Database operations dla Generation entities
-- [ ] API endpoint `/api/generations.ts` utworzony
-- [ ] Error handling i logging implementowane
-- [ ] Authorization middleware zintegrowane
+1.  **Konfiguracja Zmiennych Środowiskowych**:
+    -   Dodaj klucz API dla OpenRouter do zmiennych środowiskowych projektu (`OPENROUTER_API_KEY`).
+2.  **Schema Walidacji**:
+    -   Utwórz lub zaktualizuj plik `src/lib/validation/generations.schema.ts`, definiując schemę Zod dla `GenerateFlashcardsCommand`.
+3.  **Implementacja Serwisów**:
+    -   W `src/lib/services/hashing.service.ts` zaimplementuj funkcję do generowania hasha `md5`.
+    -   W `src/lib/services/ai-generation.service.ts` stwórz funkcję, która przyjmuje `source_text` i `model`, komunikuje się z API OpenRouter i zwraca `FlashcardCandidate[]`. Należy zaimplementować **60-sekundowy timeout** dla zapytania.
+    -   W `src/lib/services/generation-database.service.ts` dodaj dwie metody:
+        -   `logSuccessfulGeneration(data: Omit<GenerationEntity, 'id' | 'created_at' | 'updated_at'>)`
+        -   `logGenerationError(data: Omit<GenerationErrorLogEntity, 'id' | 'created_at'>)`
+4.  **Implementacja API Route**:
+    -   W pliku `src/pages/api/generations.ts` utwórz handler `POST`.
+    -   Zintegruj middleware do obsługi uwierzytelniania.
+    -   Zaimplementuj logikę przepływu danych: walidacja, pomiar czasu, wywołanie serwisów, obsługa błędów i zwracanie odpowiedzi.

@@ -56,11 +56,13 @@ export class AIGenerationService {
     const startTime = Date.now();
 
     try {
-      // Use default model if not provided
-      const model = params.model ?? 'openai/gpt-4o';
+      // Model is required at this point (should be validated/defaulted by endpoint)
+      if (!params.model) {
+        throw new Error('Model parameter is required for AI generation');
+      }
       
       const prompt = this.buildPrompt(params.sourceText);
-      const response = await this.callOpenRouter(model, prompt);
+      const response = await this.callOpenRouter(params.model, prompt);
       const candidates = this.parseAIResponse(response);
 
       const duration = Date.now() - startTime;

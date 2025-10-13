@@ -1,7 +1,6 @@
 import type { APIRoute } from 'astro';
 import { ZodError } from 'zod';
 
-import { DEFAULT_USER_ID } from '@/db/supabase.client';
 import { createAIGenerationService } from '@/lib/services/ai-generation.service';
 import { GenerationDatabaseService } from '@/lib/services/generation-database.service';
 import { HashingService } from '@/lib/services/hashing.service';
@@ -25,6 +24,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
   let model: string | null = null;
 
   try {
+    // User should be set by middleware (using DEFAULT_USER_ID for development)
+    if (!locals.user) {
+      return createJsonResponse(
+        createApiError('Internal Server Error', 'Brak informacji o użytkowniku'),
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     // 1. Parse and validate request body
     const body = await request.json();
     const validatedData = generateFlashcardsSchema.parse(body);
@@ -36,104 +43,72 @@ export const POST: APIRoute = async ({ request, locals }) => {
     sourceTextHash = HashingService.generateHash(source_text);
     sourceTextLength = source_text.length;
 
-    // MOCK: Return example data instead of calling AI and database
-    const mockResponse: GenerationResponse = {
-      generation_id: 'mock-generation-id-123',
-      model: model,
+    // 3. Generate flashcards using AI (only if model is provided)
+    let generationResult: { candidates: any[]; duration: number };
+
+    if (model) {
+      // Use AI to generate flashcards
+      const aiService = createAIGenerationService();
+      generationResult = await aiService.generateFlashcards({
+        sourceText: source_text,
+        model: model,
+      });
+    } else {
+      // No model provided - manual generation, return empty candidates list
+      generationResult = {
+        candidates: [],
+        duration: Date.now() - startTime,
+      };
+    }
+
+    // 4. Save generation metadata to database
+    const dbService = new GenerationDatabaseService(locals.supabase);
+    const generation = await dbService.createGeneration({
+      user_id: locals.user.id,
+      model,
       source_text_hash: sourceTextHash,
       source_text_length: sourceTextLength,
-      generated_count: 3,
-      rejected_count: 0,
-      generation_duration: 2500,
-      created_at: new Date().toISOString(),
-      candidates: [
-        {
-          front: 'What is TypeScript?',
-          back: 'TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.',
-          source: 'ai-full'
-        },
-        {
-          front: 'What are the benefits of using Astro?',
-          back: 'Astro provides faster page loads with less JavaScript, automatic code splitting, and support for multiple UI frameworks.',
-          source: 'ai-full'
-        },
-        {
-          front: 'What is Supabase?',
-          back: 'Supabase is an open-source Firebase alternative that provides authentication, database, storage, and real-time subscriptions.',
-          source: 'ai-full'
-        }
-      ]
+      generated_count: generationResult.candidates.length,
+      rejected_count: 0, // Initially no rejections
+      generation_duration: generationResult.duration,
+    });
+
+    // 5. Build and return response
+    const response: GenerationResponse = {
+      generation_id: generation.id,
+      model: generation.model,
+      source_text_hash: generation.source_text_hash,
+      source_text_length: generation.source_text_length,
+      generated_count: generation.generated_count,
+      rejected_count: generation.rejected_count,
+      generation_duration: generation.generation_duration,
+      created_at: generation.created_at,
+      candidates: generationResult.candidates,
     };
 
-    return createJsonResponse(mockResponse, HTTP_STATUS.OK);
-
-    // ORIGINAL CODE (commented out for mocking):
-    // // 3. Generate flashcards
-    // let generationResult: { candidates: any[]; duration: number };
-    //
-    // if (model) {
-    //   // Use AI to generate flashcards
-    //   const aiService = createAIGenerationService();
-    //   generationResult = await aiService.generateFlashcards({
-    //     sourceText: source_text,
-    //     model: model,
-    //   });
-    // } else {
-    //   // No model provided - return empty candidates list
-    //   generationResult = {
-    //     candidates: [],
-    //     duration: 0,
-    //   };
-    // }
-    //
-    // // 4. Save generation metadata to database
-    // const dbService = new GenerationDatabaseService(locals.supabase);
-    // const generation = await dbService.createGeneration({
-    //   user_id: DEFAULT_USER_ID,
-    //   model,
-    //   source_text_hash: sourceTextHash,
-    //   source_text_length: sourceTextLength,
-    //   generated_count: generationResult.candidates.length,
-    //   rejected_count: 0, // Initially no rejections
-    //   generation_duration: generationResult.duration,
-    // });
-    //
-    // // 5. Build and return response
-    // const response: GenerationResponse = {
-    //   generation_id: generation.id,
-    //   model: generation.model,
-    //   source_text_hash: generation.source_text_hash,
-    //   source_text_length: generation.source_text_length,
-    //   generated_count: generation.generated_count,
-    //   rejected_count: generation.rejected_count,
-    //   generation_duration: generation.generation_duration,
-    //   created_at: generation.created_at,
-    //   candidates: generationResult.candidates,
-    // };
-    //
-    // return createJsonResponse(response, HTTP_STATUS.OK);
+    return createJsonResponse(response, HTTP_STATUS.OK);
   } catch (error) {
-    // MOCK: Simplified error handling (no database logging)
-    return handleErrorResponse(error);
+    // Log error to database if user is authenticated
+    // Note: Validation errors (ZodError) are NOT logged to database per plan
+    if (locals.user && !(error instanceof ZodError)) {
+      await logGenerationError({
+        error,
+        userId: locals.user.id,
+        model,
+        sourceTextHash,
+        sourceTextLength,
+        supabase: locals.supabase,
+      });
+    }
 
-    // ORIGINAL CODE (commented out for mocking):
-    // // Log error to database
-    // await logGenerationError({
-    //   error,
-    //   userId: DEFAULT_USER_ID,
-    //   model,
-    //   sourceTextHash,
-    //   sourceTextLength,
-    //   supabase: locals.supabase,
-    // });
-    //
-    // // Return appropriate error response
-    // return handleErrorResponse(error);
+    // Return appropriate error response
+    return handleErrorResponse(error);
   }
 };
 
 /**
  * Log generation error to database
+ * Note: This function should only be called for non-validation errors
  */
 async function logGenerationError({
   error,
@@ -156,21 +131,22 @@ async function logGenerationError({
     let errorCode: string | null = null;
     let errorMessage = 'Unknown error';
 
-    if (error instanceof ZodError) {
-      errorCode = 'VALIDATION_ERROR';
-      errorMessage = error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ');
-    } else if (error instanceof Error) {
+    if (error instanceof Error) {
       errorMessage = error.message;
       
       // Categorize error type
-      if (error.message.includes('timeout')) {
+      if (error.message.includes('timeout') || error.message.includes('AbortError')) {
         errorCode = 'AI_TIMEOUT';
       } else if (error.message.includes('OpenRouter') || error.message.includes('API')) {
         errorCode = 'AI_API_ERROR';
       } else if (error.message.includes('parse') || error.message.includes('JSON')) {
         errorCode = 'AI_PARSE_ERROR';
-      } else if (error.message.includes('Network')) {
+      } else if (error.message.includes('Network') || error.message.includes('fetch')) {
         errorCode = 'NETWORK_ERROR';
+      } else if (error.message.includes('database') || error.message.includes('Failed to create')) {
+        errorCode = 'DATABASE_ERROR';
+      } else {
+        errorCode = 'INTERNAL_ERROR';
       }
     }
 
@@ -195,7 +171,7 @@ function handleErrorResponse(error: unknown): Response {
   // Validation errors (400 Bad Request)
   if (error instanceof ZodError) {
     const validationError = createValidationError(
-      'Invalid request data',
+      'Nieprawidłowe dane wejściowe',
       error.errors.map((e) => ({
         field: e.path.join('.'),
         message: e.message,
@@ -208,10 +184,10 @@ function handleErrorResponse(error: unknown): Response {
   // AI service errors
   if (error instanceof Error) {
     // Timeout errors (502 Bad Gateway)
-    if (error.message.includes('timeout')) {
+    if (error.message.includes('timeout') || error.message.includes('AbortError')) {
       const apiError = createApiError(
         'AI Service Timeout',
-        'AI generation took too long to respond. Please try again.',
+        'Usługa generowania jest tymczasowo niedostępna.',
         { message: error.message },
       );
 
@@ -219,10 +195,10 @@ function handleErrorResponse(error: unknown): Response {
     }
 
     // AI API errors (502 Bad Gateway)
-    if (error.message.includes('OpenRouter') || error.message.includes('Network')) {
+    if (error.message.includes('OpenRouter') || error.message.includes('Network') || error.message.includes('fetch')) {
       const apiError = createApiError(
         'AI Service Unavailable',
-        'Unable to reach AI service. Please try again later.',
+        'Usługa generowania jest tymczasowo niedostępna.',
         { message: error.message },
       );
 
@@ -233,7 +209,7 @@ function handleErrorResponse(error: unknown): Response {
     if (error.message.includes('parse') || error.message.includes('JSON')) {
       const apiError = createApiError(
         'AI Response Error',
-        'AI service returned invalid response. Please try again.',
+        'Wystąpił błąd podczas przetwarzania odpowiedzi AI.',
         { message: error.message },
       );
 
@@ -244,7 +220,7 @@ function handleErrorResponse(error: unknown): Response {
     if (error.message.includes('Failed to create') || error.message.includes('database')) {
       const apiError = createApiError(
         'Database Error',
-        'Failed to save generation data. Please try again.',
+        'Wystąpił nieoczekiwany błąd serwera.',
         { message: error.message },
       );
 
@@ -254,7 +230,7 @@ function handleErrorResponse(error: unknown): Response {
     // Generic error with message
     const apiError = createApiError(
       'Internal Server Error',
-      error.message || 'An unexpected error occurred.',
+      'Wystąpił nieoczekiwany błąd serwera.',
     );
 
     return createJsonResponse(apiError, HTTP_STATUS.INTERNAL_SERVER_ERROR);
@@ -263,7 +239,7 @@ function handleErrorResponse(error: unknown): Response {
   // Unknown error (500 Internal Server Error)
   const apiError = createApiError(
     'Internal Server Error',
-    'An unexpected error occurred. Please try again.',
+    'Wystąpił nieoczekiwany błąd serwera.',
   );
 
   return createJsonResponse(apiError, HTTP_STATUS.INTERNAL_SERVER_ERROR);
