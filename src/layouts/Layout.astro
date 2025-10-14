@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { Header } from "@/components/Header";
 
 interface Props {
   title?: string;
@@ -21,8 +22,25 @@ const {
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <script is:inline>
+      // Prevent flash of unstyled content (FOUC) by setting theme before page renders
+      (function() {
+        const getTheme = () => {
+          const stored = localStorage.getItem('theme');
+          if (stored === 'light' || stored === 'dark') return stored;
+          // System preference
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+        
+        const theme = getTheme();
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
   <body>
+    <Header client:load />
     <slot />
   </body>
 </html>

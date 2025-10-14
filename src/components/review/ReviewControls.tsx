@@ -16,7 +16,7 @@ export function ReviewControls({
   const hasSelection = selectedCount > 0;
 
   return (
-    <div className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="border-b bg-background">
       <div className="container flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-bold">Recenzja fiszek</h1>
