@@ -212,3 +212,18 @@ export interface FlashcardsListQuery {
   limit?: number;
   search?: string;
 }
+
+// =============================================================================
+// VIEW MODEL TYPES
+// =============================================================================
+// These types represent UI-specific data structures with additional state
+
+/**
+ * Review candidate view model - extends FlashcardCandidate with UI state
+ */
+export interface ReviewCandidateViewModel extends FlashcardCandidate {
+  id: string; // Unique client-side identifier (e.g. from uuid)
+  status: 'pending' | 'accepted' | 'edited' | 'rejected';
+  originalFront: string; // Original content for tracking edits
+  originalBack: string; // Original content for tracking edits
+}

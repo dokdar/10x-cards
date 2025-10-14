@@ -7,7 +7,7 @@ interface UseFlashcardGenerationResult {
   status: GenerationStatus;
   error: string | null;
   data: GenerationResponse | null;
-  generate: (sourceText: string) => Promise<void>;
+  generate: (sourceText: string, useAI?: boolean) => Promise<void>;
 }
 
 export function useFlashcardGeneration(): UseFlashcardGenerationResult {
@@ -15,21 +15,27 @@ export function useFlashcardGeneration(): UseFlashcardGenerationResult {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<GenerationResponse | null>(null);
 
-  const generate = async (sourceText: string): Promise<void> => {
+  const generate = async (sourceText: string, useAI: boolean = false): Promise<void> => {
     setStatus('loading');
     setError(null);
     setData(null);
 
     try {
+      const body: { source_text: string; model?: string } = {
+        source_text: sourceText,
+      };
+
+      // Only include model if AI generation is requested
+      if (useAI) {
+        body.model = 'openai/gpt-4o-mini';
+      }
+
       const response = await fetch('/api/generations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          source_text: sourceText,
-          model: 'openai/gpt-4o-mini',
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
