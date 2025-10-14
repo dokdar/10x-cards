@@ -1,0 +1,38 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const { id } = Astro.params;
+---
+
+<Layout 
+  title="Review Flashcards - 10x Cards" 
+  description="Przeglądaj i akceptuj wygenerowane fiszki"
+>
+  <main class="min-h-screen bg-background">
+    <div class="container mx-auto max-w-4xl py-6 px-4 sm:py-8 sm:px-6 lg:py-12">
+      <div class="space-y-6">
+        <header class="space-y-2">
+          <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
+            Review Flashcards
+          </h1>
+          <p class="text-base sm:text-lg text-muted-foreground">
+            Generation ID: {id}
+          </p>
+        </header>
+
+        <div class="rounded-lg border bg-card p-8 text-center">
+          <p class="text-lg text-muted-foreground">
+            Widok recenzji fiszek będzie tutaj zaimplementowany wkrótce.
+          </p>
+          <a 
+            href="/generate" 
+            class="mt-6 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+          >
+            Wróć do generatora
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+

@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AIGeneratorView from '../components/views/AIGeneratorView';
+
+const title = 'Generator AI - 10x Cards';
+const description = 'Wygeneruj fiszki z tekstu przy pomocy AI';
+---
+
+<Layout title={title} description={description}>
+  <AIGeneratorView client:load />
+</Layout>
+
