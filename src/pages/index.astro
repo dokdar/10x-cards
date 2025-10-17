@@ -45,10 +45,7 @@ if (confirmationCode) {
   }
 }
 
-// Redirect authenticated users to generator
-if (isAuthenticated) {
-  return Astro.redirect("/generate");
-}
+// Note: Authenticated users CAN view landing page (removed auto-redirect to /generate)
 ---
 
 <Layout
@@ -72,18 +69,29 @@ if (isAuthenticated) {
           </div>
 
           <div class="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-            <a
-              href="/register"
-              class="inline-flex items-center justify-center px-6 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
-            >
-              Zacznij za darmo
-            </a>
-            <a
-              href="/login"
-              class="inline-flex items-center justify-center px-6 py-3 text-base font-medium border bg-background text-foreground rounded-md hover:bg-accent transition-colors"
-            >
-              Zaloguj się
-            </a>
+            {isAuthenticated ? (
+              <a
+                href="/generate"
+                class="inline-flex items-center justify-center px-6 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
+              >
+                Przejdź do generatora
+              </a>
+            ) : (
+              <>
+                <a
+                  href="/register"
+                  class="inline-flex items-center justify-center px-6 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
+                >
+                  Zacznij za darmo
+                </a>
+                <a
+                  href="/login"
+                  class="inline-flex items-center justify-center px-6 py-3 text-base font-medium border bg-background text-foreground rounded-md hover:bg-accent transition-colors"
+                >
+                  Zaloguj się
+                </a>
+              </>
+            )}
           </div>
         </div>
 
@@ -113,20 +121,22 @@ if (isAuthenticated) {
         </div>
 
         {/* CTA */}
-        <div
-          class="space-y-6 text-center py-6 px-6 rounded-lg border bg-gradient-to-br from-secondary to-secondary/50"
-        >
-          <h2 class="text-2xl sm:text-3xl font-bold">Gotowy do nauki?</h2>
-          <p class="text-muted-foreground max-w-lg mx-auto">
-            Dołącz do tysięcy studentów, którzy już korzystają z 10x Cards do nauki.
-          </p>
-          <a
-            href="/register"
-            class="inline-flex items-center justify-center px-8 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
+        {!isAuthenticated && (
+          <div
+            class="space-y-6 text-center py-6 px-6 rounded-lg border bg-gradient-to-br from-secondary to-secondary/50"
           >
-            Zarejestruj się teraz
-          </a>
-        </div>
+            <h2 class="text-2xl sm:text-3xl font-bold">Gotowy do nauki?</h2>
+            <p class="text-muted-foreground max-w-lg mx-auto">
+              Dołącz do tysięcy studentów, którzy już korzystają z 10x Cards do nauki.
+            </p>
+            <a
+              href="/register"
+              class="inline-flex items-center justify-center px-8 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
+            >
+              Zarejestruj się teraz
+            </a>
+          </div>
+        )}
       </div>
     </div>
   </main>
