@@ -4,6 +4,13 @@ import { ReviewView } from "../../components/views/ReviewView";
 
 export const prerender = false;
 
+// Server-side authentication guard
+const { user } = Astro.locals;
+
+if (!user) {
+  return Astro.redirect('/login');
+}
+
 const { id } = Astro.params;
 
 const title = "Recenzja fiszek - 10x Cards";
@@ -11,5 +18,5 @@ const description = "Przejrzyj i zaakceptuj wygenerowane fiszki";
 ---
 
 <Layout title={title} description={description}>
-  <ReviewView client:load generationId={id} />
+  <ReviewView client:idle generationId={id} />
 </Layout>
