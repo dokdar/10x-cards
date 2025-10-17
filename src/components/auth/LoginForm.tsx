@@ -50,32 +50,48 @@ export default function LoginForm() {
     setIsLoading(true);
 
     try {
-      // Send login request to API endpoint
+      console.log('[LOGIN CLIENT] Sending fetch to /api/auth/login');
+      console.log('[LOGIN CLIENT] Fetch options: method=POST, credentials=include');
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include',
         body: JSON.stringify({
           email: email.trim(),
           password,
         }),
       });
 
-      // Guard: Check if response is OK
-      if (!response.ok) {
-        const data = await response.json();
+      console.log('[LOGIN CLIENT] Fetch completed');
+      console.log('[LOGIN CLIENT] Response status:', response.status);
+      console.log('[LOGIN CLIENT] Response ok:', response.ok);
 
-        // Set error message from API or generic message
-        const errorMessage = data.error || "Błąd logowania. Spróbuj ponownie później.";
-        setError(errorMessage);
+      if (!response.ok) {
+        console.error('[LOGIN CLIENT] Response not OK');
+        try {
+          const errorData = await response.json();
+          console.error('[LOGIN CLIENT] Error data:', errorData);
+          setError('Błąd logowania: ' + (errorData.error || 'Nieznany błąd'));
+        } catch (parseError) {
+          console.error('[LOGIN CLIENT] Could not parse error response:', parseError);
+          setError('Błąd logowania: Nieznany błąd');
+        }
         setIsLoading(false);
         return;
       }
 
-      // Success: Redirect to home page (full page reload for fresh auth check)
-      // This ensures middleware validates the new session on the next request
-      window.location.href = "/";
+      // Success: Status 200 means login worked on server
+      // Don't parse response body - window.location.href will navigate
+      // and response stream will change to HTML page
+      console.log('[LOGIN CLIENT] Response status OK (200)');
+      console.log('[LOGIN CLIENT] Login successful, redirecting to /generate...');
+
+      // Success: Redirect to generator (main app for authenticated users)
+      // Full page reload ensures middleware validates the new session
+      window.location.href = "/generate";
 
     } catch (_err) {
       // Handle network errors

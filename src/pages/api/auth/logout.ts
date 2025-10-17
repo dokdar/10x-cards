@@ -5,9 +5,9 @@ import { createSupabaseServerInstance } from "@/db/supabase.client";
  * POST /api/auth/logout
  *
  * Signs out the current user and clears auth cookies
- * On server-side, we need to manually clear cookies after signOut
+ * Supabase SSR handles cookie deletion automatically via signOut()
  */
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   console.log("=== [LOGOUT API] START ===");
 
   // Guard: Ensure request method is POST
@@ -19,11 +19,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
   }
 
-  // Log incoming cookies
+  // Log incoming cookies for debugging
   const incomingCookies = request.headers.get("cookie");
-  console.log("[LOGOUT API] Incoming cookies header:", incomingCookies ? "YES" : "NO");
+  console.log("[LOGOUT API] Incoming cookies:", incomingCookies ? "YES" : "NO");
   if (incomingCookies) {
-    console.log("[LOGOUT API] Cookie content:", incomingCookies.substring(0, 100) + "...");
+    // Log all cookie names (not values for security)
+    const cookieNames = incomingCookies.split(';').map(c => c.trim().split('=')[0]);
+    console.log("[LOGOUT API] Cookie names:", cookieNames.join(', '));
   }
 
   // Create server-side Supabase client
@@ -38,7 +40,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const { data: userBefore } = await supabase.auth.getUser();
   console.log("[LOGOUT API] User before signOut:", userBefore.user ? userBefore.user.email : "NONE");
 
-  // Sign out the user
+  // Sign out the user - this should trigger cookie deletion via setAll() callback
   const { error } = await supabase.auth.signOut();
 
   if (error) {
@@ -55,47 +57,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     );
   }
 
-  console.log("[LOGOUT API] SignOut successful");
+  console.log("[LOGOUT API] signOut() completed");
 
-  // Check user AFTER signOut
+  // Verify user is gone after signOut
   const { data: userAfter } = await supabase.auth.getUser();
   console.log("[LOGOUT API] User after signOut:", userAfter.user ? userAfter.user.email : "NONE");
 
-  // Try to get all cookies that were set
-  console.log("[LOGOUT API] Manually clearing cookies...");
-  
-  // List of all possible Supabase auth cookie names
-  const cookieNames = [
-    'sb-auth-token',
-    'sb-access-token', 
-    'sb-refresh-token',
-    'sb-session',
-    'sb_jwt_token',
-    'sb_refresh_token',
-  ];
-
-  cookieNames.forEach((name) => {
-    console.log(`[LOGOUT API] Deleting cookie: ${name}`);
-    cookies.delete(name, { path: '/' });
-  });
-
-  console.log("[LOGOUT API] Cookies delete called");
-
-  // Verify user is gone
-  const { data: userFinal } = await supabase.auth.getUser();
-  console.log("[LOGOUT API] User after cookie delete:", userFinal.user ? userFinal.user.email : "NONE");
-
   console.log("=== [LOGOUT API] SUCCESS ===");
 
-  // Success: Cookies are cleared
-  return new Response(
-    JSON.stringify({
-      success: true,
-      message: "Logged out successfully",
-    }),
-    {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    }
-  );
+  // Return redirect response instead of JSON
+  // This ensures cookies are properly sent with Set-Cookie headers
+  return redirect("/login", 303);
 };

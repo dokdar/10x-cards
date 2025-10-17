@@ -11,58 +11,23 @@ export function Header({ isAuthenticated = false, userEmail }: HeaderProps) {
 
   /**
    * Handle logout action
-   * 1. Send POST to /api/auth/logout
-   * 2. Cookies are automatically cleared by Supabase
-   * 3. Redirect to login page
+   * Server handles redirect, so we use form submission instead of fetch
    */
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    console.log('[LOGOUT CLIENT] Starting logout process...');
+    console.log('[LOGOUT CLIENT] Starting logout via form submission...');
 
-    try {
-      console.log('[LOGOUT CLIENT] Sending fetch to /api/auth/logout');
-      console.log('[LOGOUT CLIENT] Fetch options: method=POST, credentials=include');
-
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-
-      console.log('[LOGOUT CLIENT] Fetch completed');
-      console.log('[LOGOUT CLIENT] Response status:', response.status);
-      console.log('[LOGOUT CLIENT] Response ok:', response.ok);
-
-      if (!response.ok) {
-        console.error('[LOGOUT CLIENT] Response not OK');
-        try {
-          const errorData = await response.json();
-          console.error('[LOGOUT CLIENT] Error data:', errorData);
-          alert('Logout error: ' + (errorData.error || 'Unknown error'));
-        } catch (parseError) {
-          console.error('[LOGOUT CLIENT] Could not parse error response:', parseError);
-          alert('Logout error: ' + response.status);
-        }
-        setIsLoggingOut(false);
-        return;
-      }
-
-      console.log('[LOGOUT CLIENT] Response status OK (200)');
-      console.log('[LOGOUT CLIENT] Logout successful, redirecting to /login...');
-
-      // Success: Status 200 means logout worked on server
-      // Don't parse response body - window.location.href will navigate
-      // and response stream will change to HTML page
-      console.log('[LOGOUT CLIENT] Calling window.location.href...');
-      window.location.href = '/login';
-      console.log('[LOGOUT CLIENT] Redirect executed (page should reload)');
-    } catch (error) {
-      console.error('[LOGOUT CLIENT] Catch error:', error);
-      setIsLoggingOut(false);
-      alert(`Network error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+    // Create a hidden form and submit it
+    // This allows the server to set cookies AND redirect properly
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/api/auth/logout';
+    
+    document.body.appendChild(form);
+    console.log('[LOGOUT CLIENT] Submitting form to /api/auth/logout');
+    form.submit();
+    
+    // Note: No need to remove form or reset state - page will redirect
   };
 
   return (

@@ -28,6 +28,7 @@ interface ImportMetaEnv {
   readonly OPENROUTER_API_URL?: string;
   readonly AI_GENERATION_TIMEOUT?: string;
   readonly AI_MAX_RETRIES?: string;
+  readonly SUPABASE_SITE_URL: string;
 }
 
 interface ImportMeta {

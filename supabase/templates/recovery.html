@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Resetowanie hasła - 10x Cards</h2>
+<p>Otrzymaliśmy prośbę o zresetowanie hasła do Twojego konta.</p>
+
+<p><strong>WAŻNE:</strong> Nie klikaj linku bezpośrednio z emaila jeśli używasz Gmail lub Outlook. 
+Zamiast tego skopiuj poniższy adres i wklej go ręcznie w przeglądarce.</p>
+
+<p><strong>Link do resetowania hasła:</strong></p>
+<p style="background: #f5f5f5; padding: 10px; word-break: break-all; font-family: monospace;">
+{{ .ConfirmationURL }}
+</p>
+
+<p><em>Lub kliknij tutaj:</em> <a href="{{ .ConfirmationURL }}">Resetuj hasło</a></p>
+
+<p>Link jest ważny przez 1 godzinę od momentu pierwszego użycia.</p>
+<p>Jeśli nie prosiłeś o zmianę hasła, zignoruj tę wiadomość.</p>
+
+<hr>
+<p style="font-size: 12px; color: #666;">
+<strong>Dlaczego link może nie działać?</strong><br>
+Niektóre klienty email (Gmail, Outlook) automatycznie skanują linki w celach bezpieczeństwa, 
+co może spowodować przedwczesne wygaśnięcie jednorazowego linku. Jeśli link nie działa, 
+poproś o nowy przez formularz "Zapomniałem hasła".
+</p>
+</body>
+</html>

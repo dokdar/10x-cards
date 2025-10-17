@@ -55,10 +55,16 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     headers: request.headers,
   });
 
+  // Send password reset email with redirect to reset-password page
+  // Supabase will append token to URL for verification
+  const resetUrl = `${import.meta.env.SUPABASE_SITE_URL}/reset-password`;
+  console.log('[FORGOT PASSWORD] Sending reset link to:', email);
+  console.log('[FORGOT PASSWORD] Reset URL:', resetUrl);
+
   // Attempt to send password reset email
   // Note: Supabase returns success even if email doesn't exist (for security)
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${new URL(request.url).origin}/reset-password`,
+    redirectTo: resetUrl,
   });
 
   // Handle errors (mainly rate limiting)

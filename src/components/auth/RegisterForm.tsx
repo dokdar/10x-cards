@@ -79,6 +79,7 @@ export default function RegisterForm() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           email: email.trim(),
           password,
@@ -111,7 +112,7 @@ export default function RegisterForm() {
       } else {
         // User is logged in - redirect to home page
         // Full page reload ensures middleware validates the new session
-        window.location.href = '/';
+        window.location.href = '/generate';
       }
     } catch (err) {
       // Handle network errors

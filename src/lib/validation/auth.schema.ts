@@ -45,3 +45,22 @@ export const forgotPasswordSchema = z.object({
  * Type inferred from forgotPasswordSchema
  */
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+
+/**
+ * Schema for password update validation (during reset flow)
+ * Includes password confirmation and minimum length requirement
+ */
+export const updatePasswordSchema = z
+  .object({
+    password: z.string().min(8, "Hasło musi mieć co najmniej 8 znaków"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Hasła nie są identyczne",
+    path: ["confirmPassword"],
+  });
+
+/**
+ * Type inferred from updatePasswordSchema
+ */
+export type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>;
