@@ -40,7 +40,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
   if (!validationResult.success) {
     return new Response(
       JSON.stringify({
-        error: 'Validation failed',
+        error: 'Nieprawidłowy adres e-mail',
         details: validationResult.error.errors,
       }),
       { status: 400 },

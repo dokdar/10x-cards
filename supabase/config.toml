@@ -355,5 +355,5 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 
 # Configure recovery email template
 [auth.email.template.recovery]
-subject = "Resetowanie hasła"
+subject = "Resetowanie hasła - 10x Cards"
 content_path = "./supabase/templates/recovery.html"
