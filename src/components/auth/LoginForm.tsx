@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 /**
  * LoginForm Component
@@ -96,7 +96,7 @@ export default function LoginForm() {
       {/* Error Alert */}
       {error && (
         <Alert variant="destructive" className="animate-in">
-          {error}
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 

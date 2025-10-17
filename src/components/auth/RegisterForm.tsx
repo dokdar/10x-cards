@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Alert } from '@/components/ui/alert';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 /**
  * RegisterForm Component
@@ -129,14 +129,14 @@ export default function RegisterForm() {
       {/* Error Alert */}
       {error && (
         <Alert variant="destructive" className="animate-in">
-          {error}
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       {/* Success Message */}
       {successMessage && (
         <Alert variant="default" className="animate-in border-green-500 text-green-700">
-          {successMessage}
+          <AlertDescription>{successMessage}</AlertDescription>
         </Alert>
       )}
 
