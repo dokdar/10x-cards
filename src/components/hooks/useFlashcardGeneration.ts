@@ -21,13 +21,14 @@ export function useFlashcardGeneration(): UseFlashcardGenerationResult {
     setData(null);
 
     try {
-      const body: { source_text: string; model?: string } = {
+      const body: { source_text: string; use_ai?: boolean } = {
         source_text: sourceText,
       };
 
-      // Only include model if AI generation is requested
+      // Signal backend to use AI generation
+      // Backend will choose the model from environment variables
       if (useAI) {
-        body.model = "openai/gpt-4o-mini";
+        body.use_ai = true;
       }
 
       const response = await fetch("/api/generations", {

@@ -6,13 +6,14 @@ import { ConfigurationError, ApiError, NetworkError, ParsingError, ValidationErr
 // Schema walidacji zmiennych środowiskowych
 const openRouterEnvSchema = z.object({
   OPENROUTER_API_KEY: z.string().min(1, "OPENROUTER_API_KEY is required."),
+  OPENROUTER_API_URL: z.string().url().optional(),
   OPENROUTER_DEFAULT_MODEL: z.string().optional(),
 });
 
 export class OpenRouterService {
   private readonly apiKey: string;
+  private readonly apiUrl: string;
   private readonly defaultModel?: string;
-  private readonly apiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
   constructor() {
     const env = openRouterEnvSchema.safeParse(import.meta.env);
@@ -24,6 +25,7 @@ export class OpenRouterService {
     }
 
     this.apiKey = env.data.OPENROUTER_API_KEY;
+    this.apiUrl = env.data.OPENROUTER_API_URL || "https://openrouter.ai/api/v1/chat/completions";
     this.defaultModel = env.data.OPENROUTER_DEFAULT_MODEL;
   }
 
