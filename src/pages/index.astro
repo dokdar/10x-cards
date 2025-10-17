@@ -1,6 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
+export const prerender = false;
+
 // Check if user is authenticated
 const user = Astro.locals.user as any;
 const isAuthenticated = !!user;

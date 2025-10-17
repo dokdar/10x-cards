@@ -2,6 +2,8 @@
 import AuthLayout from '@/layouts/AuthLayout.astro';
 import LoginForm from '@/components/auth/LoginForm';
 
+export const prerender = false;
+
 // Redirect authenticated users to home page
 const { user } = Astro.locals;
 if (user) {
