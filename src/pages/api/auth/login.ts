@@ -73,7 +73,7 @@ export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => 
     // Generic error message for security (don't reveal if email exists)
     return new Response(
       JSON.stringify({
-        error: "Invalid login credentials",
+        error: "Nieprawidłowy email lub hasło",
       }),
       { status: 401 }
     );

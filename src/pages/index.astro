@@ -7,6 +7,44 @@ export const prerender = false;
 const user = Astro.locals.user as any;
 const isAuthenticated = !!user;
 
+// Check if this is an email confirmation or password recovery redirect from Supabase
+const confirmationCode = Astro.url.searchParams.get('code');
+const confirmationType = Astro.url.searchParams.get('type');
+const error = Astro.url.searchParams.get('error');
+const errorCode = Astro.url.searchParams.get('error_code');
+
+// Debug logging
+console.log('[INDEX PAGE] URL:', Astro.url.href);
+console.log('[INDEX PAGE] code:', confirmationCode);
+console.log('[INDEX PAGE] type:', confirmationType);
+console.log('[INDEX PAGE] error:', error);
+console.log('[INDEX PAGE] error_code:', errorCode);
+console.log('[INDEX PAGE] isAuthenticated:', isAuthenticated);
+
+// Handle errors from Supabase (expired token, etc.)
+if (error || errorCode) {
+  // Redirect to appropriate error page based on context
+  if (errorCode === 'otp_expired') {
+    // Expired confirmation/recovery link
+    return Astro.redirect(`/login?error=link_expired`);
+  }
+}
+
+// Email confirmation or password recovery with code parameter
+// Supabase redirects here after processing token
+if (confirmationCode) {
+  // Check if this is recovery (already has reset-password in additional_redirect_urls)
+  // For signup confirmation, redirect to success page
+  if (confirmationType === 'recovery') {
+    console.log('[INDEX PAGE] Redirecting to /reset-password (recovery)');
+    return Astro.redirect(`/reset-password?code=${confirmationCode}`);
+  } else {
+    // Default: treat as email confirmation (signup)
+    console.log('[INDEX PAGE] Redirecting to /email-confirmed (signup)');
+    return Astro.redirect("/email-confirmed");
+  }
+}
+
 // Redirect authenticated users to generator
 if (isAuthenticated) {
   return Astro.redirect("/generate");

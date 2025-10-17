@@ -120,18 +120,12 @@ export default function ResetPasswordForm() {
         return;
       }
 
-      // Success - show message and redirect after delay
+      // Success - redirect to success page
       const data = await response.json();
       console.log('[RESET PASSWORD] Password updated successfully');
       
-      setSuccessMessage('Hasło zostało zmienione! Przekierowywanie na stronę logowania...');
-      setPassword('');
-      setConfirmPassword('');
-      
-      // Redirect to login after 2 seconds to let user see the message
-      setTimeout(() => {
-        window.location.href = '/login';
-      }, 2000);
+      // Redirect immediately to success page
+      window.location.href = '/password-changed';
     } catch (err) {
       console.error('[RESET PASSWORD] Error:', err);
       setError('Błąd sieci. Spróbuj ponownie.');
