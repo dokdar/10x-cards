@@ -1,12 +1,12 @@
-import { Moon, Sun, Monitor } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Moon, Sun, Monitor } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useTheme } from '@/components/hooks/useTheme';
+} from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/components/hooks/useTheme";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -21,15 +21,15 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>
+        <DropdownMenuItem onClick={() => setTheme("light")}>
           <Sun className="mr-2 size-4" />
           <span>Jasny</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>
           <Moon className="mr-2 size-4" />
           <span>Ciemny</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>
+        <DropdownMenuItem onClick={() => setTheme("system")}>
           <Monitor className="mr-2 size-4" />
           <span>Systemowy</span>
         </DropdownMenuItem>
@@ -37,4 +37,3 @@ export function ThemeToggle() {
     </DropdownMenu>
   );
 }
-

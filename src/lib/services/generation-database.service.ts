@@ -1,8 +1,5 @@
-import type { SupabaseClient } from '@/db/supabase.client';
-import type {
-  GenerationEntity,
-  GenerationErrorLogEntity,
-} from '@/types';
+import type { SupabaseClient } from "@/db/supabase.client";
+import type { GenerationEntity, GenerationErrorLogEntity } from "@/types";
 
 /**
  * Data for creating a new generation record
@@ -38,11 +35,9 @@ export class GenerationDatabaseService {
   /**
    * Create a new generation record after successful AI generation
    */
-  async createGeneration(
-    data: CreateGenerationData,
-  ): Promise<GenerationEntity> {
+  async createGeneration(data: CreateGenerationData): Promise<GenerationEntity> {
     const { data: generation, error } = await this.supabase
-      .from('generations')
+      .from("generations")
       .insert({
         user_id: data.user_id,
         model: data.model,
@@ -62,7 +57,7 @@ export class GenerationDatabaseService {
     }
 
     if (!generation) {
-      throw new Error('Failed to create generation record: no data returned');
+      throw new Error("Failed to create generation record: no data returned");
     }
 
     return generation;
@@ -71,11 +66,9 @@ export class GenerationDatabaseService {
   /**
    * Create a generation error log when AI generation fails
    */
-  async createGenerationErrorLog(
-    data: CreateGenerationErrorData,
-  ): Promise<GenerationErrorLogEntity> {
+  async createGenerationErrorLog(data: CreateGenerationErrorData): Promise<GenerationErrorLogEntity> {
     const { data: errorLog, error } = await this.supabase
-      .from('generation_error_logs')
+      .from("generation_error_logs")
       .insert({
         user_id: data.user_id,
         model: data.model,
@@ -92,7 +85,7 @@ export class GenerationDatabaseService {
     }
 
     if (!errorLog) {
-      throw new Error('Failed to create error log: no data returned');
+      throw new Error("Failed to create error log: no data returned");
     }
 
     return errorLog;
@@ -101,19 +94,16 @@ export class GenerationDatabaseService {
   /**
    * Get generation by ID
    */
-  async getGenerationById(
-    generationId: string,
-    userId: string,
-  ): Promise<GenerationEntity | null> {
+  async getGenerationById(generationId: string, userId: string): Promise<GenerationEntity | null> {
     const { data, error } = await this.supabase
-      .from('generations')
-      .select('*')
-      .eq('id', generationId)
-      .eq('user_id', userId)
+      .from("generations")
+      .select("*")
+      .eq("id", generationId)
+      .eq("user_id", userId)
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         return null;
       }
       throw new Error(`Failed to fetch generation: ${error.message}`);
@@ -132,17 +122,17 @@ export class GenerationDatabaseService {
       accepted_unedited_count: number;
       accepted_edited_count: number;
       rejected_count: number;
-    },
+    }
   ): Promise<GenerationEntity> {
     const { data, error } = await this.supabase
-      .from('generations')
+      .from("generations")
       .update({
         accepted_unedited_count: counts.accepted_unedited_count,
         accepted_edited_count: counts.accepted_edited_count,
         rejected_count: counts.rejected_count,
       })
-      .eq('id', generationId)
-      .eq('user_id', userId)
+      .eq("id", generationId)
+      .eq("user_id", userId)
       .select()
       .single();
 
@@ -151,10 +141,9 @@ export class GenerationDatabaseService {
     }
 
     if (!data) {
-      throw new Error('Failed to update generation: no data returned');
+      throw new Error("Failed to update generation: no data returned");
     }
 
     return data;
   }
 }
-

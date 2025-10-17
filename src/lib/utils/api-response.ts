@@ -1,13 +1,9 @@
-import type { ApiError, ValidationApiError } from '@/types';
+import type { ApiError, ValidationApiError } from "@/types";
 
 /**
  * Create a standardized API error response
  */
-export function createApiError(
-  error: string,
-  message: string,
-  details?: Record<string, any>,
-): ApiError {
+export function createApiError(error: string, message: string, details?: Record<string, any>): ApiError {
   return {
     error,
     message,
@@ -20,10 +16,10 @@ export function createApiError(
  */
 export function createValidationError(
   message: string,
-  validationErrors: Array<{ field: string; message: string }>,
+  validationErrors: { field: string; message: string }[]
 ): ValidationApiError {
   return {
-    error: 'Validation Error',
+    error: "Validation Error",
     message,
     validation_errors: validationErrors,
   };
@@ -32,15 +28,11 @@ export function createValidationError(
 /**
  * Create a JSON response with proper headers
  */
-export function createJsonResponse(
-  data: any,
-  status: number = 200,
-  headers: HeadersInit = {},
-): Response {
+export function createJsonResponse(data: any, status = 200, headers: HeadersInit = {}): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...headers,
     },
   });
@@ -62,4 +54,3 @@ export const HTTP_STATUS = {
   BAD_GATEWAY: 502,
   SERVICE_UNAVAILABLE: 503,
 } as const;
-

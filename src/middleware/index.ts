@@ -1,24 +1,92 @@
-import { defineMiddleware } from 'astro:middleware';
-
-import { DEFAULT_USER_ID, supabaseClient } from '../db/supabase.client.ts';
+import { defineMiddleware } from "astro:middleware";
+import { createSupabaseServerInstance } from "../db/supabase.client";
 
 /**
- * Middleware for Astro requests
- * - Attaches Supabase client to context.locals
- * - For development: Uses DEFAULT_USER_ID as mock user
- * - TODO: Implement proper authentication after MVP
+ * Public paths - accessible to all users (authenticated and unauthenticated)
+ * Includes auth pages and their API endpoints
  */
-export const onRequest = defineMiddleware(async (context, next) => {
-  // Attach Supabase client to context
-  context.locals.supabase = supabaseClient;
+const PUBLIC_PATHS = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/api/auth/login',
+  '/api/auth/register',
+  '/api/auth/forgot-password',
+  '/api/auth/update-password',
+  '/api/auth/logout',
+];
 
-  // For API routes, attach mock user (development only)
-  if (context.url.pathname.startsWith('/api/')) {
-    // Use DEFAULT_USER_ID for development
-    context.locals.user = {
-      id: DEFAULT_USER_ID,
-    } as any;
+/**
+ * Protected paths - require authentication
+ * Unauthenticated users will be redirected to /login
+ */
+const PROTECTED_PATHS = ["/generate", "/review"];
+
+/**
+ * Middleware for authentication and authorization
+ * Runs on every request to:
+ * 1. Check and restore user session from JWT cookie
+ * 2. Redirect unauthenticated users from protected routes
+ * 3. Redirect authenticated users from public auth pages
+ * 4. Attach Supabase client to context for use in routes
+ */
+export const onRequest = defineMiddleware(async ({ locals, cookies, url, request, redirect }, next) => {
+  // Skip middleware for static assets and images
+  if (url.pathname.startsWith("/_astro/") || url.pathname.startsWith("/public/")) {
+    return next();
   }
 
+  // Create server-side Supabase client with proper cookie handling
+  const supabase = createSupabaseServerInstance({
+    cookies,
+    headers: request.headers,
+  });
+
+  // Attach Supabase client to context for use in API routes
+  locals.supabase = supabase;
+
+  // Retrieve current user session from JWT in cookies
+  // This handles automatic token refresh via @supabase/ssr
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Debug logging for session status
+  console.log(`[MIDDLEWARE] Path: ${url.pathname}`);
+  console.log(`[MIDDLEWARE] User session: ${user ? `${user.email}` : 'NONE'}`);
+
+  // If session exists, attach user info to locals
+  // This makes user data available in .astro pages and API routes
+  if (user) {
+    locals.user = {
+      id: user.id,
+      email: user.email || "",
+      aud: user.aud,
+    };
+    console.log(`[MIDDLEWARE] User attached to locals: ${user.email}`);
+  } else {
+    console.log(`[MIDDLEWARE] No user session found`);
+  }
+
+  // === REDIRECT LOGIC ===
+
+  // 1. Redirect authenticated users away from auth pages
+  //    Skip API endpoints - let them execute without redirect interference
+  if (user && PUBLIC_PATHS.includes(url.pathname) && !url.pathname.startsWith('/api/')) {
+    return redirect("/");
+  }
+
+  // 2. Redirect unauthenticated users from protected routes
+  //    (e.g., trying to access /generate without being logged in)
+  if (!user) {
+    const isProtected = PROTECTED_PATHS.some((path) => url.pathname === path || url.pathname.startsWith(`${path}/`));
+
+    if (isProtected) {
+      return redirect("/login");
+    }
+  }
+
+  // Continue with request
   return next();
 });

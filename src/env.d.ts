@@ -1,14 +1,22 @@
 /// <reference types="astro/client" />
 
-import type { User } from '@supabase/supabase-js';
+import type { SupabaseClient } from "./db/supabase.client";
 
-import type { SupabaseClient } from './db/supabase.client';
+/**
+ * User object available in Astro.locals after authentication
+ * Contains only essential user information from Supabase Auth
+ */
+interface AppUser {
+  id: string;
+  email: string;
+  aud?: string;
+}
 
 declare global {
   namespace App {
     interface Locals {
       supabase: SupabaseClient;
-      user?: User;
+      user?: AppUser;
     }
   }
 }

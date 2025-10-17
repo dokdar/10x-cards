@@ -1,16 +1,11 @@
-import type { APIRoute } from 'astro';
-import { ZodError } from 'zod';
+import type { APIRoute } from "astro";
+import { ZodError } from "zod";
 
-import { DEFAULT_USER_ID } from '@/db/supabase.client';
-import { createFlashcards } from '@/lib/services/flashcard-database.service';
-import {
-  createApiError,
-  createJsonResponse,
-  createValidationError,
-  HTTP_STATUS,
-} from '@/lib/utils/api-response';
-import { CreateFlashcardsRequestSchema } from '@/lib/validation/flashcards.schema';
-import type { CreateFlashcardCommand, FlashcardDTO } from '@/types';
+import { DEFAULT_USER_ID } from "@/db/supabase.client";
+import { createFlashcards } from "@/lib/services/flashcard-database.service";
+import { createApiError, createJsonResponse, createValidationError, HTTP_STATUS } from "@/lib/utils/api-response";
+import { CreateFlashcardsRequestSchema } from "@/lib/validation/flashcards.schema";
+import type { CreateFlashcardCommand, FlashcardDTO } from "@/types";
 
 /**
  * POST /api/flashcards
@@ -23,26 +18,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const validatedData = CreateFlashcardsRequestSchema.parse(body);
 
     // 2. Normalize data to array format
-    const flashcardsData: CreateFlashcardCommand[] = Array.isArray(validatedData)
-      ? validatedData
-      : [validatedData];
+    const flashcardsData: CreateFlashcardCommand[] = Array.isArray(validatedData) ? validatedData : [validatedData];
 
     // 3. Create flashcards in database
-    const createdFlashcards = await createFlashcards(
-      locals.supabase,
-      DEFAULT_USER_ID,
-      flashcardsData
-    );
+    const createdFlashcards = await createFlashcards(locals.supabase, DEFAULT_USER_ID, flashcardsData);
 
     // 4. Map entities to DTOs (remove user_id)
-    const flashcardsDTO: FlashcardDTO[] = createdFlashcards.map(
-      ({ user_id, ...flashcard }) => flashcard
-    );
+    const flashcardsDTO: FlashcardDTO[] = createdFlashcards.map(({ user_id, ...flashcard }) => flashcard);
 
     // 5. Return success response
     return createJsonResponse(flashcardsDTO, HTTP_STATUS.CREATED);
   } catch (error) {
-    console.error('Error creating flashcards:', error);
+    console.error("Error creating flashcards:", error);
     return handleErrorResponse(error);
   }
 };
@@ -54,11 +41,11 @@ function handleErrorResponse(error: unknown): Response {
   // Validation errors (400 Bad Request)
   if (error instanceof ZodError) {
     const validationError = createValidationError(
-      'Invalid flashcard data',
+      "Invalid flashcard data",
       error.errors.map((e) => ({
-        field: e.path.join('.'),
+        field: e.path.join("."),
         message: e.message,
-      })),
+      }))
     );
 
     return createJsonResponse(validationError, HTTP_STATUS.BAD_REQUEST);
@@ -67,30 +54,22 @@ function handleErrorResponse(error: unknown): Response {
   // Database errors
   if (error instanceof Error) {
     // Database operation errors (500 Internal Server Error)
-    if (error.message.includes('Failed to create') || error.message.includes('database')) {
-      const apiError = createApiError(
-        'Database Error',
-        'Failed to save flashcards. Please try again.',
-        { message: error.message },
-      );
+    if (error.message.includes("Failed to create") || error.message.includes("database")) {
+      const apiError = createApiError("Database Error", "Failed to save flashcards. Please try again.", {
+        message: error.message,
+      });
 
       return createJsonResponse(apiError, HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 
     // Generic error with message
-    const apiError = createApiError(
-      'Internal Server Error',
-      error.message || 'An unexpected error occurred.',
-    );
+    const apiError = createApiError("Internal Server Error", error.message || "An unexpected error occurred.");
 
     return createJsonResponse(apiError, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 
   // Unknown error (500 Internal Server Error)
-  const apiError = createApiError(
-    'Internal Server Error',
-    'An unexpected error occurred. Please try again.',
-  );
+  const apiError = createApiError("Internal Server Error", "An unexpected error occurred. Please try again.");
 
   return createJsonResponse(apiError, HTTP_STATUS.INTERNAL_SERVER_ERROR);
 }
@@ -99,4 +78,3 @@ function handleErrorResponse(error: unknown): Response {
  * Disable prerendering for this API route
  */
 export const prerender = false;
-

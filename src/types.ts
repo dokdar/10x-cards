@@ -6,7 +6,7 @@
 /**
  * Source type for flashcards - indicates how the flashcard was created
  */
-export type FlashcardSource = 'ai-full' | 'ai-edited' | 'manual';
+export type FlashcardSource = "ai-full" | "ai-edited" | "manual";
 
 /**
  * Base flashcard entity type corresponding to public.flashcards table
@@ -62,12 +62,12 @@ export interface GenerationErrorLogEntity {
 /**
  * Flashcard DTO for API responses - excludes sensitive user_id field
  */
-export type FlashcardDTO = Omit<FlashcardEntity, 'user_id'>;
+export type FlashcardDTO = Omit<FlashcardEntity, "user_id">;
 
 /**
  * Generation log DTO for API responses - excludes sensitive user_id field
  */
-export type GenerationLogDTO = Omit<GenerationEntity, 'user_id'>;
+export type GenerationLogDTO = Omit<GenerationEntity, "user_id">;
 
 /**
  * Pagination metadata for list responses
@@ -223,7 +223,7 @@ export interface FlashcardsListQuery {
  */
 export interface ReviewCandidateViewModel extends FlashcardCandidate {
   id: string; // Unique client-side identifier (e.g. from uuid)
-  status: 'pending' | 'accepted' | 'edited' | 'rejected';
+  status: "pending" | "accepted" | "edited" | "rejected";
   originalFront: string; // Original content for tracking edits
   originalBack: string; // Original content for tracking edits
 }

@@ -1,19 +1,15 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 interface GenerationStatusIndicatorProps {
-  status: 'idle' | 'loading' | 'error';
+  status: "idle" | "loading" | "error";
   errorMessage: string | null;
 }
 
 function Spinner() {
   return (
-    <div 
-      className="flex items-center justify-center space-x-2 py-8" 
-      role="status" 
-      aria-live="polite"
-    >
-      <div 
+    <div className="flex items-center justify-center space-x-2 py-8" role="status" aria-live="polite">
+      <div
         className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"
         aria-hidden="true"
       />
@@ -23,15 +19,12 @@ function Spinner() {
   );
 }
 
-export default function GenerationStatusIndicator({
-  status,
-  errorMessage,
-}: GenerationStatusIndicatorProps) {
-  if (status === 'loading') {
+export default function GenerationStatusIndicator({ status, errorMessage }: GenerationStatusIndicatorProps) {
+  if (status === "loading") {
     return <Spinner />;
   }
 
-  if (status === 'error' && errorMessage) {
+  if (status === "error" && errorMessage) {
     return (
       <div role="alert" aria-live="assertive">
         <Alert variant="destructive">
@@ -45,4 +38,3 @@ export default function GenerationStatusIndicator({
 
   return null;
 }
-

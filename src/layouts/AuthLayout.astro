@@ -1,6 +1,5 @@
 ---
 import "../styles/global.css";
-import { Header } from "@/components/Header";
 
 interface Props {
   title?: string;
@@ -8,12 +7,6 @@ interface Props {
 }
 
 const { title = "10x Cards", description = "Aplikacja do nauki z fiszkami" } = Astro.props;
-
-// Placeholder dla danych sesji z middleware
-// W przyszłości będzie pobierane z Astro.locals
-const user = Astro.locals.user as any;
-const isAuthenticated = !!user;
-const userEmail = user?.email;
 ---
 
 <!doctype html>
@@ -42,8 +35,7 @@ const userEmail = user?.email;
       })();
     </script>
   </head>
-  <body>
-    <Header client:load isAuthenticated={isAuthenticated} userEmail={userEmail} />
+  <body className="flex flex-col min-h-screen">
     <slot />
   </body>
 </html>

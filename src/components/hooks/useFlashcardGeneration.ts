@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import type { GenerationResponse, ApiError } from '@/types';
+import { useState } from "react";
+import type { GenerationResponse, ApiError } from "@/types";
 
-type GenerationStatus = 'idle' | 'loading' | 'success' | 'error';
+type GenerationStatus = "idle" | "loading" | "success" | "error";
 
 interface UseFlashcardGenerationResult {
   status: GenerationStatus;
@@ -11,12 +11,12 @@ interface UseFlashcardGenerationResult {
 }
 
 export function useFlashcardGeneration(): UseFlashcardGenerationResult {
-  const [status, setStatus] = useState<GenerationStatus>('idle');
+  const [status, setStatus] = useState<GenerationStatus>("idle");
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<GenerationResponse | null>(null);
 
-  const generate = async (sourceText: string, useAI: boolean = false): Promise<void> => {
-    setStatus('loading');
+  const generate = async (sourceText: string, useAI = false): Promise<void> => {
+    setStatus("loading");
     setError(null);
     setData(null);
 
@@ -27,33 +27,31 @@ export function useFlashcardGeneration(): UseFlashcardGenerationResult {
 
       // Only include model if AI generation is requested
       if (useAI) {
-        body.model = 'openai/gpt-4o-mini';
+        body.model = "openai/gpt-4o-mini";
       }
 
-      const response = await fetch('/api/generations', {
-        method: 'POST',
+      const response = await fetch("/api/generations", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
       });
 
       if (!response.ok) {
         const errorData: ApiError = await response.json();
-        throw new Error(errorData.message || 'Wystąpił nieoczekiwany błąd');
+        throw new Error(errorData.message || "Wystąpił nieoczekiwany błąd");
       }
 
       const result: GenerationResponse = await response.json();
       setData(result);
-      setStatus('success');
+      setStatus("success");
     } catch (err) {
       const errorMessage =
-        err instanceof Error
-          ? err.message
-          : 'Błąd połączenia. Sprawdź swoje połączenie z internetem.';
-      
+        err instanceof Error ? err.message : "Błąd połączenia. Sprawdź swoje połączenie z internetem.";
+
       setError(errorMessage);
-      setStatus('error');
+      setStatus("error");
     }
   };
 
@@ -64,4 +62,3 @@ export function useFlashcardGeneration(): UseFlashcardGenerationResult {
     generate,
   };
 }
-

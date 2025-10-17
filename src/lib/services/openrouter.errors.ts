@@ -4,7 +4,7 @@
 export class OpenRouterError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
-    this.name = 'OpenRouterError';
+    this.name = "OpenRouterError";
     Object.setPrototypeOf(this, OpenRouterError.prototype);
   }
 }
@@ -15,7 +15,7 @@ export class OpenRouterError extends Error {
 export class ConfigurationError extends OpenRouterError {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
-    this.name = 'ConfigurationError';
+    this.name = "ConfigurationError";
     Object.setPrototypeOf(this, ConfigurationError.prototype);
   }
 }
@@ -29,18 +29,9 @@ export class ApiError extends OpenRouterError {
   public readonly apiType?: string;
   public readonly apiCode?: string;
 
-  constructor(
-    statusCode: number,
-    apiMessage: string,
-    apiType?: string,
-    apiCode?: string,
-    options?: ErrorOptions
-  ) {
-    super(
-      `API Error (${statusCode}): ${apiMessage}${apiType ? ` [${apiType}]` : ''}`,
-      options
-    );
-    this.name = 'ApiError';
+  constructor(statusCode: number, apiMessage: string, apiType?: string, apiCode?: string, options?: ErrorOptions) {
+    super(`API Error (${statusCode}): ${apiMessage}${apiType ? ` [${apiType}]` : ""}`, options);
+    this.name = "ApiError";
     this.statusCode = statusCode;
     this.apiMessage = apiMessage;
     this.apiType = apiType;
@@ -55,7 +46,7 @@ export class ApiError extends OpenRouterError {
 export class NetworkError extends OpenRouterError {
   constructor(message: string, options?: ErrorOptions) {
     super(`Network Error: ${message}`, options);
-    this.name = 'NetworkError';
+    this.name = "NetworkError";
     Object.setPrototypeOf(this, NetworkError.prototype);
   }
 }
@@ -68,7 +59,7 @@ export class ParsingError extends OpenRouterError {
 
   constructor(message: string, rawContent?: string, options?: ErrorOptions) {
     super(`Parsing Error: ${message}`, options);
-    this.name = 'ParsingError';
+    this.name = "ParsingError";
     this.rawContent = rawContent;
     Object.setPrototypeOf(this, ParsingError.prototype);
   }
@@ -82,9 +73,8 @@ export class ValidationError extends OpenRouterError {
 
   constructor(message: string, validationErrors: unknown, options?: ErrorOptions) {
     super(`Validation Error: ${message}`, options);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
     this.validationErrors = validationErrors;
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
-

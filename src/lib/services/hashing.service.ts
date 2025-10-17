@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash } from "node:crypto";
 
 /**
  * Service for generating consistent hashes of source texts
@@ -10,7 +10,7 @@ export class HashingService {
    * @returns Hash string in format "md5:hexdigest"
    */
   static generateHash(text: string): string {
-    const hash = createHash('md5').update(text, 'utf8').digest('hex');
+    const hash = createHash("md5").update(text, "utf8").digest("hex");
     return `md5:${hash}`;
   }
 
@@ -24,4 +24,3 @@ export class HashingService {
     return this.generateHash(text) === hash;
   }
 }
-

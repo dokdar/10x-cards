@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export interface ModelParams {
   temperature?: number;
@@ -20,7 +20,7 @@ export interface GenerationParams<T extends z.ZodTypeAny> {
 
 // OpenRouter API Response Types
 export interface OpenRouterMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
@@ -47,4 +47,3 @@ export interface OpenRouterErrorResponse {
     code: string;
   };
 }
-

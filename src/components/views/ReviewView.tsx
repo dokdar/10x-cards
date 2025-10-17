@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { ReviewControls } from '../review/ReviewControls';
-import { CandidateList } from '../review/CandidateList';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { useReviewSession } from '@/components/hooks/useReviewSession';
-import { generationStorage } from '@/lib/utils/generation-storage';
-import type { GenerationResponse } from '@/types';
+import { useState, useEffect } from "react";
+import { ReviewControls } from "../review/ReviewControls";
+import { CandidateList } from "../review/CandidateList";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { useReviewSession } from "@/components/hooks/useReviewSession";
+import { generationStorage } from "@/lib/utils/generation-storage";
+import type { GenerationResponse } from "@/types";
 
 interface ReviewViewProps {
   generationId: string;
@@ -20,7 +20,7 @@ export function ReviewView({ generationId }: ReviewViewProps) {
     const data = generationStorage.load(generationId);
 
     if (!data) {
-      setLoadError('Nie znaleziono danych sesji generowania');
+      setLoadError("Nie znaleziono danych sesji generowania");
       return;
     }
 
@@ -37,9 +37,7 @@ export function ReviewView({ generationId }: ReviewViewProps) {
             <AlertDescription>{loadError}</AlertDescription>
           </Alert>
           <div className="mt-4 flex justify-center">
-            <Button onClick={() => (window.location.href = '/')}>
-              Powrót do strony głównej
-            </Button>
+            <Button onClick={() => (window.location.href = "/")}>Powrót do strony głównej</Button>
           </div>
         </div>
       </div>
@@ -76,7 +74,7 @@ function ReviewViewContent({ generationData }: { generationData: GenerationRespo
   // Track unsaved changes for warning before leaving
   useEffect(() => {
     const hasChanges = candidates.some(
-      (c) => c.status === 'accepted' || c.status === 'edited' || c.status === 'rejected'
+      (c) => c.status === "accepted" || c.status === "edited" || c.status === "rejected"
     );
     setHasUnsavedChanges(hasChanges);
   }, [candidates]);
@@ -86,12 +84,12 @@ function ReviewViewContent({ generationData }: { generationData: GenerationRespo
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasUnsavedChanges && !isSaving) {
         e.preventDefault();
-        e.returnValue = '';
+        e.returnValue = "";
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges, isSaving]);
 
   const handleSave = async () => {
@@ -99,19 +97,18 @@ function ReviewViewContent({ generationData }: { generationData: GenerationRespo
 
     try {
       await saveAcceptedFlashcards(generationData.generation_id);
-      
+
       // Clear session storage after successful save
       generationStorage.remove(generationData.generation_id);
-      
+
       // Redirect to collection on success
-      window.location.href = '/';
+      window.location.href = "/";
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Wystąpił błąd podczas zapisywania fiszek';
+      const errorMessage = err instanceof Error ? err.message : "Wystąpił błąd podczas zapisywania fiszek";
       setError(errorMessage);
-      
+
       // Scroll to top to show error
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -143,4 +140,3 @@ function ReviewViewContent({ generationData }: { generationData: GenerationRespo
     </div>
   );
 }
-

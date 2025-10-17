@@ -1,10 +1,10 @@
-import { CandidateCard } from './CandidateCard';
-import { Button } from '@/components/ui/button';
-import type { ReviewCandidateViewModel } from '@/types';
+import { CandidateCard } from "./CandidateCard";
+import { Button } from "@/components/ui/button";
+import type { ReviewCandidateViewModel } from "@/types";
 
 interface CandidateListProps {
   candidates: ReviewCandidateViewModel[];
-  onUpdateCandidate: (id: string, field: 'front' | 'back', value: string) => void;
+  onUpdateCandidate: (id: string, field: "front" | "back", value: string) => void;
   onToggleAccept: (id: string) => void;
   onReject: (id: string) => void;
   onAddManualCard?: () => void;
@@ -22,9 +22,7 @@ export function CandidateList({
       <div className="flex flex-col items-center justify-center py-12 space-y-4">
         <div className="text-center space-y-2">
           <p className="text-lg font-medium">Brak fiszek do recenzji</p>
-          <p className="text-sm text-muted-foreground">
-            Wybrano tryb manualny - utwórz fiszki samodzielnie
-          </p>
+          <p className="text-sm text-muted-foreground">Wybrano tryb manualny - utwórz fiszki samodzielnie</p>
         </div>
         {onAddManualCard && (
           <Button onClick={onAddManualCard} size="lg">
@@ -54,4 +52,3 @@ export function CandidateList({
     </div>
   );
 }
-

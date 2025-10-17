@@ -1,32 +1,25 @@
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
-import type { ReviewCandidateViewModel } from '@/types';
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import type { ReviewCandidateViewModel } from "@/types";
 
 interface CandidateCardProps {
   candidate: ReviewCandidateViewModel;
-  onUpdate: (id: string, field: 'front' | 'back', value: string) => void;
+  onUpdate: (id: string, field: "front" | "back", value: string) => void;
   onToggleAccept: (id: string) => void;
   onReject: (id: string) => void;
 }
 
-export function CandidateCard({
-  candidate,
-  onUpdate,
-  onToggleAccept,
-  onReject,
-}: CandidateCardProps) {
-  const isRejected = candidate.status === 'rejected';
-  const isAccepted = candidate.status === 'accepted' || candidate.status === 'edited';
+export function CandidateCard({ candidate, onUpdate, onToggleAccept, onReject }: CandidateCardProps) {
+  const isRejected = candidate.status === "rejected";
+  const isAccepted = candidate.status === "accepted" || candidate.status === "edited";
   const isEmpty = !candidate.front.trim() || !candidate.back.trim();
 
   return (
     <Card
-      className={`transition-all ${
-        isRejected ? 'opacity-50 bg-muted/50' : ''
-      } ${
-        isAccepted && !isEmpty ? 'border-primary/50 bg-primary/5' : ''
+      className={`transition-all ${isRejected ? "opacity-50 bg-muted/50" : ""} ${
+        isAccepted && !isEmpty ? "border-primary/50 bg-primary/5" : ""
       }`}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -37,13 +30,9 @@ export function CandidateCard({
             disabled={isRejected || isEmpty}
             aria-label="Accept flashcard"
           />
-          <span className="text-sm font-medium">
-            {isAccepted ? 'Zaakceptowana' : 'Oczekująca'}
-          </span>
+          <span className="text-sm font-medium">{isAccepted ? "Zaakceptowana" : "Oczekująca"}</span>
         </div>
-        {candidate.status === 'edited' && (
-          <span className="text-xs text-muted-foreground">Edytowana</span>
-        )}
+        {candidate.status === "edited" && <span className="text-xs text-muted-foreground">Edytowana</span>}
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -54,7 +43,7 @@ export function CandidateCard({
           <Textarea
             id={`front-${candidate.id}`}
             value={candidate.front}
-            onChange={(e) => onUpdate(candidate.id, 'front', e.target.value)}
+            onChange={(e) => onUpdate(candidate.id, "front", e.target.value)}
             disabled={isRejected}
             placeholder="Treść na przodzie fiszki"
             className="min-h-20"
@@ -69,7 +58,7 @@ export function CandidateCard({
           <Textarea
             id={`back-${candidate.id}`}
             value={candidate.back}
-            onChange={(e) => onUpdate(candidate.id, 'back', e.target.value)}
+            onChange={(e) => onUpdate(candidate.id, "back", e.target.value)}
             disabled={isRejected}
             placeholder="Treść na tyle fiszki"
             className="min-h-20"
@@ -77,24 +66,14 @@ export function CandidateCard({
           />
         </div>
 
-        {isEmpty && !isRejected && (
-          <p className="text-sm text-destructive">
-            Oba pola muszą zawierać tekst
-          </p>
-        )}
+        {isEmpty && !isRejected && <p className="text-sm text-destructive">Oba pola muszą zawierać tekst</p>}
       </CardContent>
 
       <CardFooter className="flex justify-end">
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => onReject(candidate.id)}
-          disabled={isRejected}
-        >
-          {isRejected ? 'Odrzucona' : 'Odrzuć'}
+        <Button variant="destructive" size="sm" onClick={() => onReject(candidate.id)} disabled={isRejected}>
+          {isRejected ? "Odrzucona" : "Odrzuć"}
         </Button>
       </CardFooter>
     </Card>
   );
 }
-

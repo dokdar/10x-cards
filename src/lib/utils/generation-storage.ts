@@ -1,6 +1,6 @@
-import type { GenerationResponse } from '@/types';
+import type { GenerationResponse } from "@/types";
 
-const STORAGE_PREFIX = 'generation_';
+const STORAGE_PREFIX = "generation_";
 
 /**
  * Helper functions for managing generation data in sessionStorage
@@ -14,7 +14,7 @@ export const generationStorage = {
       const key = `${STORAGE_PREFIX}${generationId}`;
       sessionStorage.setItem(key, JSON.stringify(data));
     } catch (error) {
-      console.error('Failed to save generation data:', error);
+      console.error("Failed to save generation data:", error);
     }
   },
 
@@ -25,14 +25,14 @@ export const generationStorage = {
     try {
       const key = `${STORAGE_PREFIX}${generationId}`;
       const storedData = sessionStorage.getItem(key);
-      
+
       if (!storedData) {
         return null;
       }
 
       return JSON.parse(storedData) as GenerationResponse;
     } catch (error) {
-      console.error('Failed to load generation data:', error);
+      console.error("Failed to load generation data:", error);
       return null;
     }
   },
@@ -45,7 +45,7 @@ export const generationStorage = {
       const key = `${STORAGE_PREFIX}${generationId}`;
       sessionStorage.removeItem(key);
     } catch (error) {
-      console.error('Failed to remove generation data:', error);
+      console.error("Failed to remove generation data:", error);
     }
   },
 
@@ -61,8 +61,7 @@ export const generationStorage = {
         }
       });
     } catch (error) {
-      console.error('Failed to clear generation data:', error);
+      console.error("Failed to clear generation data:", error);
     }
   },
 };
-

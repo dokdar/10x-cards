@@ -1,4 +1,4 @@
-import type { FlashcardCandidate } from '../../types';
+import type { FlashcardCandidate } from "../../types";
 
 /**
  * Configuration for AI generation service
@@ -14,11 +14,11 @@ interface AIServiceConfig {
  * Response from OpenRouter API
  */
 interface OpenRouterResponse {
-  choices: Array<{
+  choices: {
     message: {
       content: string;
     };
-  }>;
+  }[];
 }
 
 /**
@@ -50,17 +50,15 @@ export class AIGenerationService {
   /**
    * Generate flashcard candidates from source text using AI
    */
-  async generateFlashcards(
-    params: GenerateFlashcardsParams,
-  ): Promise<GenerationResult> {
+  async generateFlashcards(params: GenerateFlashcardsParams): Promise<GenerationResult> {
     const startTime = Date.now();
 
     try {
       // Model is required at this point (should be validated/defaulted by endpoint)
       if (!params.model) {
-        throw new Error('Model parameter is required for AI generation');
+        throw new Error("Model parameter is required for AI generation");
       }
-      
+
       const prompt = this.buildPrompt(params.sourceText);
       const response = await this.callOpenRouter(params.model, prompt);
       const candidates = this.parseAIResponse(response);
@@ -112,13 +110,10 @@ Generate the flashcards now. Return ONLY the JSON array, no additional text.`;
   /**
    * Call OpenRouter API with retry logic
    */
-  private async callOpenRouter(
-    model: string,
-    prompt: string,
-  ): Promise<OpenRouterResponse> {
+  private async callOpenRouter(model: string, prompt: string): Promise<OpenRouterResponse> {
     // Check if API key is available
     if (!this.config.apiKey) {
-      throw new Error('OPENROUTER_API_KEY environment variable is required for AI generation');
+      throw new Error("OPENROUTER_API_KEY environment variable is required for AI generation");
     }
 
     const controller = new AbortController();
@@ -126,18 +121,18 @@ Generate the flashcards now. Return ONLY the JSON array, no additional text.`;
 
     try {
       const response = await fetch(this.config.apiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${this.config.apiKey}`,
-          'HTTP-Referer': 'https://10x-cards.app',
-          'X-Title': '10xCards',
+          "HTTP-Referer": "https://10x-cards.app",
+          "X-Title": "10xCards",
         },
         body: JSON.stringify({
           model,
           messages: [
             {
-              role: 'user',
+              role: "user",
               content: prompt,
             },
           ],
@@ -163,7 +158,7 @@ Generate the flashcards now. Return ONLY the JSON array, no additional text.`;
    */
   private parseAIResponse(response: OpenRouterResponse): FlashcardCandidate[] {
     if (!response.choices || response.choices.length === 0) {
-      throw new Error('Invalid AI response: no choices returned');
+      throw new Error("Invalid AI response: no choices returned");
     }
 
     const content = response.choices[0].message.content;
@@ -172,26 +167,26 @@ Generate the flashcards now. Return ONLY the JSON array, no additional text.`;
       // Extract JSON from response (may contain markdown code blocks)
       const jsonMatch = content.match(/\[[\s\S]*\]/);
       if (!jsonMatch) {
-        throw new Error('No JSON array found in AI response');
+        throw new Error("No JSON array found in AI response");
       }
 
       const candidates = JSON.parse(jsonMatch[0]) as FlashcardCandidate[];
 
       // Validate candidates structure
       if (!Array.isArray(candidates) || candidates.length === 0) {
-        throw new Error('Invalid candidates format: expected non-empty array');
+        throw new Error("Invalid candidates format: expected non-empty array");
       }
 
       // Validate each candidate has required fields
       for (const candidate of candidates) {
         if (!candidate.front || !candidate.back || !candidate.source) {
-          throw new Error('Invalid candidate: missing required fields');
+          throw new Error("Invalid candidate: missing required fields");
         }
       }
 
       return candidates;
     } catch (error) {
-      throw new Error(`Failed to parse AI response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(`Failed to parse AI response: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
 
@@ -201,21 +196,19 @@ Generate the flashcards now. Return ONLY the JSON array, no additional text.`;
   private handleError(error: unknown, duration: number): Error {
     if (error instanceof Error) {
       // Timeout error
-      if (error.name === 'AbortError') {
-        return new Error(
-          `AI generation timeout after ${duration}ms (limit: ${this.config.timeout}ms)`,
-        );
+      if (error.name === "AbortError") {
+        return new Error(`AI generation timeout after ${duration}ms (limit: ${this.config.timeout}ms)`);
       }
 
       // Network error
-      if (error.message.includes('fetch')) {
-        return new Error('Network error: Unable to reach OpenRouter API');
+      if (error.message.includes("fetch")) {
+        return new Error("Network error: Unable to reach OpenRouter API");
       }
 
       return error;
     }
 
-    return new Error('Unknown error during AI generation');
+    return new Error("Unknown error during AI generation");
   }
 }
 
@@ -223,10 +216,8 @@ Generate the flashcards now. Return ONLY the JSON array, no additional text.`;
  * Factory function to create AI generation service with environment config
  */
 export function createAIGenerationService(): AIGenerationService {
-  const apiKey = import.meta.env.OPENROUTER_API_KEY || '';
-  const apiUrl =
-    import.meta.env.OPENROUTER_API_URL ||
-    'https://openrouter.ai/api/v1/chat/completions';
+  const apiKey = import.meta.env.OPENROUTER_API_KEY || "";
+  const apiUrl = import.meta.env.OPENROUTER_API_URL || "https://openrouter.ai/api/v1/chat/completions";
   const timeout = Number(import.meta.env.AI_GENERATION_TIMEOUT) || 60000;
   const maxRetries = Number(import.meta.env.AI_MAX_RETRIES) || 3;
 
@@ -237,4 +228,3 @@ export function createAIGenerationService(): AIGenerationService {
     maxRetries,
   });
 }
-

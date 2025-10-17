@@ -1,10 +1,93 @@
 ---
-import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
 
-return Astro.redirect('/generate');
+// Check if user is authenticated
+const user = Astro.locals.user as any;
+const isAuthenticated = !!user;
+
+// Redirect authenticated users to generator
+if (isAuthenticated) {
+  return Astro.redirect("/generate");
+}
 ---
 
-<Layout>
-  <Welcome />
+<Layout
+  title="10x Cards - Aplikacja do Nauki Fiszkami"
+  description="Automatycznie generuj fiszki z tekstu, ucz się efektywnie"
+>
+  <main className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/5">
+    <div className="container mx-auto max-w-4xl px-4 py-12 sm:py-16 lg:py-20">
+      <div className="space-y-12">
+        {/* Hero */}
+        <div className="space-y-6 text-center">
+          <div className="space-y-2">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
+              Naucz się <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"
+                >efektywnie</span
+              >
+            </h1>
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+              Zmień swój tekst w interaktywne fiszki. Ucz się szybciej z AI wsparciem.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+            <a
+              href="/register"
+              className="inline-flex items-center justify-center px-6 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
+            >
+              Zacznij za darmo
+            </a>
+            <a
+              href="/login"
+              className="inline-flex items-center justify-center px-6 py-3 text-base font-medium border bg-background text-foreground rounded-md hover:bg-accent transition-colors"
+            >
+              Zaloguj się
+            </a>
+          </div>
+        </div>
+
+        {/* Features */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-12">
+          <div className="space-y-3 p-6 rounded-lg border bg-card">
+            <div className="text-3xl">✨</div>
+            <h3 className="text-lg font-semibold">Generuj Automatycznie</h3>
+            <p className="text-muted-foreground text-sm">
+              AI analizuje Twój tekst i automatycznie tworzy fiszki z najważniejszymi informacjami.
+            </p>
+          </div>
+
+          <div className="space-y-3 p-6 rounded-lg border bg-card">
+            <div className="text-3xl">📚</div>
+            <h3 className="text-lg font-semibold">Ucz Się Efektywnie</h3>
+            <p className="text-muted-foreground text-sm">
+              System powtórek spowoduje, że nauczysz się materiału na długo.
+            </p>
+          </div>
+
+          <div className="space-y-3 p-6 rounded-lg border bg-card">
+            <div className="text-3xl">⚡</div>
+            <h3 className="text-lg font-semibold">Zaoszczędź Czas</h3>
+            <p className="text-muted-foreground text-sm">Zamiast godzin na tworzeniu fiszek, spędzaj czas na nauce.</p>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div
+          className="space-y-6 text-center py-6 px-6 rounded-lg border bg-gradient-to-br from-secondary to-secondary/50"
+        >
+          <h2 className="text-2xl sm:text-3xl font-bold">Gotów do zarabiania lepiej?</h2>
+          <p className="text-muted-foreground max-w-lg mx-auto">
+            Dołącz do tysięcy studentów którzy już korzystają z 10x Cards do nauki.
+          </p>
+          <a
+            href="/register"
+            className="inline-flex items-center justify-center px-8 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
+          >
+            Zaregistruj się teraz
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
 </Layout>
