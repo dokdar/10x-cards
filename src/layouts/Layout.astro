@@ -42,7 +42,7 @@ const userEmail = user?.email;
       })();
     </script>
   </head>
-  <body>
+  <body class="min-h-screen flex flex-col">
     <Header client:load isAuthenticated={isAuthenticated} userEmail={userEmail} />
     <slot />
   </body>

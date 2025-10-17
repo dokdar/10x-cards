@@ -99,19 +99,22 @@ export default function RegisterForm() {
         return;
       }
 
-      // Success: Handle based on session status
+      // Success: Handle based on response
       const data = await response.json();
 
       // Check if email verification is required
-      if (data.session_exists === false) {
+      if (data.requiresVerification) {
         // Email verification required - show message instead of redirect
         setSuccessMessage(data.message);
         setEmail('');
         setPassword('');
         setConfirmPassword('');
+      } else if (response.redirected) {
+        // Server redirected - follow it
+        console.log('[REGISTER CLIENT] Following redirect to:', response.url);
+        window.location.href = response.url;
       } else {
-        // User is logged in - redirect to home page
-        // Full page reload ensures middleware validates the new session
+        // Fallback: redirect manually
         window.location.href = '/generate';
       }
     } catch (err) {

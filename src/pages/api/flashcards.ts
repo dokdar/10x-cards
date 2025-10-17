@@ -1,7 +1,6 @@
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
 
-import { DEFAULT_USER_ID } from "@/db/supabase.client";
 import { createFlashcards } from "@/lib/services/flashcard-database.service";
 import { createApiError, createJsonResponse, createValidationError, HTTP_STATUS } from "@/lib/utils/api-response";
 import { CreateFlashcardsRequestSchema } from "@/lib/validation/flashcards.schema";
@@ -13,6 +12,14 @@ import type { CreateFlashcardCommand, FlashcardDTO } from "@/types";
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // Guard: Check if user is authenticated
+    if (!locals.user) {
+      return createJsonResponse(
+        createApiError("Unauthorized", "Musisz być zalogowany aby utworzyć fiszki"),
+        HTTP_STATUS.UNAUTHORIZED
+      );
+    }
+
     // 1. Parse and validate request body
     const body = await request.json();
     const validatedData = CreateFlashcardsRequestSchema.parse(body);
@@ -21,7 +28,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const flashcardsData: CreateFlashcardCommand[] = Array.isArray(validatedData) ? validatedData : [validatedData];
 
     // 3. Create flashcards in database
-    const createdFlashcards = await createFlashcards(locals.supabase, DEFAULT_USER_ID, flashcardsData);
+    const createdFlashcards = await createFlashcards(locals.supabase, locals.user.id, flashcardsData);
 
     // 4. Map entities to DTOs (remove user_id)
     const flashcardsDTO: FlashcardDTO[] = createdFlashcards.map(({ user_id, ...flashcard }) => flashcard);

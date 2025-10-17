@@ -37,7 +37,7 @@ export default function AIGeneratorView() {
   }, [status, data]);
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="flex-1 bg-background">
       <div className="container mx-auto max-w-4xl py-6 px-4 sm:py-8 sm:px-6 lg:py-12">
         <div className="space-y-6 sm:space-y-8">
           {/* Header */}

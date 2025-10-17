@@ -71,15 +71,11 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
 
   // === REDIRECT LOGIC ===
 
-  // 1. Redirect authenticated users away from auth pages
-  //    EXCEPT /reset-password (needed for password reset flow with recovery session)
+  // 1. Redirect authenticated users away from auth pages to home
   //    Skip API endpoints - let them execute without redirect interference
-  if (user && PUBLIC_PATHS.includes(url.pathname) && !url.pathname.startsWith('/api/')) {
-    // Allow access to /reset-password even for authenticated users (recovery flow)
-    if (url.pathname === '/reset-password') {
-      console.log('[MIDDLEWARE] Allowing authenticated user to access /reset-password (recovery flow)');
-      return next();
-    }
+  const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password'];
+  if (user && AUTH_PAGES.includes(url.pathname)) {
+    console.log(`[MIDDLEWARE] Redirecting authenticated user from ${url.pathname} to /`);
     return redirect("/");
   }
 

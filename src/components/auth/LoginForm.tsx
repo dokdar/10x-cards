@@ -28,8 +28,7 @@ export default function LoginForm() {
   /**
    * Handle form submission
    * 1. Validate input client-side
-   * 2. Send credentials to API
-   * 3. Handle errors or redirect on success
+   * 2. Submit form to API (server will handle redirect)
    */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -51,7 +50,6 @@ export default function LoginForm() {
 
     try {
       console.log('[LOGIN CLIENT] Sending fetch to /api/auth/login');
-      console.log('[LOGIN CLIENT] Fetch options: method=POST, credentials=include');
 
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -65,33 +63,26 @@ export default function LoginForm() {
         }),
       });
 
-      console.log('[LOGIN CLIENT] Fetch completed');
       console.log('[LOGIN CLIENT] Response status:', response.status);
-      console.log('[LOGIN CLIENT] Response ok:', response.ok);
 
+      // If error, show it
       if (!response.ok) {
-        console.error('[LOGIN CLIENT] Response not OK');
-        try {
-          const errorData = await response.json();
-          console.error('[LOGIN CLIENT] Error data:', errorData);
-          setError('Błąd logowania: ' + (errorData.error || 'Nieznany błąd'));
-        } catch (parseError) {
-          console.error('[LOGIN CLIENT] Could not parse error response:', parseError);
-          setError('Błąd logowania: Nieznany błąd');
-        }
+        const errorData = await response.json();
+        setError(errorData.error || 'Błąd logowania');
         setIsLoading(false);
         return;
       }
 
-      // Success: Status 200 means login worked on server
-      // Don't parse response body - window.location.href will navigate
-      // and response stream will change to HTML page
-      console.log('[LOGIN CLIENT] Response status OK (200)');
-      console.log('[LOGIN CLIENT] Login successful, redirecting to /generate...');
-
-      // Success: Redirect to generator (main app for authenticated users)
-      // Full page reload ensures middleware validates the new session
-      window.location.href = "/generate";
+      // Success: Server will redirect, we follow it
+      // Check if response is a redirect (3xx status or Location header)
+      if (response.redirected) {
+        console.log('[LOGIN CLIENT] Following redirect to:', response.url);
+        window.location.href = response.url;
+      } else {
+        // Fallback: redirect manually
+        console.log('[LOGIN CLIENT] Manual redirect to /generate');
+        window.location.href = "/generate";
+      }
 
     } catch (_err) {
       // Handle network errors

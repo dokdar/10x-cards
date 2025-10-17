@@ -9,7 +9,7 @@ import { createSupabaseServerInstance } from '@/db/supabase.client';
  * Returns user object and session status on success
  * Supabase automatically sets auth cookies and sends verification email
  */
-export const POST: APIRoute = async ({ request, cookies, locals }) => {
+export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => {
   // Guard: Ensure request method is POST
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
@@ -92,23 +92,23 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     });
   }
 
-  // Success: Return user object and session status
-  // If session is null, email verification is required
-  // If session exists, user is logged in (email verification disabled in Supabase)
+  // Success: Check if email verification is required
+  // If session is null, email verification is required - return message
+  // If session exists, user is logged in - redirect to app
   const sessionExists = data.session !== null;
 
-  return new Response(
-    JSON.stringify({
-      user: {
-        id: data.user.id,
-        email: data.user.email,
-        user_metadata: data.user.user_metadata,
-      },
-      session_exists: sessionExists,
-      message: sessionExists
-        ? 'Zalogowany pomyślnie'
-        : 'Sprawdź e-mail aby potwierdzić konto',
-    }),
-    { status: 200 },
-  );
+  if (!sessionExists) {
+    // Email verification required - return JSON with message
+    return new Response(
+      JSON.stringify({
+        message: 'Sprawdź e-mail aby potwierdzić konto',
+        requiresVerification: true,
+      }),
+      { status: 200 },
+    );
+  }
+
+  // User is logged in - redirect to generator page
+  // Server-side redirect ensures cookies are properly set before navigation
+  return redirect('/generate', 303);
 };

@@ -9,7 +9,7 @@ import { createSupabaseServerInstance } from "@/db/supabase.client";
  * Returns user object on success, error on failure
  * Supabase automatically sets auth cookies in the response
  */
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   // Guard: Ensure request method is POST
   if (request.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 });
@@ -71,16 +71,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     );
   }
 
-  // Success: Return authenticated user
-  // Note: Auth cookies are automatically set by Supabase in the response
-  return new Response(
-    JSON.stringify({
-      user: {
-        id: data.user.id,
-        email: data.user.email,
-        user_metadata: data.user.user_metadata,
-      },
-    }),
-    { status: 200 }
-  );
+  // Success: Redirect to generator page
+  // Server-side redirect ensures cookies are properly set before navigation
+  // Using 303 status to force GET request after POST
+  return redirect("/generate", 303);
 };

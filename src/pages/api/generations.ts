@@ -19,11 +19,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
   let model: string | null = null;
 
   try {
-    // User should be set by middleware (using DEFAULT_USER_ID for development)
+    // Guard: Check if user is authenticated (set by middleware)
     if (!locals.user) {
       return createJsonResponse(
-        createApiError("Internal Server Error", "Brak informacji o użytkowniku"),
-        HTTP_STATUS.INTERNAL_SERVER_ERROR
+        createApiError("Unauthorized", "Musisz być zalogowany aby generować fiszki"),
+        HTTP_STATUS.UNAUTHORIZED
       );
     }
 
