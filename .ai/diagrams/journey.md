@@ -1,45 +1,55 @@
 <mermaid_diagram>
 ```mermaid
 stateDiagram-v2
-    [*] --> StronaGlowna_Niezalogowany
+    [*] --> Niezalogowany
 
-    state StronaGlowna_Niezalogowany: Strona Główna (dla gości)
-    StronaGlowna_Niezalogowany --> Logowanie: Klika "Zaloguj"
-    StronaGlowna_Niezalogowany --> Rejestracja: Klika "Zarejestruj"
-    StronaGlowna_Niezalogowany --> ProbaDostepuChronionej: Próbuje wejść na /generate
+    state "Użytkownik Niezalogowany" as Niezalogowany {
+        [*] --> StronaGlowna
+        StronaGlowna: Landing Page
+        StronaGlowna --> Logowanie: Klika "Zaloguj"
+        StronaGlowna --> Rejestracja: Klika "Zarejestruj"
+        StronaGlowna --> PróbaDostępu: Próbuje wejść na /generate
+    }
 
-    state "Proces Uwierzytelniania" as AuthProcess {
+    state "Proces Uwierzytelniania" as Auth {
+        PróbaDostępu --> Logowanie
+        
         state Logowanie {
+            note right of Logowanie
+                Użytkownik podaje email i hasło.
+                Błędne dane powodują powrót do formularza.
+            end note
             [*] --> FormularzLogowania
-            FormularzLogowania --> OdzyskiwanieHasla: Klika "Zapomniałem hasła"
-            FormularzLogowania --> dec_login: Próba logowania
-            state dec_login <<choice>>
-            dec_login --> PanelGlowny: Sukces
-            dec_login --> FormularzLogowania: Błąd
+            FormularzLogowania --> Zalogowany : Dane poprawne
+            FormularzLogowania --> FormularzLogowania : Dane niepoprawne
+            FormularzLogowania --> OdzyskiwanieHasla : Klika "Zapomniałem hasła"
         }
 
         state Rejestracja {
+            note right of Rejestracja
+                Po udanej rejestracji, użytkownik
+                jest automatycznie logowany.
+            end note
             [*] --> FormularzRejestracji
-            FormularzRejestracji --> dec_register: Próba rejestracji
-            state dec_register <<choice>>
-            dec_register --> PanelGlowny: Sukces (automatyczne logowanie)
-            dec_register --> FormularzRejestracji: Błąd (np. email zajęty)
+            FormularzRejestracji --> Zalogowany : Sukces
+            FormularzRejestracji --> FormularzRejestracji : Błąd (np. email zajęty)
         }
-
+        
         state OdzyskiwanieHasla {
             [*] --> FormularzOdzyskiwania
-            FormularzOdzyskiwania --> EmailWyslany: Podaje email
-            EmailWyslany --> Logowanie: Użytkownik wraca do logowania
+            FormularzOdzyskiwania --> EmailWyslany: Podaje poprawny email
+            EmailWyslany: Użytkownik otrzymuje instrukcje
+            EmailWyslany --> Logowanie: Wraca do logowania
         }
-
-        ProbaDostepuChronionej: Próba dostępu do chronionej strony
-        ProbaDostepuChronionej --> Logowanie
     }
 
-    state PanelGlowny: Panel Główny (Zalogowany)
-    PanelGlowny --> Wylogowanie: Klika "Wyloguj"
-    Wylogowanie --> StronaGlowna_Niezalogowany
+    state "Użytkownik Zalogowany" as Zalogowany {
+        [*] --> PanelGłówny
+        PanelGłówny: Dostęp do generatora i fiszek
+        PanelGłówny --> Wylogowanie: Klika "Wyloguj"
+    }
 
-    PanelGlowny --> [*]
+    Wylogowanie --> Niezalogowany
+    Zalogowany --> [*]
 ```
 </mermaid_diagram>
