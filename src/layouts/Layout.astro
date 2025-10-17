@@ -43,7 +43,7 @@ const userEmail = user?.email;
     </script>
   </head>
   <body class="min-h-screen flex flex-col">
-    <Header client:load isAuthenticated={isAuthenticated} userEmail={userEmail} />
+    <Header client:idle isAuthenticated={isAuthenticated} userEmail={userEmail} />
     <slot />
   </body>
 </html>
