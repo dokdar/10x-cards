@@ -9,10 +9,18 @@ import { createSupabaseServerInstance } from "@/db/supabase.client";
  * Returns user object on success, error on failure
  * Supabase automatically sets auth cookies in the response
  */
-export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => {
   // Guard: Ensure request method is POST
   if (request.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 });
+  }
+
+  // Guard: Prevent already authenticated users from logging in again
+  if (locals.user) {
+    return new Response(
+      JSON.stringify({ error: "Jesteś już zalogowany" }),
+      { status: 403 },
+    );
   }
 
   // Guard: Parse and validate request body
