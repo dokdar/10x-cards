@@ -33,3 +33,6 @@ temp/
 *.temp.yaml
 *.temp.yml
 *.temp.xml
+
+# test coverage reports
+coverage/
