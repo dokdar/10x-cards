@@ -18,6 +18,7 @@
 | **Frontend**  | Astro 5, React 19, TypeScript 5, Tailwind CSS 4, Shadcn/UI              |
 | **Backend**   | Supabase (PostgreSQL, BaaS, Authentication)                             |
 | **AI**        | OpenRouter.ai (Access to OpenAI, Anthropic, Google models)              |
+| **Testing**   | Vitest, React Testing Library, Playwright, MSW, Axe-core                |
 | **CI/CD & Hosting** | GitHub Actions, DigitalOcean (Docker)                               |
 
 ## Getting Started Locally
@@ -83,6 +84,9 @@ In the project directory, you can run the following commands:
 | `npm run lint`   | Lints the codebase using ESLint.             |
 | `npm run lint:fix`| Fixes linting errors automatically.          |
 | `npm run format` | Formats the code using Prettier.             |
+| `npm run test`   | Runs unit and integration tests with Vitest. |
+| `npm run test:e2e`| Runs end-to-end tests with Playwright.      |
+| `npm run test:coverage`| Generates test coverage report.        |
 
 ## Project Scope
 
