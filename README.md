@@ -20,8 +20,9 @@
 - **Astro** - Framework for building static sites with islands of interactivity
 - **React** - Library for building user interfaces
 - **TypeScript** - Typed JavaScript for better code quality
-- **Tailwind CSS** - Utility-first CSS framework
+- **Tailwind CSS** - Utility-first CSS framework with responsive design utilities
 - **Shadcn/ui** - UI components built on Radix UI and Tailwind CSS
+- **Lucide React** - Icon library for consistent iconography across desktop and mobile
 
 ### Backend
 - **Supabase** - Backend-as-a-Service with PostgreSQL
@@ -64,6 +65,12 @@
 - Edit questions and answers
 - Accept or reject individual flashcards
 - Save accepted flashcards to database
+
+#### Responsive Design & Mobile Navigation
+- Fully responsive design for desktop, tablet, and mobile devices
+- Mobile-first bottom navigation with Home, Generate, Review, and Profile tabs
+- Adaptive header that hides on mobile when bottom navigation is active
+- Touch-friendly interface optimized for mobile interactions
 
 ### 🚧 In Progress
 
@@ -115,15 +122,27 @@ src/
 - **Key Information:** Text input, AI model selection, generation progress
 - **Components:** `AIGeneratorView`, `TextInput`, `ModelSelector`
 
-#### 3. **Review** (`/review/[id]`)
+#### 3. **Review** (`/review`, `/review/[id]`)
 - **Goal:** Review and edit generated flashcards
-- **Key Information:** List of flashcard candidates, editor, acceptance actions
-- **Components:** `CandidateList`, `CandidateCard`, `ReviewActions`
+- **Key Information:** 
+  - `/review` - Review session finder that checks sessionStorage for active generations
+  - `/review/[id]` - Review specific generation with flashcard candidates, editor, acceptance actions
+- **Components:** `ReviewView`, `CandidateList`, `CandidateCard`, `ReviewActions`
 
 #### 4. **Dashboard** (`/dashboard`) - *in progress*
 - **Goal:** Manage saved flashcards
 - **Key Information:** Flashcard list, search, pagination
 - **Components:** `FlashcardList`, `SearchBar`, `Pagination`
+
+#### 5. **Profile** (`/profile`)
+- **Goal:** User profile management
+- **Key Information:** User account details and settings
+- **Components:** `ProfileView`
+
+#### Mobile Navigation
+- **Bottom Navigation Bar:** Responsive navigation component that appears on mobile devices
+- **Navigation Items:** Home (`/`), Generate (`/generate`), Review (`/review`), Profile (`/profile`)
+- **Adaptive Behavior:** Automatically shows/hides based on screen size and user authentication status
 
 ## Getting Started Locally
 

@@ -81,13 +81,20 @@ export function Header({ isAuthenticated = false, userEmail }: HeaderProps) {
             <ThemeToggle />
           </div>
 
-          {/* Mobile Navigation */}
-          <MobileMenu 
-            isAuthenticated={isAuthenticated}
-            userEmail={userEmail}
-            onLogout={handleLogout}
-            isLoggingOut={isLoggingOut}
-          />
+          {/* Mobile Theme Toggle - Only theme toggle visible on mobile */}
+          <div className="md:hidden">
+            <ThemeToggle />
+          </div>
+
+          {/* Mobile Navigation - Hidden on mobile, replaced by bottom navigation */}
+          <div className="hidden">
+            <MobileMenu 
+              isAuthenticated={isAuthenticated}
+              userEmail={userEmail}
+              onLogout={handleLogout}
+              isLoggingOut={isLoggingOut}
+            />
+          </div>
         </nav>
       </div>
     </header>

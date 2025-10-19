@@ -37,8 +37,7 @@ export default function AIGeneratorView() {
   }, [status, data]);
 
   return (
-    <main className="flex-1 bg-background">
-      <div className="container mx-auto max-w-4xl py-4 px-3 sm:py-8 sm:px-6 lg:py-12">
+    <div className="container mx-auto max-w-4xl py-4 px-3 sm:py-8 sm:px-6 lg:py-12">
         <div className="space-y-4 sm:space-y-6 lg:space-y-8">
           {/* Header */}
           <header className="space-y-2 sm:space-y-3 text-center sm:text-left">
@@ -122,6 +121,5 @@ export default function AIGeneratorView() {
           </form>
         </div>
       </div>
-    </main>
   );
 }

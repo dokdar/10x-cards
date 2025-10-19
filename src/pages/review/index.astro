@@ -1,0 +1,167 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+
+export const prerender = false;
+
+// Server-side authentication guard
+const { user } = Astro.locals;
+
+if (!user) {
+  return Astro.redirect('/login');
+}
+
+const title = "Recenzja fiszek - 10x Cards";
+const description = "Wybierz sesję recenzji fiszek do kontynuowania";
+---
+
+<Layout title={title} description={description}>
+  <div class="container mx-auto max-w-4xl py-4 px-3 sm:py-8 sm:px-6 lg:py-12">
+    <div class="space-y-6">
+      <!-- Header -->
+      <header class="space-y-2 text-center sm:text-left">
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">Recenzja Fiszek</h1>
+        <p class="text-sm sm:text-base lg:text-lg text-muted-foreground">
+          Kontynuuj recenzję wygenerowanych fiszek
+        </p>
+      </header>
+
+      <!-- Review Session Finder -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Znajdź sesję recenzji</CardTitle>
+          <CardDescription>
+            Sprawdzamy czy masz aktywne sesje recenzji do kontynuowania
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div id="session-status" class="hidden">
+            <!-- Content will be populated by JavaScript -->
+          </div>
+          
+          <div id="no-sessions" class="hidden">
+            <Alert>
+              <AlertTitle>Brak aktywnych sesji</AlertTitle>
+              <AlertDescription>
+                Nie znaleziono żadnych aktywnych sesji recenzji. Aby rozpocząć recenzję, najpierw wygeneruj fiszki.
+              </AlertDescription>
+            </Alert>
+            <div class="mt-4 flex flex-col sm:flex-row gap-3">
+              <Button asChild>
+                <a href="/generate">Generuj nowe fiszki</a>
+              </Button>
+              <Button variant="outline" asChild>
+                <a href="/">Powrót do strony głównej</a>
+              </Button>
+            </div>
+          </div>
+
+          <div id="loading" class="flex items-center justify-center py-8">
+            <div class="flex items-center gap-2">
+              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+              <span class="text-sm text-muted-foreground">Sprawdzanie sesji...</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </div>
+
+  <script>
+    // Check for active review sessions in sessionStorage
+    function findActiveSessions() {
+      const sessions = [];
+      
+      // Look for generation data in sessionStorage
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && key.startsWith('generation_')) {
+          try {
+            const data = JSON.parse(sessionStorage.getItem(key) || '');
+            if (data && data.generation_id) {
+              sessions.push({
+                id: data.generation_id,
+                key: key,
+                data: data
+              });
+            }
+          } catch (e) {
+            // Invalid JSON, skip
+            console.warn('Invalid session data for key:', key);
+          }
+        }
+      }
+      
+      return sessions;
+    }
+
+    function displaySessions() {
+      const loadingEl = document.getElementById('loading');
+      const noSessionsEl = document.getElementById('no-sessions');
+      const sessionStatusEl = document.getElementById('session-status');
+      
+      if (!loadingEl || !noSessionsEl || !sessionStatusEl) return;
+      
+      const sessions = findActiveSessions();
+      
+      // Hide loading
+      loadingEl.classList.add('hidden');
+      
+      if (sessions.length === 0) {
+        // No sessions found
+        noSessionsEl.classList.remove('hidden');
+      } else if (sessions.length === 1) {
+        // Single session - redirect immediately
+        const session = sessions[0];
+        window.location.href = `/review/${session.id}`;
+      } else {
+        // Multiple sessions - show list
+        sessionStatusEl.classList.remove('hidden');
+        sessionStatusEl.innerHTML = `
+          <div class="space-y-4">
+            <div class="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <h3 class="font-semibold text-blue-900 dark:text-blue-100">Znaleziono aktywne sesje</h3>
+              <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                Wybierz sesję recenzji którą chcesz kontynuować:
+              </p>
+            </div>
+            <div class="space-y-2">
+              ${sessions.map(session => `
+                <div class="flex items-center justify-between p-3 border rounded-lg">
+                  <div class="flex-1">
+                    <div class="font-medium">Sesja ${session.id.substring(0, 8)}...</div>
+                    <div class="text-sm text-muted-foreground">
+                      ${session.data.generated_count || 0} fiszek wygenerowanych
+                      ${session.data.model ? ` • ${session.data.model}` : ''}
+                    </div>
+                  </div>
+                  <a href="/review/${session.id}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                    Kontynuuj
+                  </a>
+                </div>
+              `).join('')}
+            </div>
+            <div class="pt-2 border-t">
+              <div class="flex flex-col sm:flex-row gap-3">
+                <a href="/generate" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                  Generuj nowe fiszki
+                </a>
+                <a href="/" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                  Powrót do strony głównej
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Run when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      // Small delay to ensure everything is loaded
+      setTimeout(displaySessions, 100);
+    });
+  </script>
+</Layout>

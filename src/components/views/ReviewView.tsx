@@ -30,7 +30,7 @@ export function ReviewView({ generationId }: ReviewViewProps) {
   // Show error state if data not found
   if (loadError) {
     return (
-      <div className="flex-1 bg-background flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-[50vh]">
         <div className="container max-w-md">
           <Alert variant="destructive">
             <AlertTitle>Błąd</AlertTitle>
@@ -47,7 +47,7 @@ export function ReviewView({ generationId }: ReviewViewProps) {
   // Show loading state
   if (!generationData) {
     return (
-      <div className="flex-1 bg-background flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-[50vh]">
         <p className="text-muted-foreground">Ładowanie...</p>
       </div>
     );
@@ -113,7 +113,7 @@ function ReviewViewContent({ generationData }: { generationData: GenerationRespo
   };
 
   return (
-    <div className="flex-1 bg-background">
+    <div>
       <ReviewControls
         selectedCount={selectedCount}
         totalCount={candidates.length}

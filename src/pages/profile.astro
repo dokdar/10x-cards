@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { ProfileView } from '../components/views/ProfileView.tsx';
+
+export const prerender = false;
+
+// Get user from middleware (set in Astro.locals)
+const user = Astro.locals.user;
+
+// Redirect to login if not authenticated
+if (!user) {
+  return Astro.redirect('/login');
+}
+---
+
+<Layout title="Profil">
+  <ProfileView user={user} client:load />
+</Layout>

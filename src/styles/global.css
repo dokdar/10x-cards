@@ -172,3 +172,54 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Mobile Navigation Styles */
+@layer components {
+  /* Safe area support for mobile devices */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Bottom navigation container */
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 z-50;
+    @apply bg-gray-900 border-t border-gray-700;
+    @apply flex items-center justify-around;
+    @apply h-16 px-4;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Navigation item */
+  .nav-item {
+    @apply flex flex-col items-center justify-center;
+    @apply min-w-[44px] min-h-[44px];
+    @apply text-gray-400 hover:text-white;
+    @apply transition-colors duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-400;
+  }
+  
+  /* Active navigation item */
+  .nav-item.active {
+    @apply text-blue-400;
+  }
+  
+  /* View container */
+  .view-container {
+    @apply pb-20; /* Account for bottom navigation height + safe area */
+    @apply min-h-screen;
+  }
+  
+  /* Mobile header adjustments */
+  .mobile-header {
+    @apply px-4 py-3;
+    @apply flex items-center justify-between;
+    @apply bg-gray-900 border-b border-gray-700;
+  }
+  
+  /* Mobile-specific adjustments */
+  @media (max-width: 768px) {
+    .view-container {
+      min-height: calc(100vh - 4rem); /* Account for bottom nav height */
+    }
+  }
+}
