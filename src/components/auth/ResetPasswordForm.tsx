@@ -1,8 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm, type FieldErrors } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { updatePasswordSchema, type UpdatePasswordInput } from '@/lib/validation/auth.schema';
+import { updatePassword as updatePasswordService } from '@/lib/services/auth';
+import { usePkceParams } from '@/lib/hooks/usePkceParams';
 
 /**
  * ResetPasswordForm Component
@@ -13,159 +18,73 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
  * Logs out user if they were logged in
  */
 export default function ResetPasswordForm() {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { code, errorCode, errorDescription } = usePkceParams();
+  const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<UpdatePasswordInput>({
+    resolver: zodResolver(updatePasswordSchema),
+    defaultValues: { password: '', confirmPassword: '' },
+    mode: 'onSubmit',
+  });
 
-  /**
-   * On mount: Check for errors or PKCE code
-   * Supabase sends errors in query params if token is invalid/expired
-   */
+  // Surface URL-derived errors on mount
   useEffect(() => {
-    // Check for error in query params (expired/invalid token)
-    const urlParams = new URLSearchParams(window.location.search);
-    const errorCode = urlParams.get('error_code');
-    const errorDescription = urlParams.get('error_description');
-    const code = urlParams.get('code');
-
     if (errorCode === 'otp_expired') {
-      setError('Link do resetowania hasła wygasł. Poproś o nowy link.');
-      return;
+      setError('root', { message: 'Link do resetowania hasła wygasł. Poproś o nowy link.' });
+    } else if (errorDescription) {
+      setError('root', { message: errorDescription });
     }
+  }, [errorCode, errorDescription, setError]);
 
-    if (errorDescription) {
-      setError(errorDescription.replace(/\+/g, ' '));
-      return;
-    }
-
-    if (code) {
-      console.log('[RESET PASSWORD] PKCE code detected in URL - ready for password reset');
-    } else {
-      console.warn('[RESET PASSWORD] No code in URL - user may have expired link');
-    }
-  }, []);
-
-  /**
-   * Validate password strength
-   * Minimum 8 characters required
-   */
-  const isValidPassword = (passwordValue: string): boolean => {
-    return passwordValue.length >= 8;
-  };
-
-  /**
-   * Handle form submission
-   * Uses fetch with JSON for API communication
-   * Server handles redirect after successful password update
-   */
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-    setSuccessMessage('');
-
-    // Guard: Check if fields are empty
-    if (!password || !confirmPassword) {
-      setError('Wszystkie pola są wymagane');
-      return;
-    }
-
-    // Guard: Validate password strength
-    if (!isValidPassword(password)) {
-      setError('Hasło musi mieć co najmniej 8 znaków');
-      return;
-    }
-
-    // Guard: Check password confirmation
-    if (password !== confirmPassword) {
-      setError('Hasła nie są identyczne');
-      return;
-    }
-
-    setIsLoading(true);
-    console.log('[RESET PASSWORD] Submitting password update...');
-
-    // Get PKCE code from URL - this authorizes the password change
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-
+  const onValid = async (values: UpdatePasswordInput) => {
     if (!code) {
-      setError('Brak kodu autoryzacji. Link mógł wygasnąć. Poproś o nowy.');
-      setIsLoading(false);
+      setError('root', { message: 'Brak kodu autoryzacji. Link mógł wygasnąć. Poproś o nowy.' });
       return;
     }
 
-    try {
-      const response = await fetch('/api/auth/update-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          password,
-          confirmPassword,
-          code, // Send PKCE code to backend
-        }),
-      });
+    const result = await updatePasswordService({ ...values, code });
 
-      console.log('[RESET PASSWORD] Response status:', response.status);
+    if (!result.ok) {
+      setError('root', { message: result.error ?? 'Nie udało się zmienić hasła. Spróbuj ponownie.' });
+      return;
+    }
 
-      // Handle error responses
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.error || 'Nie udało się zmienić hasła. Spróbuj ponownie.');
-        setIsLoading(false);
-        return;
-      }
+    window.location.href = '/password-changed';
+  };
 
-      // Success - redirect to success page
-      const data = await response.json();
-      console.log('[RESET PASSWORD] Password updated successfully');
-      
-      // Redirect immediately to success page
-      window.location.href = '/password-changed';
-    } catch (err) {
-      console.error('[RESET PASSWORD] Error:', err);
-      setError('Błąd sieci. Spróbuj ponownie.');
-      setIsLoading(false);
+  const onInvalid = (invalid: FieldErrors<UpdatePasswordInput>) => {
+    // Pokaż ogólny komunikat tylko jeśli nie ma błędów pól
+    const hasFieldErrors = Boolean(invalid.password || invalid.confirmPassword);
+    if (!hasFieldErrors) {
+      setError('root', { message: 'Wszystkie pola są wymagane' });
     }
   };
+
+  const onSubmit = handleSubmit(onValid, onInvalid);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-4">
       {/* Error Alert */}
-      {error && (
-        <Alert variant="destructive" className="animate-in">
-          <AlertDescription>{error}</AlertDescription>
+      {(errors.root?.message || errors.password?.message || errors.confirmPassword?.message) && (
+        <Alert variant="destructive" className="animate-in" role="alert">
+          <AlertDescription>
+            {errors.root?.message || errors.password?.message || errors.confirmPassword?.message}
+          </AlertDescription>
         </Alert>
       )}
 
       {/* Success Alert */}
-      {successMessage && (
-        <Alert className="animate-in bg-green-50 dark:bg-green-950 text-green-900 dark:text-green-100 border-green-200 dark:border-green-800">
-          <AlertDescription>
-            <svg className="h-4 w-4 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            {successMessage}
-          </AlertDescription>
-        </Alert>
-      )}
+      
 
       {/* Password Field */}
       <div className="space-y-2">
         <Label htmlFor="password">Nowe hasło</Label>
         <Input
           id="password"
-          name="password"
           type="password"
           placeholder="Minimum 8 znaków"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={isLoading}
+          {...register('password')}
+          disabled={isSubmitting}
           required
+          aria-invalid={!!errors.password}
           autoComplete="new-password"
         />
         <p className="text-xs text-muted-foreground">Hasło musi mieć co najmniej 8 znaków</p>
@@ -176,13 +95,12 @@ export default function ResetPasswordForm() {
         <Label htmlFor="confirmPassword">Potwierdzenie hasła</Label>
         <Input
           id="confirmPassword"
-          name="confirmPassword"
           type="password"
           placeholder="Potwierdź hasło"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          disabled={isLoading}
+          {...register('confirmPassword')}
+          disabled={isSubmitting}
           required
+          aria-invalid={!!errors.confirmPassword}
           autoComplete="new-password"
         />
       </div>
@@ -191,11 +109,11 @@ export default function ResetPasswordForm() {
       <div className="flex flex-col gap-3">
         <Button 
           type="submit" 
-          disabled={isLoading || !!successMessage} 
+          disabled={isSubmitting} 
           className="w-full" 
-          aria-busy={isLoading}
+          aria-busy={isSubmitting}
         >
-          {isLoading ? 'Zmiana hasła...' : successMessage ? 'Przekierowywanie...' : 'Zmień hasło'}
+          {isSubmitting ? 'Zmiana hasła...' : 'Zmień hasło'}
         </Button>
       </div>
 
@@ -205,14 +123,14 @@ export default function ResetPasswordForm() {
         <a
           href="/login"
           className="text-primary hover:underline font-medium"
-          tabIndex={isLoading ? -1 : 0}
+          tabIndex={isSubmitting ? -1 : 0}
         >
           Zaloguj się
         </a>
       </p>
 
       {/* Link expired - request new one */}
-      {error && error.includes('wygasł') && (
+      {errors.root?.message && errors.root.message.includes('wygasł') && (
         <p className="text-sm text-muted-foreground text-center">
           <a
             href="/forgot-password"

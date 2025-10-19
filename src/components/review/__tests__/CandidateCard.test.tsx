@@ -224,6 +224,7 @@ describe('CandidateCard', () => {
       <div
         class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm transition-all"
         data-slot="card"
+        data-test-id="candidate-card"
       >
         <div
           class="@container/card-header auto-rows-min grid-rows-[auto_auto] gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-3"
@@ -238,6 +239,7 @@ describe('CandidateCard', () => {
               class="peer data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
               data-slot="switch"
               data-state="unchecked"
+              data-test-id="accept-candidate-switch"
               role="switch"
               type="button"
               value="on"
@@ -272,6 +274,7 @@ describe('CandidateCard', () => {
               aria-invalid="false"
               class="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-20"
               data-slot="textarea"
+              data-test-id="flashcard-front-textarea"
               id="front-test-id-1"
               placeholder="Treść na przodzie fiszki"
             >
@@ -291,6 +294,7 @@ describe('CandidateCard', () => {
               aria-invalid="false"
               class="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-20"
               data-slot="textarea"
+              data-test-id="flashcard-back-textarea"
               id="back-test-id-1"
               placeholder="Treść na tyle fiszki"
             >
@@ -305,6 +309,7 @@ describe('CandidateCard', () => {
           <button
             class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
             data-slot="button"
+            data-test-id="reject-candidate-button"
           >
             Odrzuć
           </button>
@@ -320,6 +325,7 @@ describe('CandidateCard', () => {
       <div
         class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm transition-all border-primary/50 bg-primary/5"
         data-slot="card"
+        data-test-id="candidate-card"
       >
         <div
           class="@container/card-header auto-rows-min grid-rows-[auto_auto] gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-3"
@@ -334,6 +340,7 @@ describe('CandidateCard', () => {
               class="peer data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
               data-slot="switch"
               data-state="checked"
+              data-test-id="accept-candidate-switch"
               role="switch"
               type="button"
               value="on"
@@ -373,6 +380,7 @@ describe('CandidateCard', () => {
               aria-invalid="false"
               class="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-20"
               data-slot="textarea"
+              data-test-id="flashcard-front-textarea"
               id="front-test-id-1"
               placeholder="Treść na przodzie fiszki"
             >
@@ -392,6 +400,7 @@ describe('CandidateCard', () => {
               aria-invalid="false"
               class="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-20"
               data-slot="textarea"
+              data-test-id="flashcard-back-textarea"
               id="back-test-id-1"
               placeholder="Treść na tyle fiszki"
             >
@@ -406,6 +415,7 @@ describe('CandidateCard', () => {
           <button
             class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
             data-slot="button"
+            data-test-id="reject-candidate-button"
           >
             Odrzuć
           </button>
@@ -421,6 +431,7 @@ describe('CandidateCard', () => {
       <div
         class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm transition-all opacity-50 bg-muted/50"
         data-slot="card"
+        data-test-id="candidate-card"
       >
         <div
           class="@container/card-header auto-rows-min grid-rows-[auto_auto] gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-3"
@@ -436,6 +447,7 @@ describe('CandidateCard', () => {
               data-disabled=""
               data-slot="switch"
               data-state="unchecked"
+              data-test-id="accept-candidate-switch"
               disabled=""
               role="switch"
               type="button"
@@ -472,6 +484,7 @@ describe('CandidateCard', () => {
               aria-invalid="false"
               class="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-20"
               data-slot="textarea"
+              data-test-id="flashcard-front-textarea"
               disabled=""
               id="front-test-id-1"
               placeholder="Treść na przodzie fiszki"
@@ -492,6 +505,7 @@ describe('CandidateCard', () => {
               aria-invalid="false"
               class="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-20"
               data-slot="textarea"
+              data-test-id="flashcard-back-textarea"
               disabled=""
               id="back-test-id-1"
               placeholder="Treść na tyle fiszki"
@@ -507,6 +521,7 @@ describe('CandidateCard', () => {
           <button
             class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
             data-slot="button"
+            data-test-id="reject-candidate-button"
             disabled=""
           >
             Odrzucona

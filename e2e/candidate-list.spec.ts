@@ -47,10 +47,10 @@ test.describe('CandidateList Component E2E Tests', () => {
     }
     
     // Login with real credentials using LoginPage
-    // login() method already waits for navigation to complete
     const loginPage = new LoginPage(page);
     await loginPage.goto();
     await loginPage.login(email, password);
+    await loginPage.waitForNavigation();
   });
 
   test.describe('Empty State Tests', () => {
@@ -433,6 +433,139 @@ test.describe('CandidateList Component E2E Tests', () => {
       // Should handle gracefully and show error message when data is corrupted
       await expect(page.getByText('Nie znaleziono danych sesji generowania')).toBeVisible();
       await expect(page.getByTestId('return-home-button')).toBeVisible();
+    });
+
+    test('should handle API errors during save operation', async ({ page }) => {
+      const generationData = createMockGenerationData(mockCandidates);
+      
+      await page.addInitScript((data) => {
+        window.sessionStorage.setItem('generation_test-generation-id', JSON.stringify(data));
+      }, generationData);
+
+      const candidateListPage = new CandidateListPage(page);
+      await candidateListPage.goto('test-generation-id');
+      await candidateListPage.waitForLoad();
+
+      // Accept first candidate
+      const firstCard = await candidateListPage.getCandidateCard(0);
+      await firstCard.accept();
+
+      // Mock API error response
+      await page.route('**/api/flashcards', async (route) => {
+        await route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: 'Internal Server Error' }),
+        });
+      });
+
+      // Try to save and expect error handling
+      await candidateListPage.clickSaveFlashcards();
+      
+      // Should show error message and stay on the same page
+      await expect(page.locator('[role="alert"]')).toBeVisible({ timeout: 10000 });
+      await expect(page).toHaveURL(/\/review\/test-generation-id$/);
+    });
+
+    test('should handle network timeout during save operation', async ({ page }) => {
+      const generationData = createMockGenerationData(mockCandidates);
+      
+      await page.addInitScript((data) => {
+        window.sessionStorage.setItem('generation_test-generation-id', JSON.stringify(data));
+      }, generationData);
+
+      const candidateListPage = new CandidateListPage(page);
+      await candidateListPage.goto('test-generation-id');
+      await candidateListPage.waitForLoad();
+
+      // Accept first candidate
+      const firstCard = await candidateListPage.getCandidateCard(0);
+      await firstCard.accept();
+
+      // Mock network timeout by aborting the request
+      await page.route('**/api/flashcards', async (route) => {
+        await route.abort();
+      });
+
+      // Try to save and expect error handling
+      await candidateListPage.clickSaveFlashcards();
+      
+      // Should show error message and stay on the same page
+      await expect(page.locator('[role="alert"]')).toBeVisible({ timeout: 10000 });
+      await expect(page).toHaveURL(/\/review\/test-generation-id$/);
+    });
+
+    test('should handle empty candidates array gracefully', async ({ page }) => {
+      const emptyGenerationData = createMockGenerationData([]);
+      
+      await page.addInitScript((data) => {
+        window.sessionStorage.setItem('generation_test-generation-id', JSON.stringify(data));
+      }, emptyGenerationData);
+
+      const candidateListPage = new CandidateListPage(page);
+      await candidateListPage.goto('test-generation-id');
+      await candidateListPage.waitForLoad();
+
+      // Should show empty state
+      await expect(candidateListPage.emptyState).toBeVisible();
+      await expect(candidateListPage.addFirstFlashcardButton).toBeVisible();
+    });
+
+    test('should handle malformed candidate data', async ({ page }) => {
+      const malformedData = {
+        generation_id: 'test-generation-id',
+        model: 'openai/gpt-4o-mini',
+        source_text_hash: 'test-hash',
+        source_text_length: 1500,
+        generated_count: 3,
+        rejected_count: 0,
+        generation_duration: 5000,
+        created_at: new Date().toISOString(),
+        candidates: [
+          { front: '', back: '', source: 'ai-full' }, // Empty content
+          { front: 'Valid front', back: '', source: 'ai-full' }, // Missing back
+          { front: '', back: 'Valid back', source: 'ai-full' }, // Missing front
+        ]
+      };
+      
+      await page.addInitScript((data) => {
+        window.sessionStorage.setItem('generation_test-generation-id', JSON.stringify(data));
+      }, malformedData);
+
+      const candidateListPage = new CandidateListPage(page);
+      await candidateListPage.goto('test-generation-id');
+      
+      // Wait for page to load
+      await page.waitForLoadState('domcontentloaded');
+      await page.waitForLoadState('networkidle');
+      
+      // Wait for either candidates list or empty state to appear
+      await page.waitForSelector('[data-test-id="candidates-list"], [data-test-id="empty-state"]', { 
+        state: 'visible', 
+        timeout: 10000 
+      });
+
+      // Check if candidates list is visible (app should render malformed data)
+      const isListVisible = await page.locator('[data-test-id="candidates-list"]').isVisible();
+      
+      if (isListVisible) {
+        // Should still render candidates but handle missing data gracefully
+        const candidateCount = await candidateListPage.getCandidateCardsCount();
+        expect(candidateCount).toBe(3);
+
+        // Check that cards with missing data are still editable
+        const firstCard = await candidateListPage.getCandidateCard(0);
+        await firstCard.setFrontText('Edited front');
+        await firstCard.setBackText('Edited back');
+        
+        const frontText = await firstCard.getFrontText();
+        const backText = await firstCard.getBackText();
+        expect(frontText).toBe('Edited front');
+        expect(backText).toBe('Edited back');
+      } else {
+        // If app shows empty state for malformed data, that's also acceptable
+        await expect(candidateListPage.emptyState).toBeVisible();
+      }
     });
   });
 });

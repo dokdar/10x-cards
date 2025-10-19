@@ -17,12 +17,10 @@ export class LoginPage {
 
   async goto() {
     await this.page.goto('/login', { waitUntil: 'domcontentloaded' });
-    // Ensure Astro client:idle hydration has run before interacting
-    await this.page.evaluate(() => new Promise<void>((resolve) => (
-      (window as any).requestIdleCallback
-        ? (window as any).requestIdleCallback(() => resolve())
-        : setTimeout(() => resolve(), 0)
-    )));
+    // Wait for network idle and form elements to be ready
+    await this.page.waitForLoadState('networkidle');
+    await this.emailInput.waitFor({ state: 'visible' });
+    await this.passwordInput.waitFor({ state: 'visible' });
   }
 
   async login(email: string, password: string) {
@@ -30,31 +28,61 @@ export class LoginPage {
     await this.emailInput.waitFor({ state: 'visible' });
     await this.passwordInput.waitFor({ state: 'visible' });
 
-    // Type into controlled inputs character-by-character to trigger onChange
+    // Fill inputs atomically to avoid autofill interference or partial typing
     await this.emailInput.click();
-    await this.emailInput.clear();
-    await this.emailInput.type(email, { delay: 30 });
+    await this.emailInput.fill(email);
 
     await this.passwordInput.click();
-    await this.passwordInput.clear();
-    await this.passwordInput.type(password, { delay: 30 });
+    await this.passwordInput.fill(password);
 
-    // Confirm values are set (React state reflects input)
-    await expect(this.emailInput).toHaveValue(email);
-    await expect(this.passwordInput).toHaveValue(password);
+    // Debug actual values
+    let emailValue = await this.emailInput.inputValue();
+    let passwordValue = await this.passwordInput.inputValue();
+    console.log('[LoginPage] email value after fill:', emailValue);
+    console.log('[LoginPage] password filled');
 
-    // Submit and wait for navigation away from the login page
-    await Promise.all([
-      this.page.waitForNavigation({ timeout: 60000 }),
-      this.loginButton.click(),
-    ]);
+    // If values mismatch (e.g., browser autofill), force-clear and re-fill
+    if (emailValue !== email) {
+      console.log('[LoginPage] email mismatch, refilling');
+      await this.emailInput.focus();
+      await this.emailInput.fill('');
+      await this.emailInput.fill(email);
+      emailValue = await this.emailInput.inputValue();
+      console.log('[LoginPage] email value after refill:', emailValue);
+    }
 
-    // Extra safety: ensure URL changed from /login
-    await expect(this.page).not.toHaveURL(/\/login(\/?$)/);
+    if (passwordValue !== password) {
+      console.log('[LoginPage] password mismatch, refilling');
+      await this.passwordInput.focus();
+      await this.passwordInput.fill('');
+      await this.passwordInput.fill(password);
+      passwordValue = await this.passwordInput.inputValue();
+      console.log('[LoginPage] password refilled');
+    }
+
+    // Submit (navigation oczekiwane poza metodą przez waitForNavigation)
+    await this.loginButton.click();
   }
 
   async waitForNavigation() {
-    await this.page.waitForURL('/generate');
+    // Czekaj aż URL przestanie być /login lub pokaże się błąd
+    const leaveLogin = this.page
+      .waitForURL(/^(?!.*\/login\/?$).*/, { timeout: 30000 })
+      .catch(() => null);
+    const errorVisible = this.errorMessage
+      .waitFor({ state: 'visible', timeout: 30000 })
+      .catch(() => null);
+
+    await Promise.race([leaveLogin, errorVisible]);
+
+    // Jeśli wciąż jesteśmy na /login, zraportuj powód
+    if (this.page.url().includes('/login')) {
+      const errText = await this.getErrorMessage();
+      throw new Error(`[LoginPage] Redirect failed; still on ${this.page.url()}. Error: ${errText ?? 'none'}`);
+    }
+
+    // Upewnij się, że docelowa strona się załadowała
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async getErrorMessage() {

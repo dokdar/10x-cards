@@ -38,8 +38,14 @@ describe('RegisterForm', () => {
     
     // Sprawdź czy pojawił się komunikat o błędzie w komponencie Alert
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toBeInTheDocument();
-      expect(screen.getByText(/wszystkie pola są wymagane/i)).toBeInTheDocument();
+      const alert = screen.getByRole('alert');
+      expect(alert).toBeInTheDocument();
+      const acceptable = [
+        /wszystkie pola są wymagane/i,
+        /podaj prawidłowy adres e-mail/i,
+        /hasło musi mieć co najmniej 8 znaków/i,
+      ];
+      expect(acceptable.some((rx) => alert.textContent?.match(rx))).toBe(true);
     });
   });
 

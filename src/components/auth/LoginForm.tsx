@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useForm, type FieldErrors } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { loginSchema, type LoginInput } from "@/lib/validation/auth.schema";
+import { login as loginService } from "@/lib/services/auth";
 
 /**
  * LoginForm Component
@@ -12,91 +15,54 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
  * On success, redirects to home page
  */
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+    mode: "onSubmit",
+  });
 
-  /**
-   * Validate email format using regex
-   * Provides quick client-side feedback without API call
-   */
-  const isValidEmail = (emailValue: string): boolean => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
-  };
+  const onValid = async (values: LoginInput) => {
+    const result = await loginService(values);
 
-  /**
-   * Handle form submission
-   * 1. Validate input client-side
-   * 2. Submit form to API (server will handle redirect)
-   */
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
-
-    // Guard: Check if fields are empty
-    if (!email || !password) {
-      setError("Wszystkie pola są wymagane");
+    if (!result.ok) {
+      setError("root", { message: result.error ?? "Błąd logowania" });
       return;
     }
 
-    // Guard: Validate email format
-    if (!isValidEmail(email)) {
-      setError("Podaj prawidłowy adres e-mail");
+    if (result.redirectUrl) {
+      window.location.href = result.redirectUrl;
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      console.log('[LOGIN CLIENT] Sending fetch to /api/auth/login');
-
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: email.trim(),
-          password,
-        }),
-      });
-
-      console.log('[LOGIN CLIENT] Response status:', response.status);
-
-      // If error, show it
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.error || 'Błąd logowania');
-        setIsLoading(false);
-        return;
-      }
-
-      // Success: Server will redirect, we follow it
-      // Check if response is a redirect (3xx status or Location header)
-      if (response.redirected) {
-        console.log('[LOGIN CLIENT] Following redirect to:', response.url);
-        window.location.href = response.url;
-      } else {
-        // Fallback: redirect manually
-        console.log('[LOGIN CLIENT] Manual redirect to /generate');
-        window.location.href = "/generate";
-      }
-
-    } catch (_err) {
-      // Handle network errors
-      setError("Błąd sieci. Spróbuj ponownie.");
-      setIsLoading(false);
-    }
+    // Fallback
+    window.location.href = "/generate";
   };
+
+  const onInvalid = (invalid: FieldErrors<LoginInput>) => {
+    // Preferuj komunikaty pól; w przeciwnym razie pokaż ogólny
+    // Debug: pokaż błędy w testach
+    console.warn("LoginForm onInvalid", invalid);
+    if (invalid.email?.message) {
+      setError("root", { message: String(invalid.email.message) });
+      return;
+    }
+    if (invalid.password?.message) {
+      setError("root", { message: String(invalid.password.message) });
+      return;
+    }
+    setError("root", { message: "Wszystkie pola są wymagane" });
+  };
+
+  const onSubmit = handleSubmit(onValid, onInvalid);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-4">
       {/* Error Alert */}
-      {error && (
-        <Alert variant="destructive" className="animate-in">
-          <AlertDescription>{error}</AlertDescription>
+      {(errors.root?.message || errors.email?.message || errors.password?.message) && (
+        <Alert variant="destructive" className="animate-in" role="alert">
+          <AlertDescription>
+            {errors.root?.message || errors.email?.message || errors.password?.message}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -105,13 +71,12 @@ export default function LoginForm() {
         <Label htmlFor="email">Adres e-mail</Label>
         <Input
           id="email"
-          name="email"
           type="email"
           placeholder="your@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isLoading}
+          {...register("email")}
+          disabled={isSubmitting}
           required
+          aria-invalid={!!errors.email}
           autoComplete="email"
         />
       </div>
@@ -121,27 +86,26 @@ export default function LoginForm() {
         <Label htmlFor="password">Hasło</Label>
         <Input
           id="password"
-          name="password"
           type="password"
           placeholder="Twoje hasło"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={isLoading}
+          {...register("password")}
+          disabled={isSubmitting}
           required
+          aria-invalid={!!errors.password}
           autoComplete="current-password"
         />
       </div>
 
       {/* Action Buttons */}
       <div className="flex flex-col gap-3">
-        <Button type="submit" disabled={isLoading} className="w-full" aria-busy={isLoading}>
-          {isLoading ? "Logowanie..." : "Zaloguj się"}
+        <Button type="submit" disabled={isSubmitting} className="w-full" aria-busy={isSubmitting}>
+          {isSubmitting ? "Logowanie..." : "Zaloguj się"}
         </Button>
 
         <a
           href="/forgot-password"
           className="text-sm text-primary hover:underline text-center"
-          tabIndex={isLoading ? -1 : 0}
+          tabIndex={isSubmitting ? -1 : 0}
         >
           Zapomniałeś hasła?
         </a>
@@ -150,7 +114,7 @@ export default function LoginForm() {
       {/* Registration Link */}
       <p className="text-sm text-muted-foreground text-center">
         Nie masz konta?{" "}
-        <a href="/register" className="text-primary hover:underline font-medium" tabIndex={isLoading ? -1 : 0}>
+        <a href="/register" className="text-primary hover:underline font-medium" tabIndex={isSubmitting ? -1 : 0}>
           Zarejestruj się
         </a>
       </p>
