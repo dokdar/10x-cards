@@ -38,12 +38,12 @@ export default function AIGeneratorView() {
 
   return (
     <main className="flex-1 bg-background">
-      <div className="container mx-auto max-w-4xl py-6 px-4 sm:py-8 sm:px-6 lg:py-12">
-        <div className="space-y-6 sm:space-y-8">
+      <div className="container mx-auto max-w-4xl py-4 px-3 sm:py-8 sm:px-6 lg:py-12">
+        <div className="space-y-4 sm:space-y-6 lg:space-y-8">
           {/* Header */}
-          <header className="space-y-2 sm:space-y-3">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Generator Fiszek</h1>
-            <p className="text-base sm:text-lg text-muted-foreground">
+          <header className="space-y-2 sm:space-y-3 text-center sm:text-left">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">Generator Fiszek</h1>
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
               Wklej tekst, a następnie wybierz sposób tworzenia fiszek.
             </p>
           </header>
@@ -66,32 +66,32 @@ export default function AIGeneratorView() {
             />
 
             {/* Generation Mode Selection */}
-            <div className="space-y-3">
-              <Label className="text-base font-semibold">Sposób tworzenia fiszek</Label>
+            <div className="space-y-3 sm:space-y-4">
+              <Label className="text-sm sm:text-base font-semibold">Sposób tworzenia fiszek</Label>
               <RadioGroup
                 value={mode}
                 onValueChange={(value) => setMode(value as GenerationMode)}
                 disabled={status === "loading"}
-                className="space-y-3"
+                className="space-y-4 sm:space-y-3"
               >
-                <div className="flex items-start space-x-3 space-y-0">
-                  <RadioGroupItem value="manual" id="manual" />
-                  <div className="space-y-1 leading-none">
-                    <Label htmlFor="manual" className="font-medium cursor-pointer">
+                <div className="flex items-start space-x-3 space-y-0 p-3 sm:p-0 rounded-lg border sm:border-0 bg-card sm:bg-transparent">
+                  <RadioGroupItem value="manual" id="manual" className="mt-1" />
+                  <div className="space-y-1 leading-none flex-1">
+                    <Label htmlFor="manual" className="font-medium cursor-pointer text-sm sm:text-base">
                       Tworzenie manualne
                     </Label>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       Przejdź do edytora i utwórz fiszki samodzielnie na podstawie tekstu
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3 space-y-0">
-                  <RadioGroupItem value="ai" id="ai" />
-                  <div className="space-y-1 leading-none">
-                    <Label htmlFor="ai" className="font-medium cursor-pointer">
+                <div className="flex items-start space-x-3 space-y-0 p-3 sm:p-0 rounded-lg border sm:border-0 bg-card sm:bg-transparent">
+                  <RadioGroupItem value="ai" id="ai" className="mt-1" />
+                  <div className="space-y-1 leading-none flex-1">
+                    <Label htmlFor="ai" className="font-medium cursor-pointer text-sm sm:text-base">
                       Generowanie przez AI
                     </Label>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       AI automatycznie wygeneruje propozycje fiszek na podstawie tekstu
                     </p>
                   </div>
@@ -100,8 +100,13 @@ export default function AIGeneratorView() {
             </div>
 
             {/* Generate Button */}
-            <div className="flex flex-col sm:flex-row sm:justify-end gap-4">
-              <Button type="submit" size="lg" disabled={isDisabled} className="w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row sm:justify-end gap-4 pt-2">
+              <Button 
+                type="submit" 
+                size="lg" 
+                disabled={isDisabled} 
+                className="w-full sm:w-auto min-h-[48px] text-sm sm:text-base font-medium"
+              >
                 {status === "loading"
                   ? mode === "ai"
                     ? "Generowanie przez AI..."

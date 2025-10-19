@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
+import { MobileMenu } from './MobileMenu';
 
 interface HeaderProps {
   isAuthenticated?: boolean;
@@ -40,40 +41,53 @@ export function Header({ isAuthenticated = false, userEmail }: HeaderProps) {
         </div>
 
         <nav className="flex items-center gap-4">
-          {isAuthenticated && (
-            <>
-              <a href="/generate" className="text-sm font-medium transition-colors hover:text-primary">
-                Generator
-              </a>
-              <div className="flex items-center gap-2 px-2">
-                <span className="text-sm text-muted-foreground">{userEmail}</span>
-              </div>
-              <button
-                className="text-sm font-medium transition-colors hover:text-primary disabled:opacity-50"
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                aria-busy={isLoggingOut}
-              >
-                {isLoggingOut ? 'Wylogowywanie...' : 'Wyloguj'}
-              </button>
-            </>
-          )}
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-4">
+            {isAuthenticated && (
+              <>
+                <a href="/generate" className="text-sm font-medium transition-colors hover:text-primary">
+                  Generator
+                </a>
+                <div className="flex items-center gap-2 px-2">
+                  <span className="text-sm text-muted-foreground truncate max-w-[150px]" title={userEmail}>
+                    {userEmail}
+                  </span>
+                </div>
+                <button
+                  className="text-sm font-medium transition-colors hover:text-primary disabled:opacity-50"
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  aria-busy={isLoggingOut}
+                >
+                  {isLoggingOut ? 'Wylogowywanie...' : 'Wyloguj'}
+                </button>
+              </>
+            )}
 
-          {!isAuthenticated && (
-            <>
-              <a href="/login" className="text-sm font-medium transition-colors hover:text-primary">
-                Zaloguj się
-              </a>
-              <a
-                href="/register"
-                className="text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
-              >
-                Zarejestruj się
-              </a>
-            </>
-          )}
+            {!isAuthenticated && (
+              <>
+                <a href="/login" className="text-sm font-medium transition-colors hover:text-primary">
+                  Zaloguj się
+                </a>
+                <a
+                  href="/register"
+                  className="text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
+                >
+                  Zarejestruj się
+                </a>
+              </>
+            )}
 
-          <ThemeToggle />
+            <ThemeToggle />
+          </div>
+
+          {/* Mobile Navigation */}
+          <MobileMenu 
+            isAuthenticated={isAuthenticated}
+            userEmail={userEmail}
+            onLogout={handleLogout}
+            isLoggingOut={isLoggingOut}
+          />
         </nav>
       </div>
     </header>

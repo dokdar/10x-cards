@@ -21,24 +21,24 @@ if (errorParam === 'link_expired') {
 ---
 
 <AuthLayout title="Zaloguj się - 10x Cards" description="Zaloguj się do aplikacji 10x Cards">
-  <main class="flex-1 flex items-center justify-center bg-background px-4 py-8">
+  <main class="flex-1 flex items-center justify-center bg-background px-3 py-4 sm:px-4 sm:py-8">
     <div class="w-full max-w-md">
-      <div class="space-y-8">
+      <div class="space-y-6 sm:space-y-8">
         {/* Header */}
         <div class="space-y-2 text-center">
-          <h1 class="text-3xl font-bold tracking-tight">Zaloguj się</h1>
-          <p class="text-muted-foreground">Wróć do swojej aplikacji do nauki</p>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Zaloguj się</h1>
+          <p class="text-sm sm:text-base text-muted-foreground">Wróć do swojej aplikacji do nauki</p>
         </div>
 
         {/* Error Alert */}
         {errorMessage && (
           <Alert variant="destructive">
-            <AlertDescription>{errorMessage}</AlertDescription>
+            <AlertDescription class="text-sm">{errorMessage}</AlertDescription>
           </Alert>
         )}
 
         {/* Form Card */}
-        <div class="bg-card rounded-lg border p-8 shadow-sm">
+        <div class="bg-card rounded-lg border p-4 sm:p-6 lg:p-8 shadow-sm">
           <LoginForm client:idle />
         </div>
       </div>
