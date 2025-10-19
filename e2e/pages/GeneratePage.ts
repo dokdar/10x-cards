@@ -12,23 +12,22 @@ export class GeneratePage {
     this.sourceTextarea = page.locator('#source-text-input');
     this.manualRadio = page.locator('#manual');
     this.aiRadio = page.locator('#ai');
-    this.submitButton = page.getByRole('button', { name: /Generuj przez AI|Utwórz Manualne Fiszki/ });
+    this.submitButton = page.getByRole('button', { name: /Generuj przez AI|Utwórz Manualne Fiszki|Generowanie przez AI\.\.\.|Przygotowywanie\.\.\./ });
   }
 
   async goto() {
     await this.page.goto('/generate', { waitUntil: 'domcontentloaded' });
-    await this.page.evaluate(() => new Promise<void>((resolve) => (
-      (window as any).requestIdleCallback
-        ? (window as any).requestIdleCallback(() => resolve())
-        : setTimeout(() => resolve(), 0)
-    )));
+    // Wait for network idle and form elements to be ready
+    await this.page.waitForLoadState('networkidle');
+    await this.sourceTextarea.waitFor({ state: 'visible' });
+    await this.manualRadio.waitFor({ state: 'visible' });
+    await this.aiRadio.waitFor({ state: 'visible' });
   }
 
   async pasteSourceText(text: string) {
     await this.sourceTextarea.waitFor({ state: 'visible' });
     await this.sourceTextarea.click();
-    await this.sourceTextarea.fill('');
-    await this.sourceTextarea.type(text, { delay: 1 });
+    await this.sourceTextarea.fill(text);
     await expect(this.sourceTextarea).toHaveValue(text);
   }
 

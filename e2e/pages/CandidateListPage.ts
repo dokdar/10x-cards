@@ -33,7 +33,15 @@ export class CandidateListPage {
   }
 
   async waitForLoad() {
+    // Upewnij się, że DOM jest załadowany
+    await this.page.waitForLoadState('domcontentloaded');
+    // Poczekaj na network idle dla stabilności
     await this.page.waitForLoadState('networkidle');
+    // Poczekaj aż pojawi się jakikolwiek stan listy (empty lub filled) lub stan błędu
+    await this.page.waitForSelector('[data-test-id="empty-state"], [data-test-id="candidates-list"], [role="alert"], [data-testid="return-home-button"]', { 
+      state: 'visible',
+      timeout: 10000 
+    });
   }
 
   async isEmptyStateVisible() {

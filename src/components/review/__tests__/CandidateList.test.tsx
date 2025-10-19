@@ -255,6 +255,7 @@ describe('CandidateList', () => {
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="space-y-4"
+          data-test-id="candidates-list"
         >
           <div
             data-testid="candidate-card-1"
@@ -349,6 +350,7 @@ describe('CandidateList', () => {
           <button
             class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
             data-slot="button"
+            data-test-id="add-manual-flashcard-button"
           >
             Dodaj Kolejną Fiszkę
           </button>
@@ -361,17 +363,20 @@ describe('CandidateList', () => {
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="flex flex-col items-center justify-center py-12 space-y-4"
+          data-test-id="empty-state"
         >
           <div
             class="text-center space-y-2"
           >
             <p
               class="text-lg font-medium"
+              data-test-id="empty-state-title"
             >
               Brak fiszek do recenzji
             </p>
             <p
               class="text-sm text-muted-foreground"
+              data-test-id="empty-state-description"
             >
               Wybrano tryb manualny - utwórz fiszki samodzielnie
             </p>
@@ -379,6 +384,7 @@ describe('CandidateList', () => {
           <button
             class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4"
             data-slot="button"
+            data-test-id="add-first-flashcard-button"
           >
             Dodaj Pierwszą Fiszkę
           </button>

@@ -1,8 +1,12 @@
 import { useState } from 'react';
+import { useForm, type FieldErrors } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { registerSchema, type RegisterInput } from '@/lib/validation/auth.schema';
+import { register as registerService } from '@/lib/services/auth';
 
 /**
  * RegisterForm Component
@@ -12,124 +16,64 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
  * Shows email verification message or redirects on success
  */
 export default function RegisterForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { register, handleSubmit, setError, reset, formState: { errors, isSubmitting } } = useForm<RegisterInput>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { email: '', password: '', confirmPassword: '' },
+    mode: 'onSubmit',
+  });
 
-  /**
-   * Validate email format using regex
-   * Provides quick client-side feedback without API call
-   */
-  const isValidEmail = (emailValue: string): boolean => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+  const onValid = async (values: RegisterInput) => {
+    const result = await registerService(values);
+
+    if (!result.ok) {
+      setError('root', { message: result.error ?? 'Błąd rejestracji. Spróbuj ponownie później.' });
+      return;
+    }
+
+    // Requires email verification
+    if (result.requiresVerification) {
+      setSuccessMessage(result.message ?? 'Sprawdź e-mail aby potwierdzić konto');
+      reset();
+      return;
+    }
+
+    // Redirect on success
+    if (result.redirectUrl) {
+      window.location.href = result.redirectUrl;
+      return;
+    }
+
+    window.location.href = '/generate';
   };
 
-  /**
-   * Validate password strength
-   * Minimum 8 characters required
-   */
-  const isValidPassword = (passwordValue: string): boolean => {
-    return passwordValue.length >= 8;
+  const onInvalid = (invalid: FieldErrors<RegisterInput>) => {
+    // Preferuj komunikaty pól; w przeciwnym razie pokaż ogólny
+    if (invalid.email?.message) {
+      setError('root', { message: String(invalid.email.message) });
+      return;
+    }
+    if (invalid.password?.message) {
+      setError('root', { message: String(invalid.password.message) });
+      return;
+    }
+    if (invalid.confirmPassword?.message) {
+      setError('root', { message: String(invalid.confirmPassword.message) });
+      return;
+    }
+    setError('root', { message: 'Wszystkie pola są wymagane' });
   };
 
-  /**
-   * Handle form submission
-   * 1. Validate input client-side
-   * 2. Send credentials to API
-   * 3. Handle errors or show verification message
-   */
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-    setSuccessMessage('');
-
-    // Guard: Check if fields are empty
-    if (!email || !password || !confirmPassword) {
-      setError('Wszystkie pola są wymagane');
-      return;
-    }
-
-    // Guard: Validate email format
-    if (!isValidEmail(email)) {
-      setError('Podaj prawidłowy adres e-mail');
-      return;
-    }
-
-    // Guard: Validate password strength
-    if (!isValidPassword(password)) {
-      setError('Hasło musi mieć co najmniej 8 znaków');
-      return;
-    }
-
-    // Guard: Check password confirmation
-    if (password !== confirmPassword) {
-      setError('Hasła nie są identyczne');
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Send registration request to API endpoint
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: email.trim(),
-          password,
-          confirmPassword,
-        }),
-      });
-
-      // Guard: Check if response is OK
-      if (!response.ok) {
-        const data = await response.json();
-
-        // Set error message from API or generic message
-        const errorMessage =
-          data.error || 'Błąd rejestracji. Spróbuj ponownie później.';
-        setError(errorMessage);
-        setIsLoading(false);
-        return;
-      }
-
-      // Success: Handle based on response
-      const data = await response.json();
-
-      // Check if email verification is required
-      if (data.requiresVerification) {
-        // Email verification required - show message instead of redirect
-        setSuccessMessage(data.message);
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-      } else if (response.redirected) {
-        // Server redirected - follow it
-        console.log('[REGISTER CLIENT] Following redirect to:', response.url);
-        window.location.href = response.url;
-      } else {
-        // Fallback: redirect manually
-        window.location.href = '/generate';
-      }
-    } catch (err) {
-      // Handle network errors
-      setError('Błąd sieci. Spróbuj ponownie.');
-      setIsLoading(false);
-    }
-  };
+  const onSubmit = handleSubmit(onValid, onInvalid);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-4">
       {/* Error Alert */}
-      {error && (
-        <Alert variant="destructive" className="animate-in">
-          <AlertDescription>{error}</AlertDescription>
+      {(errors.root?.message || errors.email?.message || errors.password?.message || errors.confirmPassword?.message) && (
+        <Alert variant="destructive" className="animate-in" role="alert">
+          <AlertDescription>
+            {errors.root?.message || errors.email?.message || errors.password?.message || errors.confirmPassword?.message}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -147,10 +91,10 @@ export default function RegisterForm() {
           id="email"
           type="email"
           placeholder="your@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isLoading}
+          {...register('email')}
+          disabled={isSubmitting || !!successMessage}
           required
+          aria-invalid={!!errors.email}
           autoComplete="email"
         />
       </div>
@@ -162,10 +106,10 @@ export default function RegisterForm() {
           id="password"
           type="password"
           placeholder="Minimum 8 znaków"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={isLoading}
+          {...register('password')}
+          disabled={isSubmitting || !!successMessage}
           required
+          aria-invalid={!!errors.password}
           autoComplete="new-password"
         />
         <p className="text-xs text-muted-foreground">Hasło musi mieć co najmniej 8 znaków</p>
@@ -178,10 +122,10 @@ export default function RegisterForm() {
           id="confirmPassword"
           type="password"
           placeholder="Potwierdź hasło"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          disabled={isLoading}
+          {...register('confirmPassword')}
+          disabled={isSubmitting || !!successMessage}
           required
+          aria-invalid={!!errors.confirmPassword}
           autoComplete="new-password"
         />
       </div>
@@ -190,11 +134,11 @@ export default function RegisterForm() {
       <div className="flex flex-col gap-3">
         <Button
           type="submit"
-          disabled={isLoading || !!successMessage}
+          disabled={isSubmitting || !!successMessage}
           className="w-full"
-          aria-busy={isLoading}
+          aria-busy={isSubmitting}
         >
-          {isLoading ? 'Rejestrowanie...' : 'Zarejestruj się'}
+          {isSubmitting ? 'Rejestrowanie...' : 'Zarejestruj się'}
         </Button>
       </div>
 
@@ -204,7 +148,7 @@ export default function RegisterForm() {
         <a
           href="/login"
           className="text-primary hover:underline font-medium"
-          tabIndex={isLoading ? -1 : 0}
+          tabIndex={isSubmitting || !!successMessage ? -1 : 0}
         >
           Zaloguj się
         </a>
