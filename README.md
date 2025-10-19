@@ -1,117 +1,273 @@
 # 10xCards
 
-10xCards is a web application designed to streamline the creation of educational flashcards using Artificial Intelligence. It allows users to generate high-quality flashcards from provided text and integrates them with a spaced repetition algorithm to make learning more efficient and accessible.
+**10xCards** is a web application designed to streamline the process of creating educational flashcards using artificial intelligence. The application enables users to generate high-quality flashcards from provided text and then integrates them with a ready-made spaced repetition algorithm. The MVP goal is to minimize the time and effort needed to create learning materials.
 
 ## Table of Contents
 
 - [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Application Architecture](#application-architecture)
 - [Getting Started Locally](#getting-started-locally)
 - [Available Scripts](#available-scripts)
+- [Testing](#testing)
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
 - [License](#license)
 
 ## Tech Stack
 
-| Category      | Technology                                                              |
-|---------------|-------------------------------------------------------------------------|
-| **Frontend**  | Astro 5, React 19, TypeScript 5, Tailwind CSS 4, Shadcn/UI              |
-| **Backend**   | Supabase (PostgreSQL, BaaS, Authentication)                             |
-| **AI**        | OpenRouter.ai (Access to OpenAI, Anthropic, Google models)              |
-| **Testing**   | Vitest, React Testing Library, Playwright, MSW, Axe-core                |
-| **CI/CD & Hosting** | GitHub Actions, DigitalOcean (Docker)                               |
+### Frontend
+- **Astro** - Framework for building static sites with islands of interactivity
+- **React** - Library for building user interfaces
+- **TypeScript** - Typed JavaScript for better code quality
+- **Tailwind CSS** - Utility-first CSS framework
+- **Shadcn/ui** - UI components built on Radix UI and Tailwind CSS
+
+### Backend
+- **Supabase** - Backend-as-a-Service with PostgreSQL
+- **Supabase SDK** - JavaScript client for communicating with Supabase
+- **Supabase Auth** - Authentication system
+
+### AI
+- **Openrouter.ai** - API for various AI models (GPT-4, Claude, Llama, etc.)
+
+### Testing
+- **Vitest** - Framework for unit and integration tests
+- **React Testing Library** - Tools for testing React components
+- **Playwright** - End-to-end testing framework
+- **MSW (Mock Service Worker)** - API mocking in tests
+- **Axe-core** - Accessibility testing
+- **@vitest/coverage-v8** - Code coverage
+
+### CI/CD and Hosting
+- **Github Actions** - CI/CD automation
+- **DigitalOcean** - Application hosting
+
+## Features
+
+### ✅ Implemented
+
+#### User Authentication
+- Registration and login with email and password
+- Password reset via email
+- Form validation with error messages
+- Secure user sessions
+
+#### AI Flashcard Generator
+- Generate flashcards from text (1000-10000 characters)
+- Integration with OpenRouter.ai (GPT-4, Claude, Llama)
+- Text length validation and error messages
+- Loading indicators during generation
+
+#### Flashcard Review Process
+- Review generated flashcards before saving
+- Edit questions and answers
+- Accept or reject individual flashcards
+- Save accepted flashcards to database
+
+### 🚧 In Progress
+
+#### Flashcard Dashboard
+- Display all user flashcards
+- Pagination and text search
+- Basic CRUD operations on flashcards
+
+#### Spaced Repetition Algorithm
+- Integration with spaced repetition library
+- Learning progress tracking
+- Review schedule
+
+## Application Architecture
+
+### Directory Structure
+
+```
+src/
+├── components/          # React components
+│   ├── auth/           # Authentication components
+│   ├── generator/      # AI generator components
+│   ├── review/         # Review process components
+│   ├── ui/             # UI components (shadcn/ui)
+│   └── views/          # Main application views
+├── pages/              # Astro pages
+│   ├── api/            # API endpoints
+│   └── *.astro         # Application pages
+├── layouts/            # Astro layouts
+├── lib/                # Libraries and utilities
+│   ├── hooks/          # Custom React hooks
+│   ├── services/       # Services (API, auth)
+│   ├── utils/          # Helper functions
+│   └── validation/     # Validation schemas
+├── db/                 # Database configuration
+├── middleware/         # Astro middleware
+└── styles/             # Global styles
+```
+
+### Main Application Views
+
+#### 1. **Authentication** (`/login`, `/register`)
+- **Goal:** User authentication
+- **Key Information:** Login/registration forms, validation
+- **Components:** `LoginForm`, `RegisterForm`, `ResetPasswordForm`
+
+#### 2. **AI Generator** (`/generate`)
+- **Goal:** Generate flashcards using AI
+- **Key Information:** Text input, AI model selection, generation progress
+- **Components:** `AIGeneratorView`, `TextInput`, `ModelSelector`
+
+#### 3. **Review** (`/review/[id]`)
+- **Goal:** Review and edit generated flashcards
+- **Key Information:** List of flashcard candidates, editor, acceptance actions
+- **Components:** `CandidateList`, `CandidateCard`, `ReviewActions`
+
+#### 4. **Dashboard** (`/dashboard`) - *in progress*
+- **Goal:** Manage saved flashcards
+- **Key Information:** Flashcard list, search, pagination
+- **Components:** `FlashcardList`, `SearchBar`, `Pagination`
 
 ## Getting Started Locally
 
-To get a local copy up and running, follow these simple steps.
+To run a local copy of the application, follow the steps below.
 
 ### Prerequisites
 
-- Node.js `22.14.0`
-- npm (Node Package Manager)
+- **Node.js** (version 18 or newer)
+- **npm** or **yarn**
+- **Supabase Account** - for database and authentication
+- **OpenRouter API Key** - for AI flashcard generation
 
-### Installation
+### Installation Steps
 
-1.  **Clone the repository:**
-    ```sh
-    git clone https://github.com/your-username/10x-cards.git
-    cd 10x-cards
-    ```
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd 10x-cards
+   ```
 
-2.  **Set the Node.js version:**
-    If you are using `nvm` (Node Version Manager), run the following command to use the correct Node.js version:
-    ```sh
-    nvm use
-    ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-3.  **Install NPM packages:**
-    ```sh
-    npm install
-    ```
+3. **Configure environment variables:**
+   Copy `.env.example` to `.env` and fill in the required values:
+   ```bash
+   cp .env.example .env
+   ```
 
-4.  **Set up environment variables:**
-    Create a `.env` file in the root of the project and add the necessary environment variables for Supabase and OpenRouter.
-    ```env
-    # .env
-    # Supabase Configuration
-    SUPABASE_URL=your_supabase_url
-    SUPABASE_KEY=your_supabase_anon_key
-    
-    # OpenRouter API Configuration
-    OPENROUTER_API_KEY=your_openrouter_api_key
-    OPENROUTER_API_URL=https://openrouter.ai/api/v1/chat/completions
-    
-    # AI Generation Settings (optional)
-    AI_GENERATION_TIMEOUT=60000
-    AI_MAX_RETRIES=3
-    ```
+4. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
-5.  **Run the development server:**
-    ```sh
-    npm run dev
-    ```
-    The application will be available at `http://localhost:3000`.
+5. **Open the application:**
+   Navigate to [http://localhost:4321](http://localhost:4321) in your browser.
 
 ## Available Scripts
 
 In the project directory, you can run the following commands:
 
-| Script       | Description                                  |
-|--------------|----------------------------------------------|
-| `npm run dev`    | Runs the app in development mode.            |
-| `npm run build`  | Builds the app for production.               |
-| `npm run preview`| Previews the production build locally.       |
-| `npm run lint`   | Lints the codebase using ESLint.             |
-| `npm run lint:fix`| Fixes linting errors automatically.          |
-| `npm run format` | Formats the code using Prettier.             |
-| `npm run test`   | Runs unit and integration tests with Vitest. |
-| `npm run test:e2e`| Runs end-to-end tests with Playwright.      |
-| `npm run test:coverage`| Generates test coverage report.        |
+| Script       | Description                                         |
+|--------------|-----------------------------------------------------|
+| `npm run dev`    | Runs the application in development mode.  |
+| `npm run build`  | Builds the application for production.               |
+| `npm run preview`| Preview production build locally.       |
+| `npm run lint`   | Lints code using ESLint.                |
+| `npm run lint:fix`| Automatically fixes linting errors.     |
+| `npm run format` | Formats code using Prettier.            |
+| `npm run test`   | Runs unit and integration tests.  |
+| `npm run test:e2e`| Runs end-to-end tests with Playwright.    |
+| `npm run test:coverage`| Generates test coverage report.       |
+
+## Testing
+
+The project implements a comprehensive testing strategy covering different levels of testing:
+
+### Unit and Integration Tests
+
+**Framework:** Vitest + React Testing Library  
+**Location:** `src/components/**/__tests__/`  
+**Coverage:** React components, hooks, services, utility functions
+
+**Test examples:**
+```bash
+# Run all unit tests
+npm run test
+
+# Run tests with code coverage
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+### End-to-End (E2E) Tests
+
+**Framework:** Playwright  
+**Location:** `e2e/`  
+**Coverage:** Main user flows, API integration
+
+**Main test scenarios:**
+- User registration and login
+- AI flashcard generation
+- Review and saving process
+- Navigation between views
+
+**Execution examples:**
+```bash
+# Run all E2E tests
+npm run test:e2e
+
+# Run E2E tests in headed mode (with UI)
+npm run test:e2e:headed
+
+# Run specific test file
+npx playwright test generate.spec.ts
+```
+
+### Test Configuration
+
+- **API Mocking:** MSW (Mock Service Worker)
+- **Accessibility Testing:** @axe-core/playwright
+- **Code Coverage:** @vitest/coverage-v8
+- **Test Setup:** `src/test/setup.ts`
 
 ## Project Scope
 
-### In Scope (MVP)
+### In Scope (MVP) ✅
 
--   **User Authentication:** Secure user registration and login via email and password.
--   **AI Flashcard Generation:** Generate flashcards from user-provided text (1,000-10,000 characters).
--   **Manual CRUD:** Manually create, read, update, and delete flashcards.
--   **Flashcard Management:** View all flashcards with simple pagination and text-based search.
--   **Spaced Repetition:** Integration with an open-source library for spaced repetition.
--   **Platform:** The application will be available as a web version only.
+-   **User Authentication:** Secure user registration and login via email and password
+-   **AI Flashcard Generation:** Generate flashcards from user-provided text (1000-10000 characters)
+-   **Review Process:** Review, edit and accept generated flashcards before saving
+-   **Validation and UX:** Form validation, loading indicators, error messages
+-   **Platform:** Web application only
 
 ### Out of Scope (Post-MVP)
 
--   Advanced spaced repetition algorithms (e.g., custom SuperMemo-style implementation).
--   Importing files (PDF, DOCX, etc.).
--   Social features like sharing flashcard decks.
--   Integrations with external educational platforms.
--   Mobile applications (iOS, Android).
--   Monetization and subscription systems.
--   Third-party authentication providers (Google, Facebook, etc.).
+-   **Advanced spaced repetition algorithms** (e.g., custom SuperMemo-style implementation)
+-   **File imports** (PDF, DOCX, etc.)
+-   **Social features** (sharing flashcard decks)
+-   **Educational platform integrations**
+-   **Mobile applications** (iOS, Android)
+-   **Monetization and subscription systems**
+-   **Third-party authentication providers** (Google, Facebook, etc.)
+-   **Full flashcard CRUD** - currently in implementation phase
+-   **Dashboard with pagination and search** - currently in implementation phase
 
 ## Project Status
 
-The project is currently in the **MVP development phase**.
+The project is currently in the **MVP development phase**. 
+
+### Implementation Progress
+
+- ✅ **Authentication** - fully implemented
+- ✅ **AI Generator** - fully implemented  
+- ✅ **Review View** - fully implemented
+- ✅ **E2E Tests** - comprehensive coverage of main flows
+- ✅ **Unit Tests** - coverage of components and services
+- 🚧 **Flashcard Dashboard** - in progress
+- 🚧 **Spaced Repetition Algorithm** - planned
+- 🚧 **API endpoints** - partially implemented
 
 ## License
 
