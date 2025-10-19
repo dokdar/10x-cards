@@ -21,6 +21,7 @@ export function CandidateCard({ candidate, onUpdate, onToggleAccept, onReject }:
       className={`transition-all ${isRejected ? "opacity-50 bg-muted/50" : ""} ${
         isAccepted && !isEmpty ? "border-primary/50 bg-primary/5" : ""
       }`}
+      data-test-id="candidate-card"
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <div className="flex items-center gap-2">
@@ -29,6 +30,7 @@ export function CandidateCard({ candidate, onUpdate, onToggleAccept, onReject }:
             onCheckedChange={() => onToggleAccept(candidate.id)}
             disabled={isRejected || isEmpty}
             aria-label="Accept flashcard"
+            data-test-id="accept-candidate-switch"
           />
           <span className="text-sm font-medium">{isAccepted ? "Zaakceptowana" : "Oczekująca"}</span>
         </div>
@@ -48,6 +50,7 @@ export function CandidateCard({ candidate, onUpdate, onToggleAccept, onReject }:
             placeholder="Treść na przodzie fiszki"
             className="min-h-20"
             aria-invalid={!candidate.front.trim()}
+            data-test-id="flashcard-front-textarea"
           />
         </div>
 
@@ -63,6 +66,7 @@ export function CandidateCard({ candidate, onUpdate, onToggleAccept, onReject }:
             placeholder="Treść na tyle fiszki"
             className="min-h-20"
             aria-invalid={!candidate.back.trim()}
+            data-test-id="flashcard-back-textarea"
           />
         </div>
 
@@ -70,7 +74,13 @@ export function CandidateCard({ candidate, onUpdate, onToggleAccept, onReject }:
       </CardContent>
 
       <CardFooter className="flex justify-end">
-        <Button variant="destructive" size="sm" onClick={() => onReject(candidate.id)} disabled={isRejected}>
+        <Button 
+          variant="destructive" 
+          size="sm" 
+          onClick={() => onReject(candidate.id)} 
+          disabled={isRejected}
+          data-test-id="reject-candidate-button"
+        >
           {isRejected ? "Odrzucona" : "Odrzuć"}
         </Button>
       </CardFooter>

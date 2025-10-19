@@ -105,6 +105,7 @@ export default function LoginForm() {
         <Label htmlFor="email">Adres e-mail</Label>
         <Input
           id="email"
+          name="email"
           type="email"
           placeholder="your@email.com"
           value={email}
@@ -120,6 +121,7 @@ export default function LoginForm() {
         <Label htmlFor="password">Hasło</Label>
         <Input
           id="password"
+          name="password"
           type="password"
           placeholder="Twoje hasło"
           value={password}
