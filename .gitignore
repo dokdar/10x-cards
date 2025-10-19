@@ -36,3 +36,7 @@ temp/
 
 # test coverage reports
 coverage/
+
+# playwright test artifacts
+playwright-report/
+test-results/
