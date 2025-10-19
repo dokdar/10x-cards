@@ -83,7 +83,7 @@ export class CandidateListPage {
   }
 
   async waitForSaveSuccess() {
-    await this.page.waitForURL('/generate');
+    await this.page.waitForURL('/');
   }
 
   async isLoadingVisible() {
