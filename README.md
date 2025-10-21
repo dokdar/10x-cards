@@ -68,7 +68,7 @@
 
 #### Responsive Design & Mobile Navigation
 - Fully responsive design for desktop, tablet, and mobile devices
-- Mobile-first bottom navigation with Home, Generate, Review, and Profile tabs
+- Mobile-first bottom navigation with auth-aware items (guest: Home, Log In; auth: Home, Generate, Review, Profile)
 - Adaptive header that hides on mobile when bottom navigation is active
 - Touch-friendly interface optimized for mobile interactions
 
@@ -141,7 +141,8 @@ src/
 
 #### Mobile Navigation
 - **Bottom Navigation Bar:** Responsive navigation component that appears on mobile devices
-- **Navigation Items:** Home (`/`), Generate (`/generate`), Review (`/review`), Profile (`/profile`)
+- **Navigation Items (authenticated):** Home (`/`), Generate (`/generate`), Review (`/review`), Profile (`/profile`)
+- **Navigation Items (guest):** Home (`/`), Log In (`/login`)
 - **Adaptive Behavior:** Automatically shows/hides based on screen size and user authentication status
 
 ## Getting Started Locally

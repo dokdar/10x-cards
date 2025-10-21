@@ -1,34 +1,16 @@
 import { useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
-import { MobileMenu } from './MobileMenu';
 
-interface HeaderProps {
-  isAuthenticated?: boolean;
-  userEmail?: string;
-}
-
-export function Header({ isAuthenticated = false, userEmail }: HeaderProps) {
+export function Header({ isAuthenticated, userEmail }: { isAuthenticated: boolean; userEmail?: string }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  /**
-   * Handle logout action
-   * Server handles redirect, so we use form submission instead of fetch
-   */
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    console.log('[LOGOUT CLIENT] Starting logout via form submission...');
-
-    // Create a hidden form and submit it
-    // This allows the server to set cookies AND redirect properly
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/api/auth/logout';
-    
     document.body.appendChild(form);
-    console.log('[LOGOUT CLIENT] Submitting form to /api/auth/logout');
     form.submit();
-    
-    // Note: No need to remove form or reset state - page will redirect
   };
 
   return (
@@ -84,16 +66,6 @@ export function Header({ isAuthenticated = false, userEmail }: HeaderProps) {
           {/* Mobile Theme Toggle - Only theme toggle visible on mobile */}
           <div className="md:hidden">
             <ThemeToggle />
-          </div>
-
-          {/* Mobile Navigation - Hidden on mobile, replaced by bottom navigation */}
-          <div className="hidden">
-            <MobileMenu 
-              isAuthenticated={isAuthenticated}
-              userEmail={userEmail}
-              onLogout={handleLogout}
-              isLoggingOut={isLoggingOut}
-            />
           </div>
         </nav>
       </div>

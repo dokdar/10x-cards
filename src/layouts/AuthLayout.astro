@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { Header } from "@/components/Header";
+import { BottomNavigation } from "@/components/BottomNavigation";
 
 interface Props {
   title?: string;
@@ -13,6 +14,7 @@ const { title = "10x Cards", description = "Aplikacja do nauki z fiszkami" } = A
 const user = Astro.locals.user as any;
 const isAuthenticated = !!user;
 const userEmail = user?.email;
+const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -43,7 +45,10 @@ const userEmail = user?.email;
   </head>
   <body class="min-h-screen flex flex-col">
     <Header client:idle isAuthenticated={isAuthenticated} userEmail={userEmail} />
-    <slot />
+    <main class="view-container">
+      <slot />
+    </main>
+    <BottomNavigation client:idle currentPath={currentPath} user={user} />
   </body>
 </html>
 

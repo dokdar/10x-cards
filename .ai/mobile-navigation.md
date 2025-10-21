@@ -40,16 +40,19 @@ This specification outlines the changes required to improve the mobile experienc
 
 ### Bottom Navigation
 
-- Fixed position at the bottom of the viewport
-- Four equal-width navigation items:
+- Fixed position at the bottom of the viewport.
+- The navigation items will adapt based on the user's authentication status to provide a contextual experience.
+- **For authenticated users**, it will display four items for full functionality:
   1. **Home** (🏠) - Dashboard/Welcome
   2. **Generator** (⚡) - AI flashcard creation
   3. **Review** (📚) - Active review sessions
   4. **Profile** (👤) - User settings and logout
-- Active state indication for current view
-- Consistent with modern mobile app patterns
-- Dark theme by default (matching current design)
-- Minimum touch target: 44x44px
+- **For guest users**, the navigation focuses on authentication:
+  1. **Home** (🏠) - Dashboard/Welcome
+  2. **Log In** (→) - A clear call-to-action to sign in or register.
+- The `Generator` and `Review` items are hidden for guests.
+- Active state indication for the current view.
+- Minimum touch target: 44x44px.
 
 ### View Transitions
 
@@ -196,41 +199,46 @@ interface NavItem {
 
 ```tsx
 // src/components/BottomNavigation.tsx
-import { Home, Zap, BookOpen, User } from 'lucide-react';
+import { Home, Zap, BookOpen, User, LogIn } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface BottomNavigationProps {
   currentPath: string;
-  user?: any;
+  user?: any; // Replace with your actual user type
 }
+
+const navItems = [
+  { id: 'home', label: 'Home', icon: Home, path: '/', auth: false },
+  { id: 'generator', label: 'Generator', icon: Zap, path: '/generate', auth: true },
+  { id: 'review', label: 'Review', icon: BookOpen, path: '/review', auth: true },
+  { id: 'profile', label: 'Profile', icon: User, path: '/profile', auth: true },
+  { id: 'login', label: 'Log In', icon: LogIn, path: '/login', auth: false },
+];
 
 export default function BottomNavigation({ currentPath, user }: BottomNavigationProps) {
   const [activeView, setActiveView] = useState('home');
-
-  const navItems = [
-    { id: 'home', label: 'Home', icon: Home, path: '/' },
-    { id: 'generator', label: 'Generator', icon: Zap, path: '/generate', requiresAuth: true },
-    { id: 'review', label: 'Review', icon: BookOpen, path: '/review', requiresAuth: true },
-    { id: 'profile', label: 'Profile', icon: User, path: '/profile', requiresAuth: true },
-  ];
 
   useEffect(() => {
     const current = navItems.find(item => currentPath.startsWith(item.path));
     if (current) setActiveView(current.id);
   }, [currentPath]);
 
+  const visibleItems = user
+    ? navItems.filter(item => item.auth || item.id === 'home')
+    : navItems.filter(item => !item.auth);
+
   return (
     <nav className="bottom-nav md:hidden" role="navigation" aria-label="Main navigation">
-      {navItems.map((item) => {
+      {visibleItems.map((item) => {
         const Icon = item.icon;
         const isActive = activeView === item.id;
-        const isDisabled = item.requiresAuth && !user;
+        const isTeaser = item.id === 'generator' && !user;
 
         return (
           <a
             key={item.id}
-            href={isDisabled ? '/login' : item.path}
-            className={`nav-item ${isActive ? 'active' : ''} ${isDisabled ? 'opacity-50' : ''}`}
+            href={isTeaser ? '/login' : item.path}
+            className={`nav-item ${isActive ? 'active' : ''} ${isTeaser ? 'opacity-50' : ''}`}
             aria-label={item.label}
             aria-current={isActive ? 'page' : undefined}
           >

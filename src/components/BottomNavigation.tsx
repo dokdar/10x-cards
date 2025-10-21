@@ -1,4 +1,4 @@
-import { Home, Zap, BookOpen, User } from 'lucide-react';
+import { Home, Zap, BookOpen, User, LogIn } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface BottomNavigationProps {
@@ -22,6 +22,7 @@ export function BottomNavigation({ currentPath, user }: BottomNavigationProps) {
     { id: 'generator', label: 'Generator', icon: Zap, path: '/generate', requiresAuth: true },
     { id: 'review', label: 'Review', icon: BookOpen, path: '/review', requiresAuth: true },
     { id: 'profile', label: 'Profil', icon: User, path: '/profile', requiresAuth: true },
+    { id: 'login', label: 'Zaloguj', icon: LogIn, path: '/login' },
   ];
 
   useEffect(() => {
@@ -37,13 +38,18 @@ export function BottomNavigation({ currentPath, user }: BottomNavigationProps) {
     }
   }, [currentPath]);
 
+  const isAuthenticated = !!user;
+  const visibleItems = isAuthenticated
+    ? navItems.filter((item) => item.id !== 'login')
+    : navItems.filter((item) => ['home', 'login'].includes(item.id));
+
   return (
     <nav 
-      className="bottom-nav" 
+      className="bottom-nav md:hidden" 
       role="navigation" 
       aria-label="Main navigation"
     >
-      {navItems.map((item) => {
+      {visibleItems.map((item) => {
         const Icon = item.icon;
         const isActive = activeView === item.id;
         const isDisabled = item.requiresAuth && !user;
