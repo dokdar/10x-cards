@@ -83,7 +83,7 @@ const description = "Wybierz sesję recenzji fiszek do kontynuowania";
                 data: data,
               });
             }
-          } catch (e) {
+          } catch {
             // Invalid JSON, skip
             console.warn("Invalid session data for key:", key);
           }

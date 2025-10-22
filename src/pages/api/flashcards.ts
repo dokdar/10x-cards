@@ -31,7 +31,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const createdFlashcards = await createFlashcards(locals.supabase, locals.user.id, flashcardsData);
 
     // 4. Map entities to DTOs (remove user_id)
-    const flashcardsDTO: FlashcardDTO[] = createdFlashcards.map(({ user_id, ...flashcard }) => flashcard);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const flashcardsDTO: FlashcardDTO[] = createdFlashcards.map(({ user_id: _, ...flashcard }) => flashcard);
 
     // 5. Return success response
     return createJsonResponse(flashcardsDTO, HTTP_STATUS.CREATED);

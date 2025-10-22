@@ -1,6 +1,5 @@
 import type { APIRoute } from "astro";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
-import { updatePasswordSchema } from "@/lib/validation/auth.schema";
 
 /**
  * POST /api/auth/update-password

@@ -6,7 +6,8 @@ import { GenerationDatabaseService } from "@/lib/services/generation-database.se
 import { HashingService } from "@/lib/services/hashing.service";
 import { createApiError, createJsonResponse, createValidationError, HTTP_STATUS } from "@/lib/utils/api-response";
 import { generateFlashcardsSchema } from "@/lib/validation/generations.schema";
-import type { GenerationResponse } from "@/types";
+import type { FlashcardCandidate, GenerationResponse } from "@/types";
+import type { SupabaseClient } from "@/db/supabase.client";
 
 /**
  * POST /api/generations
@@ -53,7 +54,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     sourceTextLength = source_text.length;
 
     // 3. Generate flashcards using AI (only if model is provided)
-    let generationResult: { candidates: any[]; duration: number };
+    let generationResult: { candidates: FlashcardCandidate[]; duration: number };
 
     if (model) {
       // Use AI to generate flashcards
@@ -139,7 +140,7 @@ async function logGenerationError({
   model: string | null;
   sourceTextHash: string | null;
   sourceTextLength: number | null;
-  supabase: any;
+  supabase: SupabaseClient;
 }): Promise<void> {
   try {
     const dbService = new GenerationDatabaseService(supabase);

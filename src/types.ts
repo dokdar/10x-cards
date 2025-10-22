@@ -166,7 +166,7 @@ export interface UpdateGenerationCommand {
 export interface ApiError {
   error: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 /**
