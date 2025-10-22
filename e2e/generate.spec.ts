@@ -4,13 +4,22 @@ import { LoginPage, GeneratePage, CandidateListPage } from "./pages";
 // Tests run in chromium project per playwright.config.ts
 // Use robust selectors, intercept API calls, and stable waits.
 
+test.beforeAll(() => {
+  if (!process.env.E2E_USERNAME) {
+    throw new Error("E2E_USERNAME is not set");
+  }
+  if (!process.env.E2E_PASSWORD) {
+    throw new Error("E2E_PASSWORD is not set");
+  }
+});
+
 test.describe("Generator Fiszek /generate", () => {
   test("Scenariusz 1 — generowanie manualne zapisuje sesję i przekierowuje do /review/e2e-gen-manual-123", async ({
     page,
   }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+    await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
     await loginPage.waitForNavigation();
 
     const generatePage = new GeneratePage(page);
@@ -57,8 +66,10 @@ test.describe("Generator Fiszek /generate", () => {
     // Expect sessionStorage contains generation data
     const stored = await page.evaluate((key) => sessionStorage.getItem(key), "generation_e2e-gen-manual-123");
     expect(stored).not.toBeNull();
-    const parsed = JSON.parse(stored!);
-    expect(parsed).toMatchObject({ generation_id: "e2e-gen-manual-123", candidates: [] });
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      expect(parsed).toMatchObject({ generation_id: "e2e-gen-manual-123", candidates: [] });
+    }
 
     // Expect redirect to review page
     await expect(page).toHaveURL(/\/review\/e2e-gen-manual-123$/);
@@ -69,7 +80,7 @@ test.describe("Generator Fiszek /generate", () => {
   }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+    await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
     await loginPage.waitForNavigation();
 
     const generatePage = new GeneratePage(page);
@@ -120,8 +131,10 @@ test.describe("Generator Fiszek /generate", () => {
     // Expect sessionStorage contains generation data
     const stored = await page.evaluate((key) => sessionStorage.getItem(key), "generation_e2e-gen-ai-123");
     expect(stored).not.toBeNull();
-    const parsed = JSON.parse(stored!);
-    expect(parsed).toMatchObject({ generation_id: "e2e-gen-ai-123", generated_count: 3 });
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      expect(parsed).toMatchObject({ generation_id: "e2e-gen-ai-123", generated_count: 3 });
+    }
 
     // Expect redirect to review page
     await expect(page).toHaveURL(/\/review\/e2e-gen-ai-123$/);
@@ -138,7 +151,7 @@ test.describe("Generator Fiszek /generate", () => {
     test("should disable submit button when text is too short", async ({ page }) => {
       const loginPage = new LoginPage(page);
       await loginPage.goto();
-      await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+      await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
       await loginPage.waitForNavigation();
 
       const generatePage = new GeneratePage(page);
@@ -160,7 +173,7 @@ test.describe("Generator Fiszek /generate", () => {
     test("should disable submit button when text is too long", async ({ page }) => {
       const loginPage = new LoginPage(page);
       await loginPage.goto();
-      await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+      await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
       await loginPage.waitForNavigation();
 
       const generatePage = new GeneratePage(page);
@@ -181,7 +194,7 @@ test.describe("Generator Fiszek /generate", () => {
     test("should enable submit button when text length is valid", async ({ page }) => {
       const loginPage = new LoginPage(page);
       await loginPage.goto();
-      await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+      await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
       await loginPage.waitForNavigation();
 
       const generatePage = new GeneratePage(page);
@@ -204,7 +217,7 @@ test.describe("Generator Fiszek /generate", () => {
     test("should handle API validation error (400)", async ({ page }) => {
       const loginPage = new LoginPage(page);
       await loginPage.goto();
-      await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+      await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
       await loginPage.waitForNavigation();
 
       const generatePage = new GeneratePage(page);
@@ -246,7 +259,7 @@ test.describe("Generator Fiszek /generate", () => {
     test("should handle AI service timeout (502)", async ({ page }) => {
       const loginPage = new LoginPage(page);
       await loginPage.goto();
-      await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+      await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
       await loginPage.waitForNavigation();
 
       const generatePage = new GeneratePage(page);
@@ -286,7 +299,7 @@ test.describe("Generator Fiszek /generate", () => {
     test("should handle network error during generation", async ({ page }) => {
       const loginPage = new LoginPage(page);
       await loginPage.goto();
-      await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+      await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
       await loginPage.waitForNavigation();
 
       const generatePage = new GeneratePage(page);
@@ -314,7 +327,7 @@ test.describe("Generator Fiszek /generate", () => {
     test("should handle unauthorized access (401)", async ({ page }) => {
       const loginPage = new LoginPage(page);
       await loginPage.goto();
-      await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+      await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
       await loginPage.waitForNavigation();
 
       const generatePage = new GeneratePage(page);
@@ -355,7 +368,7 @@ test.describe("Generator Fiszek /generate", () => {
     test("should switch between manual and AI modes correctly", async ({ page }) => {
       const loginPage = new LoginPage(page);
       await loginPage.goto();
-      await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+      await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
       await loginPage.waitForNavigation();
 
       const generatePage = new GeneratePage(page);
@@ -385,7 +398,7 @@ test.describe("Generator Fiszek /generate", () => {
     test("should show loading state during generation", async ({ page }) => {
       const loginPage = new LoginPage(page);
       await loginPage.goto();
-      await loginPage.login(process.env.E2E_USERNAME!, process.env.E2E_PASSWORD!);
+      await loginPage.login(process.env.E2E_USERNAME as string, process.env.E2E_PASSWORD as string);
       await loginPage.waitForNavigation();
 
       const generatePage = new GeneratePage(page);
