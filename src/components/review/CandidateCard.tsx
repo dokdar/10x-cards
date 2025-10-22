@@ -74,10 +74,10 @@ export function CandidateCard({ candidate, onUpdate, onToggleAccept, onReject }:
       </CardContent>
 
       <CardFooter className="flex justify-end">
-        <Button 
-          variant="destructive" 
-          size="sm" 
-          onClick={() => onReject(candidate.id)} 
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => onReject(candidate.id)}
           disabled={isRejected}
           data-test-id="reject-candidate-button"
         >

@@ -7,6 +7,7 @@ This specification outlines the changes required to improve the mobile experienc
 ## Current Application Structure
 
 ### Main Views
+
 - **Home/Dashboard** (`/`) - Landing page with welcome content
 - **Generator** (`/generate`) - AI flashcard generation interface
 - **Review** (`/review/[id]`) - Flashcard review and editing interface
@@ -132,7 +133,7 @@ This specification outlines the changes required to improve the mobile experienc
 
 ```typescript
 interface BottomNavProps {
-  activeView: 'home' | 'generator' | 'review' | 'profile';
+  activeView: "home" | "generator" | "review" | "profile";
   onViewChange: (view: string) => void;
   user?: User | null;
 }
@@ -170,24 +171,28 @@ interface NavItem {
 ## Implementation Phases
 
 ### Phase 1: Foundation (Week 1)
+
 - Create `BottomNavigation.tsx` component
 - Update `Layout.astro` to conditionally render bottom nav on mobile
 - Implement basic view switching logic
 - Test with existing authentication flow
 
 ### Phase 2: View Optimization (Week 2)
+
 - Optimize `AIGeneratorView.tsx` for mobile bottom navigation
 - Enhance `ReviewView.tsx` with mobile-specific features
 - Create dedicated `ProfileView.tsx` component
 - Implement scroll position preservation
 
 ### Phase 3: Polish & Testing (Week 3)
+
 - Add smooth transitions and animations
 - Implement swipe gestures for review cards
 - Comprehensive accessibility testing
 - Performance optimization and testing
 
 ### Phase 4: Analytics & Refinement (Week 4)
+
 - Implement usage analytics
 - A/B test with existing hamburger menu
 - Gather user feedback
@@ -199,8 +204,8 @@ interface NavItem {
 
 ```tsx
 // src/components/BottomNavigation.tsx
-import { Home, Zap, BookOpen, User, LogIn } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Home, Zap, BookOpen, User, LogIn } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface BottomNavigationProps {
   currentPath: string;
@@ -208,39 +213,39 @@ interface BottomNavigationProps {
 }
 
 const navItems = [
-  { id: 'home', label: 'Home', icon: Home, path: '/', auth: false },
-  { id: 'generator', label: 'Generator', icon: Zap, path: '/generate', auth: true },
-  { id: 'review', label: 'Review', icon: BookOpen, path: '/review', auth: true },
-  { id: 'profile', label: 'Profile', icon: User, path: '/profile', auth: true },
-  { id: 'login', label: 'Log In', icon: LogIn, path: '/login', auth: false },
+  { id: "home", label: "Home", icon: Home, path: "/", auth: false },
+  { id: "generator", label: "Generator", icon: Zap, path: "/generate", auth: true },
+  { id: "review", label: "Review", icon: BookOpen, path: "/review", auth: true },
+  { id: "profile", label: "Profile", icon: User, path: "/profile", auth: true },
+  { id: "login", label: "Log In", icon: LogIn, path: "/login", auth: false },
 ];
 
 export default function BottomNavigation({ currentPath, user }: BottomNavigationProps) {
-  const [activeView, setActiveView] = useState('home');
+  const [activeView, setActiveView] = useState("home");
 
   useEffect(() => {
-    const current = navItems.find(item => currentPath.startsWith(item.path));
+    const current = navItems.find((item) => currentPath.startsWith(item.path));
     if (current) setActiveView(current.id);
   }, [currentPath]);
 
   const visibleItems = user
-    ? navItems.filter(item => item.auth || item.id === 'home')
-    : navItems.filter(item => !item.auth);
+    ? navItems.filter((item) => item.auth || item.id === "home")
+    : navItems.filter((item) => !item.auth);
 
   return (
     <nav className="bottom-nav md:hidden" role="navigation" aria-label="Main navigation">
       {visibleItems.map((item) => {
         const Icon = item.icon;
         const isActive = activeView === item.id;
-        const isTeaser = item.id === 'generator' && !user;
+        const isTeaser = item.id === "generator" && !user;
 
         return (
           <a
             key={item.id}
-            href={isTeaser ? '/login' : item.path}
-            className={`nav-item ${isActive ? 'active' : ''} ${isTeaser ? 'opacity-50' : ''}`}
+            href={isTeaser ? "/login" : item.path}
+            className={`nav-item ${isActive ? "active" : ""} ${isTeaser ? "opacity-50" : ""}`}
             aria-label={item.label}
-            aria-current={isActive ? 'page' : undefined}
+            aria-current={isActive ? "page" : undefined}
           >
             <Icon size={20} />
             <span className="text-xs mt-1">{item.label}</span>
@@ -257,7 +262,7 @@ export default function BottomNavigation({ currentPath, user }: BottomNavigation
 ```astro
 ---
 // src/layouts/Layout.astro
-import BottomNavigation from '../components/BottomNavigation.tsx';
+import BottomNavigation from "../components/BottomNavigation.tsx";
 
 const { user } = Astro.locals;
 const currentPath = Astro.url.pathname;
@@ -286,18 +291,21 @@ const currentPath = Astro.url.pathname;
 ## Testing Strategy
 
 ### Functional Testing
+
 - Cross-device compatibility (iOS Safari, Android Chrome)
 - Authentication flow with bottom navigation
 - Form state preservation during navigation
 - Offline behavior and error handling
 
 ### Accessibility Testing
+
 - Screen reader compatibility (VoiceOver, TalkBack)
 - Keyboard navigation flow
 - Color contrast validation
 - Touch target size verification
 
 ### Performance Testing
+
 - Navigation transition smoothness
 - Memory usage during view switching
 - Bundle size impact analysis
@@ -306,6 +314,7 @@ const currentPath = Astro.url.pathname;
 ## Rollback Plan
 
 If issues arise during implementation:
+
 1. Feature flag to toggle between hamburger and bottom navigation
 2. Gradual rollout to percentage of mobile users
 3. Quick revert capability via environment variables

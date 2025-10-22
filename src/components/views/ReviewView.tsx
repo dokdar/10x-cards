@@ -37,7 +37,9 @@ export function ReviewView({ generationId }: ReviewViewProps) {
             <AlertDescription>{loadError}</AlertDescription>
           </Alert>
           <div className="mt-4 flex justify-center">
-            <Button onClick={() => (window.location.href = "/")} data-testid="return-home-button">Powrót do strony głównej</Button>
+            <Button onClick={() => (window.location.href = "/")} data-testid="return-home-button">
+              Powrót do strony głównej
+            </Button>
           </div>
         </div>
       </div>

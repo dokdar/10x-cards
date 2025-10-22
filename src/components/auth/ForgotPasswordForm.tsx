@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 /**
  * ForgotPasswordForm Component
@@ -12,9 +12,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
  * Shows success message after request (doesn't redirect)
  */
 export default function ForgotPasswordForm() {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   /**
@@ -33,18 +33,18 @@ export default function ForgotPasswordForm() {
    */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
-    setSuccessMessage('');
+    setError("");
+    setSuccessMessage("");
 
     // Guard: Check if email is empty
     if (!email) {
-      setError('Adres e-mail jest wymagany');
+      setError("Adres e-mail jest wymagany");
       return;
     }
 
     // Guard: Validate email format
     if (!isValidEmail(email)) {
-      setError('Podaj prawidłowy adres e-mail');
+      setError("Podaj prawidłowy adres e-mail");
       return;
     }
 
@@ -52,12 +52,12 @@ export default function ForgotPasswordForm() {
 
     try {
       // Send password reset request to API endpoint
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({
           email: email.trim(),
         }),
@@ -68,7 +68,7 @@ export default function ForgotPasswordForm() {
         const data = await response.json();
 
         // Set error message from API or generic message
-        const errorMessage = data.error || 'Nie udało się wysłać e-maila. Spróbuj ponownie.';
+        const errorMessage = data.error || "Nie udało się wysłać e-maila. Spróbuj ponownie.";
         setError(errorMessage);
         setIsLoading(false);
         return;
@@ -77,11 +77,11 @@ export default function ForgotPasswordForm() {
       // Success: Show message and reset form
       const data = await response.json();
       setSuccessMessage(data.message);
-      setEmail('');
+      setEmail("");
       setIsLoading(false);
     } catch (err) {
       // Handle network errors
-      setError('Błąd sieci. Spróbuj ponownie.');
+      setError("Błąd sieci. Spróbuj ponownie.");
       setIsLoading(false);
     }
   };
@@ -126,13 +126,8 @@ export default function ForgotPasswordForm() {
 
       {/* Action Buttons */}
       <div className="flex flex-col gap-3">
-        <Button
-          type="submit"
-          disabled={isLoading || !!successMessage}
-          className="w-full"
-          aria-busy={isLoading}
-        >
-          {isLoading ? 'Wysyłanie...' : 'Wyślij link do resetowania'}
+        <Button type="submit" disabled={isLoading || !!successMessage} className="w-full" aria-busy={isLoading}>
+          {isLoading ? "Wysyłanie..." : "Wyślij link do resetowania"}
         </Button>
 
         <a href="/login" className="text-sm text-primary hover:underline text-center">
@@ -142,7 +137,7 @@ export default function ForgotPasswordForm() {
 
       {/* Registration Link */}
       <p className="text-sm text-muted-foreground text-center">
-        Nie masz konta?{' '}
+        Nie masz konta?{" "}
         <a href="/register" className="text-primary hover:underline font-medium">
           Zarejestruj się
         </a>

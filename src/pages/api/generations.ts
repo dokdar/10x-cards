@@ -19,12 +19,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
   let model: string | null = null;
 
   try {
-    console.log('[GENERATIONS API] Starting request processing');
-    console.log('[GENERATIONS API] User:', locals.user ? locals.user.email : 'NONE');
+    console.log("[GENERATIONS API] Starting request processing");
+    console.log("[GENERATIONS API] User:", locals.user ? locals.user.email : "NONE");
 
     // Guard: Check if user is authenticated (set by middleware)
     if (!locals.user) {
-      console.log('[GENERATIONS API] User not authenticated, returning 401');
+      console.log("[GENERATIONS API] User not authenticated, returning 401");
       return createJsonResponse(
         createApiError("Unauthorized", "Musisz być zalogowany aby generować fiszki"),
         HTTP_STATUS.UNAUTHORIZED
@@ -33,16 +33,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // 1. Parse and validate request body
     const body = await request.json();
-    console.log('[GENERATIONS API] Request body:', { 
-      source_text_length: body.source_text?.length, 
-      use_ai: body.use_ai 
+    console.log("[GENERATIONS API] Request body:", {
+      source_text_length: body.source_text?.length,
+      use_ai: body.use_ai,
     });
-    
+
     const validatedData = generateFlashcardsSchema.parse(body);
-    console.log('[GENERATIONS API] Validation passed');
+    console.log("[GENERATIONS API] Validation passed");
 
     const { source_text, use_ai } = validatedData;
-    
+
     // If AI generation is requested, use model from environment
     if (use_ai) {
       model = import.meta.env.OPENROUTER_DEFAULT_MODEL || "openai/gpt-4o-mini";
@@ -98,10 +98,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return createJsonResponse(response, HTTP_STATUS.OK);
   } catch (error) {
     // Log error to console for debugging
-    console.error('[GENERATIONS API] Error occurred:', error);
+    console.error("[GENERATIONS API] Error occurred:", error);
     if (error instanceof Error) {
-      console.error('[GENERATIONS API] Error message:', error.message);
-      console.error('[GENERATIONS API] Error stack:', error.stack);
+      console.error("[GENERATIONS API] Error message:", error.message);
+      console.error("[GENERATIONS API] Error stack:", error.stack);
     }
 
     // Log error to database if user is authenticated

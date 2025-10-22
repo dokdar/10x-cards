@@ -17,6 +17,7 @@
 ## Tech Stack
 
 ### Frontend
+
 - **Astro** - Framework for building static sites with islands of interactivity
 - **React** - Library for building user interfaces
 - **TypeScript** - Typed JavaScript for better code quality
@@ -25,14 +26,17 @@
 - **Lucide React** - Icon library for consistent iconography across desktop and mobile
 
 ### Backend
+
 - **Supabase** - Backend-as-a-Service with PostgreSQL
 - **Supabase SDK** - JavaScript client for communicating with Supabase
 - **Supabase Auth** - Authentication system
 
 ### AI
+
 - **Openrouter.ai** - API for various AI models (GPT-4, Claude, Llama, etc.)
 
 ### Testing
+
 - **Vitest** - Framework for unit and integration tests
 - **React Testing Library** - Tools for testing React components
 - **Playwright** - End-to-end testing framework
@@ -41,6 +45,7 @@
 - **@vitest/coverage-v8** - Code coverage
 
 ### CI/CD and Hosting
+
 - **Github Actions** - CI/CD automation
 - **DigitalOcean** - Application hosting
 
@@ -49,24 +54,28 @@
 ### ✅ Implemented
 
 #### User Authentication
+
 - Registration and login with email and password
 - Password reset via email
 - Form validation with error messages
 - Secure user sessions
 
 #### AI Flashcard Generator
+
 - Generate flashcards from text (1000-10000 characters)
 - Integration with OpenRouter.ai (GPT-4, Claude, Llama)
 - Text length validation and error messages
 - Loading indicators during generation
 
 #### Flashcard Review Process
+
 - Review generated flashcards before saving
 - Edit questions and answers
 - Accept or reject individual flashcards
 - Save accepted flashcards to database
 
 #### Responsive Design & Mobile Navigation
+
 - Fully responsive design for desktop, tablet, and mobile devices
 - Mobile-first bottom navigation with auth-aware items (guest: Home, Log In; auth: Home, Generate, Review, Profile)
 - Adaptive header that hides on mobile when bottom navigation is active
@@ -75,11 +84,13 @@
 ### 🚧 In Progress
 
 #### Flashcard Dashboard
+
 - Display all user flashcards
 - Pagination and text search
 - Basic CRUD operations on flashcards
 
 #### Spaced Repetition Algorithm
+
 - Integration with spaced repetition library
 - Learning progress tracking
 - Review schedule
@@ -113,33 +124,39 @@ src/
 ### Main Application Views
 
 #### 1. **Authentication** (`/login`, `/register`)
+
 - **Goal:** User authentication
 - **Key Information:** Login/registration forms, validation
 - **Components:** `LoginForm`, `RegisterForm`, `ResetPasswordForm`
 
 #### 2. **AI Generator** (`/generate`)
+
 - **Goal:** Generate flashcards using AI
 - **Key Information:** Text input, AI model selection, generation progress
 - **Components:** `AIGeneratorView`, `TextInput`, `ModelSelector`
 
 #### 3. **Review** (`/review`, `/review/[id]`)
+
 - **Goal:** Review and edit generated flashcards
-- **Key Information:** 
+- **Key Information:**
   - `/review` - Review session finder that checks sessionStorage for active generations
   - `/review/[id]` - Review specific generation with flashcard candidates, editor, acceptance actions
 - **Components:** `ReviewView`, `CandidateList`, `CandidateCard`, `ReviewActions`
 
-#### 4. **Dashboard** (`/dashboard`) - *in progress*
+#### 4. **Dashboard** (`/dashboard`) - _in progress_
+
 - **Goal:** Manage saved flashcards
 - **Key Information:** Flashcard list, search, pagination
 - **Components:** `FlashcardList`, `SearchBar`, `Pagination`
 
 #### 5. **Profile** (`/profile`)
+
 - **Goal:** User profile management
 - **Key Information:** User account details and settings
 - **Components:** `ProfileView`
 
 #### Mobile Navigation
+
 - **Bottom Navigation Bar:** Responsive navigation component that appears on mobile devices
 - **Navigation Items (authenticated):** Home (`/`), Generate (`/generate`), Review (`/review`), Profile (`/profile`)
 - **Navigation Items (guest):** Home (`/`), Log In (`/login`)
@@ -159,23 +176,27 @@ To run a local copy of the application, follow the steps below.
 ### Installation Steps
 
 1. **Clone the repository:**
+
    ```bash
    git clone <repository-url>
    cd 10x-cards
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Configure environment variables:**
    Copy `.env.example` to `.env` and fill in the required values:
+
    ```bash
    cp .env.example .env
    ```
 
 4. **Start the development server:**
+
    ```bash
    npm run dev
    ```
@@ -187,17 +208,17 @@ To run a local copy of the application, follow the steps below.
 
 In the project directory, you can run the following commands:
 
-| Script       | Description                                         |
-|--------------|-----------------------------------------------------|
-| `npm run dev`    | Runs the application in development mode.  |
-| `npm run build`  | Builds the application for production.               |
-| `npm run preview`| Preview production build locally.       |
-| `npm run lint`   | Lints code using ESLint.                |
-| `npm run lint:fix`| Automatically fixes linting errors.     |
-| `npm run format` | Formats code using Prettier.            |
-| `npm run test`   | Runs unit and integration tests.  |
-| `npm run test:e2e`| Runs end-to-end tests with Playwright.    |
-| `npm run test:coverage`| Generates test coverage report.       |
+| Script                  | Description                               |
+| ----------------------- | ----------------------------------------- |
+| `npm run dev`           | Runs the application in development mode. |
+| `npm run build`         | Builds the application for production.    |
+| `npm run preview`       | Preview production build locally.         |
+| `npm run lint`          | Lints code using ESLint.                  |
+| `npm run lint:fix`      | Automatically fixes linting errors.       |
+| `npm run format`        | Formats code using Prettier.              |
+| `npm run test`          | Runs unit and integration tests.          |
+| `npm run test:e2e`      | Runs end-to-end tests with Playwright.    |
+| `npm run test:coverage` | Generates test coverage report.           |
 
 ## Testing
 
@@ -210,6 +231,7 @@ The project implements a comprehensive testing strategy covering different level
 **Coverage:** React components, hooks, services, utility functions
 
 **Test examples:**
+
 ```bash
 # Run all unit tests
 npm run test
@@ -228,12 +250,14 @@ npm run test:watch
 **Coverage:** Main user flows, API integration
 
 **Main test scenarios:**
+
 - User registration and login
 - AI flashcard generation
 - Review and saving process
 - Navigation between views
 
 **Execution examples:**
+
 ```bash
 # Run all E2E tests
 npm run test:e2e
@@ -256,32 +280,32 @@ npx playwright test generate.spec.ts
 
 ### In Scope (MVP) ✅
 
--   **User Authentication:** Secure user registration and login via email and password
--   **AI Flashcard Generation:** Generate flashcards from user-provided text (1000-10000 characters)
--   **Review Process:** Review, edit and accept generated flashcards before saving
--   **Validation and UX:** Form validation, loading indicators, error messages
--   **Platform:** Web application only
+- **User Authentication:** Secure user registration and login via email and password
+- **AI Flashcard Generation:** Generate flashcards from user-provided text (1000-10000 characters)
+- **Review Process:** Review, edit and accept generated flashcards before saving
+- **Validation and UX:** Form validation, loading indicators, error messages
+- **Platform:** Web application only
 
 ### Out of Scope (Post-MVP)
 
--   **Advanced spaced repetition algorithms** (e.g., custom SuperMemo-style implementation)
--   **File imports** (PDF, DOCX, etc.)
--   **Social features** (sharing flashcard decks)
--   **Educational platform integrations**
--   **Mobile applications** (iOS, Android)
--   **Monetization and subscription systems**
--   **Third-party authentication providers** (Google, Facebook, etc.)
--   **Full flashcard CRUD** - currently in implementation phase
--   **Dashboard with pagination and search** - currently in implementation phase
+- **Advanced spaced repetition algorithms** (e.g., custom SuperMemo-style implementation)
+- **File imports** (PDF, DOCX, etc.)
+- **Social features** (sharing flashcard decks)
+- **Educational platform integrations**
+- **Mobile applications** (iOS, Android)
+- **Monetization and subscription systems**
+- **Third-party authentication providers** (Google, Facebook, etc.)
+- **Full flashcard CRUD** - currently in implementation phase
+- **Dashboard with pagination and search** - currently in implementation phase
 
 ## Project Status
 
-The project is currently in the **MVP development phase**. 
+The project is currently in the **MVP development phase**.
 
 ### Implementation Progress
 
 - ✅ **Authentication** - fully implemented
-- ✅ **AI Generator** - fully implemented  
+- ✅ **AI Generator** - fully implemented
 - ✅ **Review View** - fully implemented
 - ✅ **E2E Tests** - comprehensive coverage of main flows
 - ✅ **Unit Tests** - coverage of components and services

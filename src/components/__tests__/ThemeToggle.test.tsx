@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { ThemeToggle } from '../ThemeToggle';
-import * as useThemeModule from '@/components/hooks/useTheme';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { ThemeToggle } from "../ThemeToggle";
+import * as useThemeModule from "@/components/hooks/useTheme";
 
 // Mock useTheme hook
-vi.mock('@/components/hooks/useTheme', async () => {
-  const actual = await vi.importActual('@/components/hooks/useTheme');
+vi.mock("@/components/hooks/useTheme", async () => {
+  const actual = await vi.importActual("@/components/hooks/useTheme");
   return {
     ...actual,
     useTheme: vi.fn(),
@@ -13,26 +13,30 @@ vi.mock('@/components/hooks/useTheme', async () => {
 });
 
 // Mock Radix UI DropdownMenu
-vi.mock('@/components/ui/dropdown-menu', () => {
+vi.mock("@/components/ui/dropdown-menu", () => {
   return {
     DropdownMenu: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     DropdownMenuTrigger: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-    DropdownMenuContent: ({ children }: { children: React.ReactNode }) => <div data-testid="dropdown-content">{children}</div>,
-    DropdownMenuItem: ({ onClick, children }: { onClick: () => void, children: React.ReactNode }) => (
-      <button onClick={onClick} data-testid="menu-item">{children}</button>
+    DropdownMenuContent: ({ children }: { children: React.ReactNode }) => (
+      <div data-testid="dropdown-content">{children}</div>
+    ),
+    DropdownMenuItem: ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => (
+      <button onClick={onClick} data-testid="menu-item">
+        {children}
+      </button>
     ),
   };
 });
 
-describe('ThemeToggle', () => {
+describe("ThemeToggle", () => {
   let setThemeMock: ReturnType<typeof vi.fn>;
-  
+
   beforeEach(() => {
     setThemeMock = vi.fn();
     // Domyślny mock dla useTheme
-    vi.spyOn(useThemeModule, 'useTheme').mockReturnValue({
-      theme: 'light',
-      resolvedTheme: 'light',
+    vi.spyOn(useThemeModule, "useTheme").mockReturnValue({
+      theme: "light",
+      resolvedTheme: "light",
       setTheme: setThemeMock,
     });
   });
@@ -41,24 +45,24 @@ describe('ThemeToggle', () => {
     vi.clearAllMocks();
   });
 
-  it('renders theme toggle button', () => {
+  it("renders theme toggle button", () => {
     render(<ThemeToggle />);
-    
+
     // Check if button exists
-    const button = screen.getByRole('button', { name: /przełącz motyw/i });
+    const button = screen.getByRole("button", { name: /przełącz motyw/i });
     expect(button).toBeInTheDocument();
-    
+
     // Sprawdzamy, czy ikony są poprawnie renderowane
-    expect(screen.getByText('Przełącz motyw')).toBeInTheDocument();
+    expect(screen.getByText("Przełącz motyw")).toBeInTheDocument();
   });
 
-  it('renders correctly in light mode', () => {
+  it("renders correctly in light mode", () => {
     render(<ThemeToggle />);
-    
+
     // Sprawdzamy, czy komponent renderuje się poprawnie w trybie jasnym
-    const button = screen.getByRole('button', { name: /przełącz motyw/i });
+    const button = screen.getByRole("button", { name: /przełącz motyw/i });
     expect(button).toBeInTheDocument();
-    
+
     // Robimy snapshot dla trybu jasnego
     expect(button).toMatchInlineSnapshot(`
       <button
@@ -133,20 +137,20 @@ describe('ThemeToggle', () => {
     `);
   });
 
-  it('renders correctly in dark mode', () => {
+  it("renders correctly in dark mode", () => {
     // Ustawiamy tryb ciemny
-    vi.spyOn(useThemeModule, 'useTheme').mockReturnValue({
-      theme: 'dark',
-      resolvedTheme: 'dark',
+    vi.spyOn(useThemeModule, "useTheme").mockReturnValue({
+      theme: "dark",
+      resolvedTheme: "dark",
       setTheme: setThemeMock,
     });
-    
+
     render(<ThemeToggle />);
-    
+
     // Sprawdzamy, czy komponent renderuje się poprawnie w trybie ciemnym
-    const button = screen.getByRole('button', { name: /przełącz motyw/i });
+    const button = screen.getByRole("button", { name: /przełącz motyw/i });
     expect(button).toBeInTheDocument();
-    
+
     // Robimy snapshot dla trybu ciemnego
     expect(button).toMatchInlineSnapshot(`
       <button
@@ -221,83 +225,83 @@ describe('ThemeToggle', () => {
     `);
   });
 
-  it('renders correctly in system mode', () => {
+  it("renders correctly in system mode", () => {
     // Ustawiamy tryb systemowy
-    vi.spyOn(useThemeModule, 'useTheme').mockReturnValue({
-      theme: 'system',
-      resolvedTheme: 'light', // Zakładamy, że system preferuje jasny motyw
+    vi.spyOn(useThemeModule, "useTheme").mockReturnValue({
+      theme: "system",
+      resolvedTheme: "light", // Zakładamy, że system preferuje jasny motyw
       setTheme: setThemeMock,
     });
-    
+
     render(<ThemeToggle />);
-    
+
     // Sprawdzamy, czy komponent renderuje się poprawnie w trybie systemowym
-    const button = screen.getByRole('button', { name: /przełącz motyw/i });
+    const button = screen.getByRole("button", { name: /przełącz motyw/i });
     expect(button).toBeInTheDocument();
   });
 
   it('calls setTheme with "light" when light option is clicked', () => {
     render(<ThemeToggle />);
-    
+
     // Znajdujemy wszystkie przyciski menu
-    const menuItems = screen.getAllByTestId('menu-item');
-    
+    const menuItems = screen.getAllByTestId("menu-item");
+
     // Klikamy opcję jasnego motywu (pierwszy element)
-    const lightOption = menuItems.find(item => item.textContent?.includes('Jasny'));
+    const lightOption = menuItems.find((item) => item.textContent?.includes("Jasny"));
     lightOption?.click();
-    
+
     // Sprawdzamy, czy setTheme zostało wywołane z odpowiednim argumentem
-    expect(setThemeMock).toHaveBeenCalledWith('light');
+    expect(setThemeMock).toHaveBeenCalledWith("light");
   });
 
   it('calls setTheme with "dark" when dark option is clicked', () => {
     render(<ThemeToggle />);
-    
+
     // Znajdujemy wszystkie przyciski menu
-    const menuItems = screen.getAllByTestId('menu-item');
-    
+    const menuItems = screen.getAllByTestId("menu-item");
+
     // Klikamy opcję ciemnego motywu (drugi element)
-    const darkOption = menuItems.find(item => item.textContent?.includes('Ciemny'));
+    const darkOption = menuItems.find((item) => item.textContent?.includes("Ciemny"));
     darkOption?.click();
-    
+
     // Sprawdzamy, czy setTheme zostało wywołane z odpowiednim argumentem
-    expect(setThemeMock).toHaveBeenCalledWith('dark');
+    expect(setThemeMock).toHaveBeenCalledWith("dark");
   });
 
   it('calls setTheme with "system" when system option is clicked', () => {
     render(<ThemeToggle />);
-    
+
     // Znajdujemy wszystkie przyciski menu
-    const menuItems = screen.getAllByTestId('menu-item');
-    
+    const menuItems = screen.getAllByTestId("menu-item");
+
     // Klikamy opcję systemowego motywu (trzeci element)
-    const systemOption = menuItems.find(item => item.textContent?.includes('Systemowy'));
+    const systemOption = menuItems.find((item) => item.textContent?.includes("Systemowy"));
     systemOption?.click();
-    
+
     // Sprawdzamy, czy setTheme zostało wywołane z odpowiednim argumentem
-    expect(setThemeMock).toHaveBeenCalledWith('system');
+    expect(setThemeMock).toHaveBeenCalledWith("system");
   });
 
-  it('correctly responds to system preference changes', () => {
+  it("correctly responds to system preference changes", () => {
     // Testujemy, czy komponent reaguje na zmiany preferencji systemowych
     // Najpierw ustawiamy tryb systemowy z preferencją jasnego motywu
-    vi.spyOn(useThemeModule, 'useTheme').mockReturnValue({
-      theme: 'system',
-      resolvedTheme: 'light',
+    vi.spyOn(useThemeModule, "useTheme").mockReturnValue({
+      theme: "system",
+      resolvedTheme: "light",
       setTheme: setThemeMock,
     });
-    
+
     const { rerender } = render(<ThemeToggle />);
-    
+
     // Następnie zmieniamy preferencję systemową na ciemny motyw
-    vi.spyOn(useThemeModule, 'useTheme').mockReturnValue({
-      theme: 'system',
-      resolvedTheme: 'dark',
+    vi.spyOn(useThemeModule, "useTheme").mockReturnValue({
+      theme: "system",
+      resolvedTheme: "dark",
       setTheme: setThemeMock,
     });
-    
+
     rerender(<ThemeToggle />);
-    
+
     // Sprawdzamy, czy hook został poprawnie użyty
     expect(useThemeModule.useTheme).toHaveBeenCalled();
   });

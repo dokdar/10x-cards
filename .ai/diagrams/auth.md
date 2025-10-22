@@ -1,9 +1,9 @@
 sequenceDiagram
-    autonumber
-    participant Przeglądarka
-    participant Komponent React
-    participant Astro Middleware
-    participant Supabase Auth
+autonumber
+participant Przeglądarka
+participant Komponent React
+participant Astro Middleware
+participant Supabase Auth
 
     rect rgb(230, 245, 255)
         Note over Przeglądarka, Supabase Auth: Przepływ Rejestracji Użytkownika

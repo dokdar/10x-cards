@@ -15,7 +15,12 @@ import { login as loginService } from "@/lib/services/auth";
  * On success, redirects to home page
  */
 export default function LoginForm() {
-  const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<LoginInput>({
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
     mode: "onSubmit",

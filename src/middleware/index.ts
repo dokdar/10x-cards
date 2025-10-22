@@ -6,17 +6,17 @@ import { createSupabaseServerInstance } from "../db/supabase.client";
  * Includes auth pages and their API endpoints
  */
 const PUBLIC_PATHS = [
-  '/login',
-  '/register',
-  '/forgot-password',
-  '/reset-password',
-  '/email-confirmed',
-  '/password-changed',
-  '/api/auth/login',
-  '/api/auth/register',
-  '/api/auth/forgot-password',
-  '/api/auth/update-password',
-  '/api/auth/logout',
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/email-confirmed",
+  "/password-changed",
+  "/api/auth/login",
+  "/api/auth/register",
+  "/api/auth/forgot-password",
+  "/api/auth/update-password",
+  "/api/auth/logout",
 ];
 
 /**
@@ -56,7 +56,7 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
 
   // Debug logging for session status
   console.log(`[MIDDLEWARE] Path: ${url.pathname}`);
-  console.log(`[MIDDLEWARE] User session: ${user ? `${user.email}` : 'NONE'}`);
+  console.log(`[MIDDLEWARE] User session: ${user ? `${user.email}` : "NONE"}`);
 
   // If session exists, attach user info to locals
   // This makes user data available in .astro pages and API routes
@@ -75,7 +75,7 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
 
   // 1. Redirect authenticated users away from auth pages to home
   //    Skip API endpoints - let them execute without redirect interference
-  const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password'];
+  const AUTH_PAGES = ["/login", "/register", "/forgot-password", "/reset-password"];
   if (user && AUTH_PAGES.includes(url.pathname)) {
     console.log(`[MIDDLEWARE] Redirecting authenticated user from ${url.pathname} to /`);
     return redirect("/");

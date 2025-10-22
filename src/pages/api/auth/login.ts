@@ -17,10 +17,7 @@ export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => 
 
   // Guard: Prevent already authenticated users from logging in again
   if (locals.user) {
-    return new Response(
-      JSON.stringify({ error: "Jesteś już zalogowany" }),
-      { status: 403 },
-    );
+    return new Response(JSON.stringify({ error: "Jesteś już zalogowany" }), { status: 403 });
   }
 
   // Guard: Parse and validate request body
@@ -36,7 +33,7 @@ export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => 
   if (!validationResult.success) {
     // Map Zod errors to user-friendly messages
     const fieldErrors = validationResult.error.flatten().fieldErrors;
-    let userMessage = 'Walidacja nie powiodła się';
+    let userMessage = "Walidacja nie powiodła się";
 
     // Get the first error message from any field
     if (fieldErrors.email && fieldErrors.email[0]) {
@@ -49,7 +46,7 @@ export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => 
       JSON.stringify({
         error: userMessage,
       }),
-      { status: 400 },
+      { status: 400 }
     );
   }
 

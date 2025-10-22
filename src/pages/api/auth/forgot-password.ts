@@ -1,6 +1,6 @@
-import type { APIRoute } from 'astro';
-import { forgotPasswordSchema } from '@/lib/validation/auth.schema';
-import { createSupabaseServerInstance } from '@/db/supabase.client';
+import type { APIRoute } from "astro";
+import { forgotPasswordSchema } from "@/lib/validation/auth.schema";
+import { createSupabaseServerInstance } from "@/db/supabase.client";
 
 /**
  * POST /api/auth/forgot-password
@@ -11,18 +11,15 @@ import { createSupabaseServerInstance } from '@/db/supabase.client';
  */
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
   // Guard: Ensure request method is POST
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
     });
   }
 
   // Guard: Prevent already authenticated users from requesting password reset
   if (locals.user) {
-    return new Response(
-      JSON.stringify({ error: 'Jesteś już zalogowany' }),
-      { status: 403 },
-    );
+    return new Response(JSON.stringify({ error: "Jesteś już zalogowany" }), { status: 403 });
   }
 
   // Guard: Parse and validate request body
@@ -30,7 +27,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
     body = await request.json();
   } catch {
-    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+    return new Response(JSON.stringify({ error: "Invalid request body" }), {
       status: 400,
     });
   }
@@ -40,10 +37,10 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
   if (!validationResult.success) {
     return new Response(
       JSON.stringify({
-        error: 'Nieprawidłowy adres e-mail',
+        error: "Nieprawidłowy adres e-mail",
         details: validationResult.error.errors,
       }),
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -58,8 +55,8 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
   // Send password reset email with redirect to reset-password page
   // Supabase will append token to URL for verification
   const resetUrl = `${import.meta.env.SUPABASE_SITE_URL}/reset-password`;
-  console.log('[FORGOT PASSWORD] Sending reset link to:', email);
-  console.log('[FORGOT PASSWORD] Reset URL:', resetUrl);
+  console.log("[FORGOT PASSWORD] Sending reset link to:", email);
+  console.log("[FORGOT PASSWORD] Reset URL:", resetUrl);
 
   // Attempt to send password reset email
   // Note: Supabase returns success even if email doesn't exist (for security)
@@ -70,21 +67,21 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
   // Handle errors (mainly rate limiting)
   if (error) {
     // Check for rate limiting
-    if (error.message.includes('rate limit') || error.message.includes('too many')) {
+    if (error.message.includes("rate limit") || error.message.includes("too many")) {
       return new Response(
         JSON.stringify({
-          error: 'Za wiele prób. Spróbuj za kilka minut.',
+          error: "Za wiele prób. Spróbuj za kilka minut.",
         }),
-        { status: 429 },
+        { status: 429 }
       );
     }
 
     // Generic error message for other errors
     return new Response(
       JSON.stringify({
-        error: 'Nie udało się wysłać e-maila. Spróbuj ponownie.',
+        error: "Nie udało się wysłać e-maila. Spróbuj ponownie.",
       }),
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -92,8 +89,8 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
   return new Response(
     JSON.stringify({
       success: true,
-      message: 'Sprawdź e-mail aby otrzymać link do resetowania hasła',
+      message: "Sprawdź e-mail aby otrzymać link do resetowania hasła",
     }),
-    { status: 200 },
+    { status: 200 }
   );
 };

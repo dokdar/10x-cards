@@ -1,4 +1,5 @@
 <mermaid_diagram>
+
 ```mermaid
 flowchart TD
     classDef astroPage fill:#FF7E2A,stroke:#000,stroke-width:2px,color:#fff;
@@ -26,23 +27,23 @@ flowchart TD
         Comp_LoginForm[src/components/auth/LoginForm.tsx]:::reactComp
         Comp_RegisterForm[src/components/auth/RegisterForm.tsx]:::reactComp
     end
-    
+
     subgraph "Backend as a Service"
         Supabase[Supabase Auth]
     end
 
     MW -- "Ustawia dane sesji w" --> Locals
-    
+
     Page_Login -- "Używa" --> L
     Page_Register -- "Używa" --> L
     Page_Generate -- "Używa" --> L
-    
+
     L -- "Czyta dane z" --> Locals
     L -- "Renderuje" --> Comp_Header
-    
+
     Page_Login -- "Renderuje" --> Comp_LoginForm
     Page_Register -- "Renderuje" --> Comp_RegisterForm
-    
+
     Locals -- "Przekazuje dane (np. user) do" --> Page_Generate
     Page_Generate -- "Przekazuje props (np. user) do" --> L
 
@@ -52,4 +53,5 @@ flowchart TD
 
     class L,Comp_Header updated;
 ```
+
 </mermaid_diagram>

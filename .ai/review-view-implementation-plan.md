@@ -1,15 +1,19 @@
 # Plan implementacji widoku Recenzja
 
 ## 1. Przegląd
+
 Widok "Recenzja" ma na celu umożliwienie użytkownikowi przeglądania, edytowania, akceptowania i odrzucania fiszek wygenerowanych przez AI. Po dokonaniu wyboru, użytkownik może zapisać zaakceptowane fiszki w swojej kolekcji. Widok ten jest kluczowym elementem pętli feedbacku, zapewniając kontrolę jakości nad treściami generowanymi automatycznie.
 
 ## 2. Routing widoku
+
 Widok będzie dostępny pod dynamiczną ścieżką:
+
 - **Ścieżka**: `/review/[id]`
 - **Plik**: `src/pages/review/[id].astro`
 - **Uwaga**: Dane do widoku (`GenerationResponse`) powinny być przekazywane ze strony generowania poprzez stan nawigacji lub tymczasowy magazyn stanu po stronie klienta (np. Zustand), aby uniknąć utraty danych przy odświeżaniu strony.
 
 ## 3. Struktura komponentów
+
 Hierarchia komponentów zostanie zaimplementowana w React i osadzona na stronie Astro za pomocą dyrektywy `client:load`.
 
 ```
@@ -28,6 +32,7 @@ src/pages/review/[id].astro
 ## 4. Szczegóły komponentów
 
 ### `ReviewView.tsx` (Komponent Kontener)
+
 - **Opis**: Główny komponent widoku recenzji. Odpowiada za zarządzanie stanem całej sesji recenzji za pomocą hooka `useReviewSession`. Otrzymuje dane z generacji i renderuje interfejs użytkownika.
 - **Główne elementy**: `<ReviewControls />`, `<CandidateList />`.
 - **Obsługiwane interakcje**:
@@ -37,6 +42,7 @@ src/pages/review/[id].astro
   - `generationData: GenerationResponse`
 
 ### `ReviewControls.tsx`
+
 - **Opis**: Wyświetla globalne przyciski akcji oraz podsumowanie (np. "Wybrano 3 z 10 fiszek").
 - **Główne elementy**: `<Button />` do zapisu, `<p>` do wyświetlania statystyk.
 - **Obsługiwane interakcje**:
@@ -50,6 +56,7 @@ src/pages/review/[id].astro
   - `onSave: () => void`
 
 ### `CandidateList.tsx`
+
 - **Opis**: Renderuje listę komponentów `CandidateCard` na podstawie przekazanej tablicy kandydatów.
 - **Główne elementy**: Lista zamapowanych komponentów `<CandidateCard />`.
 - **Obsługiwane interakcje**: Przekazuje zdarzenia z `CandidateCard` do `ReviewView` w celu aktualizacji stanu.
@@ -61,6 +68,7 @@ src/pages/review/[id].astro
   - `onReject: (id: string) => void`
 
 ### `CandidateCard.tsx`
+
 - **Opis**: Reprezentuje pojedynczą fiszkę-kandydata. Umożliwia edycję treści, akceptację i odrzucenie.
 - **Główne elementy**: `<Card>`, dwa `<Textarea>` (dla przodu i tyłu), `<Switch>` (do akceptacji), `<Button>` (do odrzucenia).
 - **Obsługiwane interakcje**:
@@ -78,18 +86,20 @@ src/pages/review/[id].astro
 ## 5. Typy
 
 ### `ReviewCandidateViewModel` (ViewModel)
+
 W celu zarządzania stanem interfejsu, rozszerzymy typ `FlashcardCandidate` o dodatkowe pola.
 
 ```typescript
-import { FlashcardCandidate } from '@/types';
+import { FlashcardCandidate } from "@/types";
 
 export interface ReviewCandidateViewModel extends FlashcardCandidate {
   id: string; // Unikalny identyfikator po stronie klienta (np. z uuid)
-  status: 'pending' | 'accepted' | 'edited' | 'rejected';
+  status: "pending" | "accepted" | "edited" | "rejected";
   originalFront: string; // Oryginalna treść do śledzenia edycji
   originalBack: string; // Oryginalna treść do śledzenia edycji
 }
 ```
+
 - **`id`**: Kluczowy dla renderowania list w React i efektywnego zarządzania stanem.
 - **`status`**: Śledzi decyzję użytkownika dla każdej fiszki.
 - **`originalFront` / `originalBack`**: Używane do określenia, czy `source` przy zapisie powinien być `'ai-full'`, `'ai-edited'`, czy `'manual'`.
@@ -99,6 +109,7 @@ export interface ReviewCandidateViewModel extends FlashcardCandidate {
 Logika zarządzania stanem zostanie zamknięta w niestandardowym hooku `useReviewSession`.
 
 ### `useReviewSession(initialCandidates: FlashcardCandidate[])`
+
 - **Cel**: Hermetyzacja logiki stanu dla listy kandydatów.
 - **Stan wewnętrzny**: `useState<ReviewCandidateViewModel[]>([])` do przechowywania listy kandydatów.
 - **Udostępniane wartości**:
@@ -114,9 +125,11 @@ Logika zarządzania stanem zostanie zamknięta w niestandardowym hooku `useRevie
 ## 7. Integracja API
 
 ### Pobieranie danych
+
 - Brak dedykowanego endpointu `GET /generations/{id}`. Dane (`GenerationResponse`) muszą zostać przekazane z poprzedniej strony (`/generate`) do widoku recenzji. Zalecane jest użycie biblioteki do zarządzania stanem (np. Zustand), aby przetrwać odświeżenie strony.
 
 ### Zapisywanie danych
+
 - **Endpoint**: `POST /api/flashcards`
 - **Akcja**: Wywoływany po kliknięciu przycisku "Zapisz w kolekcji".
 - **Typ żądania**: `CreateFlashcardCommand[]`
@@ -129,23 +142,27 @@ Logika zarządzania stanem zostanie zamknięta w niestandardowym hooku `useRevie
 - **Obsługa sukcesu**: Przekierowanie użytkownika do jego kolekcji fiszek z komunikatem o powodzeniu.
 
 ## 8. Interakcje użytkownika
+
 - **Edycja treści**: Użytkownik wpisuje tekst w polach `Textarea`. Stan jest aktualizowany na bieżąco, a status fiszki zmienia się na `'edited'`.
 - **Akceptacja**: Użytkownik klika `Switch`, co przełącza status fiszki między `'pending'` a `'accepted'`.
 - **Odrzucenie**: Użytkownik klika przycisk "Odrzuć". Fiszka jest wizualnie oznaczana jako odrzucona (np. wyszarzona), a jej kontrolki stają się nieaktywne.
 - **Zapis**: Użytkownik klika "Zapisz w kolekcji". Przycisk pokazuje stan ładowania, a po pomyślnym zapisie następuje przekierowanie.
 
 ## 9. Warunki i walidacja
+
 - **Poziom komponentu**:
   - `CandidateCard`: Pola tekstowe `front` i `back` nie mogą być puste. Jeśli pole jest puste, fiszka nie może być zaakceptowana.
 - **Poziom widoku**:
   - `ReviewControls`: Przycisk "Zapisz w kolekcji" jest aktywny tylko wtedy, gdy co najmniej jedna fiszka ma status `'accepted'` lub `'edited'`.
 
 ## 10. Obsługa błędów
+
 - **Brak danych początkowych**: Jeśli użytkownik wejdzie na stronę `/review/{id}` bezpośrednio (np. z zakładki), widok powinien wyświetlić komunikat o błędzie "Nie znaleziono danych sesji generowania" i przycisk powrotu na stronę główną.
 - **Błąd zapisu API**: W przypadku niepowodzenia wywołania `POST /api/flashcards` (błąd sieci, serwera), użytkownikowi zostanie wyświetlony komunikat (np. w komponencie `Alert` z Shadcn) informujący o problemie i zachęcający do ponownej próby.
 - **Ostrzeżenie o niezapisanych zmianach**: Jeśli użytkownik dokonał jakichkolwiek zmian (edycja, akceptacja, odrzucenie) i próbuje opuścić stronę, zostanie mu wyświetlone natywne okno przeglądarki z pytaniem, czy na pewno chce opuścić stronę.
 
 ## 11. Kroki implementacji
+
 1.  **Utworzenie struktury plików**: Stworzenie plików dla strony Astro (`src/pages/review/[id].astro`) oraz komponentów React (`ReviewView`, `ReviewControls`, `CandidateList`, `CandidateCard`) w katalogu `src/components/review`.
 2.  **Zdefiniowanie typów**: Dodanie typu `ReviewCandidateViewModel` do odpowiedniego pliku z typami.
 3.  **Implementacja hooka `useReviewSession`**: Stworzenie całej logiki zarządzania stanem, w tym funkcji do modyfikacji i zapisu danych.

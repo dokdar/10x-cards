@@ -1,4 +1,5 @@
 <mermaid_diagram>
+
 ```mermaid
 stateDiagram-v2
     [*] --> Niezalogowany
@@ -13,7 +14,7 @@ stateDiagram-v2
 
     state "Proces Uwierzytelniania" as Auth {
         PróbaDostępu --> Logowanie
-        
+
         state Logowanie {
             note right of Logowanie
                 Użytkownik podaje email i hasło.
@@ -34,7 +35,7 @@ stateDiagram-v2
             FormularzRejestracji --> Zalogowany : Sukces
             FormularzRejestracji --> FormularzRejestracji : Błąd (np. email zajęty)
         }
-        
+
         state OdzyskiwanieHasla {
             [*] --> FormularzOdzyskiwania
             FormularzOdzyskiwania --> EmailWyslany: Podaje poprawny email
@@ -52,4 +53,5 @@ stateDiagram-v2
     Wylogowanie --> Niezalogowany
     Zalogowany --> [*]
 ```
+
 </mermaid_diagram>

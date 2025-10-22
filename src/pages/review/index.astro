@@ -10,7 +10,7 @@ export const prerender = false;
 const { user } = Astro.locals;
 
 if (!user) {
-  return Astro.redirect('/login');
+  return Astro.redirect("/login");
 }
 
 const title = "Recenzja fiszek - 10x Cards";
@@ -23,24 +23,20 @@ const description = "Wybierz sesję recenzji fiszek do kontynuowania";
       <!-- Header -->
       <header class="space-y-2 text-center sm:text-left">
         <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">Recenzja Fiszek</h1>
-        <p class="text-sm sm:text-base lg:text-lg text-muted-foreground">
-          Kontynuuj recenzję wygenerowanych fiszek
-        </p>
+        <p class="text-sm sm:text-base lg:text-lg text-muted-foreground">Kontynuuj recenzję wygenerowanych fiszek</p>
       </header>
 
       <!-- Review Session Finder -->
       <Card>
         <CardHeader>
           <CardTitle>Znajdź sesję recenzji</CardTitle>
-          <CardDescription>
-            Sprawdzamy czy masz aktywne sesje recenzji do kontynuowania
-          </CardDescription>
+          <CardDescription> Sprawdzamy czy masz aktywne sesje recenzji do kontynuowania </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div id="session-status" class="hidden">
             <!-- Content will be populated by JavaScript -->
           </div>
-          
+
           <div id="no-sessions" class="hidden">
             <Alert>
               <AlertTitle>Brak aktywnych sesji</AlertTitle>
@@ -73,52 +69,52 @@ const description = "Wybierz sesję recenzji fiszek do kontynuowania";
     // Check for active review sessions in sessionStorage
     function findActiveSessions() {
       const sessions = [];
-      
+
       // Look for generation data in sessionStorage
       for (let i = 0; i < sessionStorage.length; i++) {
         const key = sessionStorage.key(i);
-        if (key && key.startsWith('generation_')) {
+        if (key && key.startsWith("generation_")) {
           try {
-            const data = JSON.parse(sessionStorage.getItem(key) || '');
+            const data = JSON.parse(sessionStorage.getItem(key) || "");
             if (data && data.generation_id) {
               sessions.push({
                 id: data.generation_id,
                 key: key,
-                data: data
+                data: data,
               });
             }
           } catch (e) {
             // Invalid JSON, skip
-            console.warn('Invalid session data for key:', key);
+            console.warn("Invalid session data for key:", key);
           }
         }
       }
-      
+
       return sessions;
     }
 
     function displaySessions() {
-      const loadingEl = document.getElementById('loading');
-      const noSessionsEl = document.getElementById('no-sessions');
-      const sessionStatusEl = document.getElementById('session-status');
-      
+      const loadingEl = document.getElementById("loading");
+      const noSessionsEl = document.getElementById("no-sessions");
+      const sessionStatusEl = document.getElementById("session-status");
+
       if (!loadingEl || !noSessionsEl || !sessionStatusEl) return;
-      
+
       const sessions = findActiveSessions();
-      
+
       // Hide loading
-      loadingEl.classList.add('hidden');
-      
+      loadingEl.classList.add("hidden");
+
       if (sessions.length === 0) {
         // No sessions found
-        noSessionsEl.classList.remove('hidden');
+        noSessionsEl.classList.remove("hidden");
       } else if (sessions.length === 1) {
         // Single session - redirect immediately
         const session = sessions[0];
         window.location.href = `/review/${session.id}`;
       } else {
         // Multiple sessions - show list
-        sessionStatusEl.classList.remove('hidden');
+        sessionStatusEl.classList.remove("hidden");
         sessionStatusEl.innerHTML = `
           <div class="space-y-4">
             <div class="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
@@ -128,20 +124,24 @@ const description = "Wybierz sesję recenzji fiszek do kontynuowania";
               </p>
             </div>
             <div class="space-y-2">
-              ${sessions.map(session => `
+              ${sessions
+                .map(
+                  (session) => `
                 <div class="flex items-center justify-between p-3 border rounded-lg">
                   <div class="flex-1">
                     <div class="font-medium">Sesja ${session.id.substring(0, 8)}...</div>
                     <div class="text-sm text-muted-foreground">
                       ${session.data.generated_count || 0} fiszek wygenerowanych
-                      ${session.data.model ? ` • ${session.data.model}` : ''}
+                      ${session.data.model ? ` • ${session.data.model}` : ""}
                     </div>
                   </div>
                   <a href="/review/${session.id}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                     Kontynuuj
                   </a>
                 </div>
-              `).join('')}
+              `
+                )
+                .join("")}
             </div>
             <div class="pt-2 border-t">
               <div class="flex flex-col sm:flex-row gap-3">
@@ -159,7 +159,7 @@ const description = "Wybierz sesję recenzji fiszek do kontynuowania";
     }
 
     // Run when page loads
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener("DOMContentLoaded", () => {
       // Small delay to ensure everything is loaded
       setTimeout(displaySessions, 100);
     });

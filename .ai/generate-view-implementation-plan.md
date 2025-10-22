@@ -1,12 +1,15 @@
 # Plan implementacji widoku Generator AI
 
 ## 1. Przegląd
+
 Widok "Generator AI" jest kluczowym elementem aplikacji, umożliwiającym użytkownikom inicjowanie procesu tworzenia fiszek. Jego głównym celem jest dostarczenie prostego interfejsu do wklejenia tekstu źródłowego, zwalidowanie go pod kątem długości, a następnie wysłanie do API w celu wygenerowania propozycji fiszek. Widok zarządza stanami ładowania i błędów, a po pomyślnym zakończeniu operacji przekierowuje użytkownika do widoku recenzji.
 
 ## 2. Routing widoku
+
 Widok będzie dostępny pod ścieżką `/generate` dla zalogowanych użytkowników.
 
 ## 3. Struktura komponentów
+
 Komponenty zostaną zaimplementowane w React i osadzone na stronie Astro. Hierarchia będzie wyglądać następująco:
 
 ```
@@ -25,6 +28,7 @@ Komponenty zostaną zaimplementowane w React i osadzone na stronie Astro. Hierar
 ## 4. Szczegóły komponentów
 
 ### `AIGeneratorView.tsx`
+
 - **Opis komponentu**: Główny kontener widoku, który zarządza stanem i logiką. Składa się z nagłówka, komponentu do wprowadzania tekstu, przycisku akcji oraz wskaźnika statusu.
 - **Główne elementy**: `<h1>`, `<p>`, `SourceTextInput`, `Button`, `GenerationStatusIndicator`.
 - **Obsługiwane interakcje**:
@@ -35,6 +39,7 @@ Komponenty zostaną zaimplementowane w React i osadzone na stronie Astro. Hierar
 - **Propsy**: Brak.
 
 ### `SourceTextInput.tsx`
+
 - **Opis komponentu**: Kontrolowany komponent do wprowadzania tekstu źródłowego. Zawiera pole `Textarea` oraz licznik znaków.
 - **Główne elementy**: `<div>` (wrapper), `Textarea` (z `shadcn/ui`), `<p>` (licznik/helper).
 - **Obsługiwane interakcje**:
@@ -54,6 +59,7 @@ Komponenty zostaną zaimplementowane w React i osadzone na stronie Astro. Hierar
   ```
 
 ### `GenerationStatusIndicator.tsx`
+
 - **Opis komponentu**: Wyświetla stan operacji generowania. W stanie ładowania pokazuje animowany wskaźnik, a w przypadku błędu – komunikat w komponencie `Alert`.
 - **Główne elementy**: `Spinner`, `Alert` (z `shadcn/ui`).
 - **Obsługiwane interakcje**: Brak.
@@ -62,12 +68,13 @@ Komponenty zostaną zaimplementowane w React i osadzone na stronie Astro. Hierar
 - **Propsy**:
   ```typescript
   interface GenerationStatusIndicatorProps {
-    status: 'idle' | 'loading' | 'error';
+    status: "idle" | "loading" | "error";
     errorMessage: string | null;
   }
   ```
 
 ## 5. Typy
+
 Do implementacji widoku wykorzystane zostaną istniejące typy DTO z `src/types.ts`. Nie ma potrzeby tworzenia nowych, złożonych typów ViewModel.
 
 - **`GenerateFlashcardsCommand`**: Obiekt wysyłany w ciele żądania `POST /api/generations`.
@@ -94,10 +101,11 @@ Do implementacji widoku wykorzystane zostaną istniejące typy DTO z `src/types.
   ```
 - **`GenerationStatus`**: Typ literalny do zarządzania stanem UI.
   ```typescript
-  type GenerationStatus = 'idle' | 'loading' | 'success' | 'error';
+  type GenerationStatus = "idle" | "loading" | "success" | "error";
   ```
 
 ## 6. Zarządzanie stanem
+
 Stan będzie zarządzany lokalnie w komponencie `AIGeneratorView` przy użyciu hooka `useState`. W celu hermetyzacji logiki API i zarządzania stanem, zostanie utworzony niestandardowy hook `useFlashcardGeneration`.
 
 - **Hook `useFlashcardGeneration`**:
@@ -107,6 +115,7 @@ Stan będzie zarządzany lokalnie w komponencie `AIGeneratorView` przy użyciu h
   - **Użycie w `AIGeneratorView`**: Komponent będzie wywoływał `generate` i reagował na zmiany `statusu`, `error` i `data`, aktualizując UI i wykonując przekierowanie.
 
 ## 7. Integracja API
+
 - **Endpoint**: `POST /api/generations`
 - **Przepływ integracji**:
   1. Użytkownik klika przycisk "Generuj Fiszki".
@@ -120,6 +129,7 @@ Stan będzie zarządzany lokalnie w komponencie `AIGeneratorView` przy użyciu h
      - Komponent `AIGeneratorView` wyświetla `GenerationStatusIndicator` z komunikatem błędu.
 
 ## 8. Interakcje użytkownika
+
 - **Wpisywanie tekstu**: Użytkownik wpisuje tekst w `Textarea`. Interfejs na bieżąco aktualizuje licznik znaków i stan walidacji przycisku.
 - **Kliknięcie "Generuj Fiszki"**:
   - Jeśli przycisk jest aktywny, UI przechodzi w stan ładowania: formularz zostaje zablokowany, a wskaźnik ładowania (`Spinner`) jest wyświetlany.
@@ -127,6 +137,7 @@ Stan będzie zarządzany lokalnie w komponencie `AIGeneratorView` przy użyciu h
   - W razie błędu, stan ładowania jest usuwany, a na ekranie pojawia się komunikat błędu.
 
 ## 9. Warunki i walidacja
+
 - **Warunek główny**: Długość tekstu źródłowego musi zawierać się w przedziale od 1000 do 10000 znaków.
 - **Weryfikacja**:
   - **`AIGeneratorView`**: Oblicza `const isValid = sourceText.length >= 1000 && sourceText.length <= 10000;`.
@@ -134,13 +145,15 @@ Stan będzie zarządzany lokalnie w komponencie `AIGeneratorView` przy użyciu h
   - **`SourceTextInput`**: Wyświetla licznik znaków, np. `1234/10000`, aby informować użytkownika o postępie w spełnianiu warunku.
 
 ## 10. Obsługa błędów
+
 - **Błąd walidacji (400)**: Wyświetlenie komunikatu, np. "Tekst musi mieć od 1000 do 10000 znaków."
 - **Błąd usługi AI (502)**: Wyświetlenie komunikatu z API, np. "Usługa generowania jest tymczasowo niedostępna. Spróbuj ponownie później."
 - **Błąd serwera (500)**: Wyświetlenie generycznego komunikatu, np. "Wystąpił nieoczekiwany błąd serwera."
 - **Błąd sieci**: Wyświetlenie komunikatu, np. "Błąd połączenia. Sprawdź swoje połączenie z internetem."
-Wszystkie błędy będą prezentowane użytkownikowi za pomocą komponentu `GenerationStatusIndicator`, który renderuje `Alert` z odpowiednią wiadomością.
+  Wszystkie błędy będą prezentowane użytkownikowi za pomocą komponentu `GenerationStatusIndicator`, który renderuje `Alert` z odpowiednią wiadomością.
 
 ## 11. Kroki implementacji
+
 1.  **Utworzenie plików**: Stworzenie strony `/src/pages/generate.astro` oraz komponentów: `/src/components/views/AIGeneratorView.tsx`, `/src/components/generator/SourceTextInput.tsx`, `/src/components/generator/GenerationStatusIndicator.tsx`.
 2.  **Implementacja strony Astro**: W pliku `generate.astro` umieścić `Layout` i zaimportować `AIGeneratorView` z dyrektywą `client:load`.
 3.  **Budowa statycznego UI**: Zaimplementować strukturę JSX dla wszystkich komponentów, używając komponentów z `shadcn/ui` (`Textarea`, `Button`, `Alert`) bez logiki stanu.

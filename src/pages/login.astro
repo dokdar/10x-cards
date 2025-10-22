@@ -1,22 +1,23 @@
 ---
-import AuthLayout from '@/layouts/AuthLayout.astro';
-import LoginForm from '@/components/auth/LoginForm';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import LoginForm from "@/components/auth/LoginForm";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const prerender = false;
 
 // Redirect authenticated users to home page
 const { user } = Astro.locals;
 if (user) {
-  return Astro.redirect('/');
+  return Astro.redirect("/");
 }
 
 // Check for error messages from URL params
-const errorParam = Astro.url.searchParams.get('error');
-let errorMessage = '';
+const errorParam = Astro.url.searchParams.get("error");
+let errorMessage = "";
 
-if (errorParam === 'link_expired') {
-  errorMessage = 'Link weryfikacyjny wygasł. Jeśli jeszcze nie potwierdziłeś emaila, sprawdź swoją skrzynkę i użyj najnowszego linku.';
+if (errorParam === "link_expired") {
+  errorMessage =
+    "Link weryfikacyjny wygasł. Jeśli jeszcze nie potwierdziłeś emaila, sprawdź swoją skrzynkę i użyj najnowszego linku.";
 }
 ---
 
@@ -31,11 +32,13 @@ if (errorParam === 'link_expired') {
         </div>
 
         {/* Error Alert */}
-        {errorMessage && (
-          <Alert variant="destructive">
-            <AlertDescription class="text-sm">{errorMessage}</AlertDescription>
-          </Alert>
-        )}
+        {
+          errorMessage && (
+            <Alert variant="destructive">
+              <AlertDescription class="text-sm">{errorMessage}</AlertDescription>
+            </Alert>
+          )
+        }
 
         {/* Form Card */}
         <div class="bg-card rounded-lg border p-4 sm:p-6 lg:p-8 shadow-sm">

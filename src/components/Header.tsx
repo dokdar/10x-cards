@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { ThemeToggle } from './ThemeToggle';
+import { useState } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Header({ isAuthenticated, userEmail }: { isAuthenticated: boolean; userEmail?: string }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/api/auth/logout';
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/api/auth/logout";
     document.body.appendChild(form);
     form.submit();
   };
@@ -41,7 +41,7 @@ export function Header({ isAuthenticated, userEmail }: { isAuthenticated: boolea
                   disabled={isLoggingOut}
                   aria-busy={isLoggingOut}
                 >
-                  {isLoggingOut ? 'Wylogowywanie...' : 'Wyloguj'}
+                  {isLoggingOut ? "Wylogowywanie..." : "Wyloguj"}
                 </button>
               </>
             )}

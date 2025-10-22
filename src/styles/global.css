@@ -4,41 +4,41 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.9940 0 0);
+  --background: oklch(0.994 0 0);
   --foreground: oklch(0.2046 0 0);
-  --card: oklch(1.0000 0 0);
+  --card: oklch(1 0 0);
   --card-foreground: oklch(0.2046 0 0);
-  --popover: oklch(1.0000 0 0);
+  --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2046 0 0);
   --primary: oklch(0.6731 0.1624 144.2083);
-  --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.9571 0.0210 147.6360);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.9571 0.021 147.636);
   --secondary-foreground: oklch(0.5234 0.1347 144.1672);
   --muted: oklch(0.9551 0 0);
   --muted-foreground: oklch(0.4926 0 0);
   --accent: oklch(0.8952 0.0504 146.0366);
   --accent-foreground: oklch(0.4254 0.1159 144.3078);
   --destructive: oklch(0.6539 0.1926 25.1437);
-  --destructive-foreground: oklch(1.0000 0 0);
+  --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.9067 0 0);
   --input: oklch(0.9702 0 0);
   --ring: oklch(0.7185 0.1417 144.8887);
   --chart-1: oklch(0.6731 0.1624 144.2083);
   --chart-2: oklch(0.7536 0.1626 130.5022);
-  --chart-3: oklch(0.8555 0.1766 114.8460);
+  --chart-3: oklch(0.8555 0.1766 114.846);
   --chart-4: oklch(0.9285 0.1803 102.4974);
   --chart-5: oklch(0.8442 0.1722 84.9338);
   --sidebar: oklch(0.9761 0 0);
   --sidebar-foreground: oklch(0.2478 0 0);
   --sidebar-primary: oklch(0.6731 0.1624 144.2083);
-  --sidebar-primary-foreground: oklch(1.0000 0 0);
-  --sidebar-accent: oklch(0.9571 0.0210 147.6360);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.9571 0.021 147.636);
   --sidebar-accent-foreground: oklch(0.5234 0.1347 144.1672);
   --sidebar-border: oklch(0.9067 0 0);
   --sidebar-ring: oklch(0.7185 0.1417 144.8887);
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: 'Playfair Display', serif;
-  --font-mono: 'Fira Code', monospace;
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-mono: "Fira Code", monospace;
   --radius: 0.5rem;
   --shadow-x: 0;
   --shadow-y: 0.125rem;
@@ -67,7 +67,7 @@
   --popover-foreground: oklch(0.9067 0 0);
   --primary: oklch(0.7185 0.1417 144.8887);
   --primary-foreground: oklch(0.2284 0.0384 282.9324);
-  --secondary: oklch(0.3713 0.0307 284.8070);
+  --secondary: oklch(0.3713 0.0307 284.807);
   --secondary-foreground: oklch(0.7887 0.1425 129.7661);
   --muted: oklch(0.3289 0.0317 284.5259);
   --muted-foreground: oklch(0.7058 0 0);
@@ -77,23 +77,23 @@
   --destructive-foreground: oklch(0.2284 0.0384 282.9324);
   --border: oklch(0.3565 0.0327 284.6175);
   --input: oklch(0.3565 0.0327 284.6175);
-  --ring: oklch(0.7660 0.1179 145.2950);
+  --ring: oklch(0.766 0.1179 145.295);
   --chart-1: oklch(0.7185 0.1417 144.8887);
   --chart-2: oklch(0.7887 0.1425 129.7661);
-  --chart-3: oklch(0.8740 0.1603 114.2912);
+  --chart-3: oklch(0.874 0.1603 114.2912);
   --chart-4: oklch(0.9364 0.1657 102.8117);
   --chart-5: oklch(0.8859 0.1539 91.2298);
   --sidebar: oklch(0.2507 0.0413 283.0121);
   --sidebar-foreground: oklch(0.9491 0 0);
   --sidebar-primary: oklch(0.7185 0.1417 144.8887);
   --sidebar-primary-foreground: oklch(0.2507 0.0413 283.0121);
-  --sidebar-accent: oklch(0.3713 0.0307 284.8070);
+  --sidebar-accent: oklch(0.3713 0.0307 284.807);
   --sidebar-accent-foreground: oklch(0.7887 0.1425 129.7661);
   --sidebar-border: oklch(0.3565 0.0327 284.6175);
-  --sidebar-ring: oklch(0.7660 0.1179 145.2950);
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: 'Playfair Display', serif;
-  --font-mono: 'Fira Code', monospace;
+  --sidebar-ring: oklch(0.766 0.1179 145.295);
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-mono: "Fira Code", monospace;
   --radius: 0.5rem;
   --shadow-x: 0;
   --shadow-y: 0.25rem;
@@ -101,14 +101,14 @@
   --shadow-spread: 0;
   --shadow-opacity: 0.2;
   --shadow-color: 0 0 0;
-  --shadow-2xs: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.10);
-  --shadow-xs: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.10);
-  --shadow-sm: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.20), 0 1px 2px -1px hsl(0 0 0 / 0.20);
-  --shadow: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.20), 0 1px 2px -1px hsl(0 0 0 / 0.20);
-  --shadow-md: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.20), 0 2px 4px -1px hsl(0 0 0 / 0.20);
-  --shadow-lg: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.20), 0 4px 6px -1px hsl(0 0 0 / 0.20);
-  --shadow-xl: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.20), 0 8px 10px -1px hsl(0 0 0 / 0.20);
-  --shadow-2xl: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.50);
+  --shadow-2xs: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.1);
+  --shadow-xs: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.1);
+  --shadow-sm: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.2), 0 1px 2px -1px hsl(0 0 0 / 0.2);
+  --shadow: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.2), 0 1px 2px -1px hsl(0 0 0 / 0.2);
+  --shadow-md: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.2), 0 2px 4px -1px hsl(0 0 0 / 0.2);
+  --shadow-lg: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.2), 0 4px 6px -1px hsl(0 0 0 / 0.2);
+  --shadow-xl: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.2), 0 8px 10px -1px hsl(0 0 0 / 0.2);
+  --shadow-2xl: 0 0.25rem 0.5rem 0 hsl(0 0 0 / 0.5);
 }
 
 @theme inline {
@@ -179,7 +179,7 @@
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
-  
+
   /* Bottom navigation container */
   .bottom-nav {
     @apply fixed bottom-0 left-0 right-0 z-50;
@@ -188,7 +188,7 @@
     @apply h-16 px-4;
     padding-bottom: env(safe-area-inset-bottom);
   }
-  
+
   /* Navigation item */
   .nav-item {
     @apply flex flex-col items-center justify-center;
@@ -197,25 +197,25 @@
     @apply transition-colors duration-200;
     @apply focus:outline-none focus:ring-2 focus:ring-blue-400;
   }
-  
+
   /* Active navigation item */
   .nav-item.active {
     @apply text-blue-400;
   }
-  
+
   /* View container */
   .view-container {
     @apply pb-20; /* Account for bottom navigation height + safe area */
     @apply min-h-screen;
   }
-  
+
   /* Mobile header adjustments */
   .mobile-header {
     @apply px-4 py-3;
     @apply flex items-center justify-between;
     @apply bg-gray-900 border-b border-gray-700;
   }
-  
+
   /* Mobile-specific adjustments */
   @media (max-width: 768px) {
     .view-container {

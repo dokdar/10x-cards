@@ -1,4 +1,4 @@
-import { expect, type Page, type Locator } from '@playwright/test';
+import { expect, type Page, type Locator } from "@playwright/test";
 
 export class LoginPage {
   readonly page: Page;
@@ -16,17 +16,17 @@ export class LoginPage {
   }
 
   async goto() {
-    await this.page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await this.page.goto("/login", { waitUntil: "domcontentloaded" });
     // Wait for network idle and form elements to be ready
-    await this.page.waitForLoadState('networkidle');
-    await this.emailInput.waitFor({ state: 'visible' });
-    await this.passwordInput.waitFor({ state: 'visible' });
+    await this.page.waitForLoadState("networkidle");
+    await this.emailInput.waitFor({ state: "visible" });
+    await this.passwordInput.waitFor({ state: "visible" });
   }
 
   async login(email: string, password: string) {
     // Wait for inputs to be visible and ready
-    await this.emailInput.waitFor({ state: 'visible' });
-    await this.passwordInput.waitFor({ state: 'visible' });
+    await this.emailInput.waitFor({ state: "visible" });
+    await this.passwordInput.waitFor({ state: "visible" });
 
     // Fill inputs atomically to avoid autofill interference or partial typing
     await this.emailInput.click();
@@ -38,26 +38,26 @@ export class LoginPage {
     // Debug actual values
     let emailValue = await this.emailInput.inputValue();
     let passwordValue = await this.passwordInput.inputValue();
-    console.log('[LoginPage] email value after fill:', emailValue);
-    console.log('[LoginPage] password filled');
+    console.log("[LoginPage] email value after fill:", emailValue);
+    console.log("[LoginPage] password filled");
 
     // If values mismatch (e.g., browser autofill), force-clear and re-fill
     if (emailValue !== email) {
-      console.log('[LoginPage] email mismatch, refilling');
+      console.log("[LoginPage] email mismatch, refilling");
       await this.emailInput.focus();
-      await this.emailInput.fill('');
+      await this.emailInput.fill("");
       await this.emailInput.fill(email);
       emailValue = await this.emailInput.inputValue();
-      console.log('[LoginPage] email value after refill:', emailValue);
+      console.log("[LoginPage] email value after refill:", emailValue);
     }
 
     if (passwordValue !== password) {
-      console.log('[LoginPage] password mismatch, refilling');
+      console.log("[LoginPage] password mismatch, refilling");
       await this.passwordInput.focus();
-      await this.passwordInput.fill('');
+      await this.passwordInput.fill("");
       await this.passwordInput.fill(password);
       passwordValue = await this.passwordInput.inputValue();
-      console.log('[LoginPage] password refilled');
+      console.log("[LoginPage] password refilled");
     }
 
     // Submit (navigation oczekiwane poza metodą przez waitForNavigation)
@@ -66,23 +66,19 @@ export class LoginPage {
 
   async waitForNavigation() {
     // Czekaj aż URL przestanie być /login lub pokaże się błąd
-    const leaveLogin = this.page
-      .waitForURL(/^(?!.*\/login\/?$).*/, { timeout: 30000 })
-      .catch(() => null);
-    const errorVisible = this.errorMessage
-      .waitFor({ state: 'visible', timeout: 30000 })
-      .catch(() => null);
+    const leaveLogin = this.page.waitForURL(/^(?!.*\/login\/?$).*/, { timeout: 30000 }).catch(() => null);
+    const errorVisible = this.errorMessage.waitFor({ state: "visible", timeout: 30000 }).catch(() => null);
 
     await Promise.race([leaveLogin, errorVisible]);
 
     // Jeśli wciąż jesteśmy na /login, zraportuj powód
-    if (this.page.url().includes('/login')) {
+    if (this.page.url().includes("/login")) {
       const errText = await this.getErrorMessage();
-      throw new Error(`[LoginPage] Redirect failed; still on ${this.page.url()}. Error: ${errText ?? 'none'}`);
+      throw new Error(`[LoginPage] Redirect failed; still on ${this.page.url()}. Error: ${errText ?? "none"}`);
     }
 
     // Upewnij się, że docelowa strona się załadowała
-    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForLoadState("domcontentloaded");
   }
 
   async getErrorMessage() {

@@ -1,6 +1,6 @@
-import type { APIRoute } from 'astro';
-import { registerSchema } from '@/lib/validation/auth.schema';
-import { createSupabaseServerInstance } from '@/db/supabase.client';
+import type { APIRoute } from "astro";
+import { registerSchema } from "@/lib/validation/auth.schema";
+import { createSupabaseServerInstance } from "@/db/supabase.client";
 
 /**
  * POST /api/auth/register
@@ -11,18 +11,15 @@ import { createSupabaseServerInstance } from '@/db/supabase.client';
  */
 export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => {
   // Guard: Ensure request method is POST
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
     });
   }
 
   // Guard: Prevent already authenticated users from registering
   if (locals.user) {
-    return new Response(
-      JSON.stringify({ error: 'Jesteś już zalogowany' }),
-      { status: 403 },
-    );
+    return new Response(JSON.stringify({ error: "Jesteś już zalogowany" }), { status: 403 });
   }
 
   // Guard: Parse and validate request body
@@ -30,7 +27,7 @@ export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => 
   try {
     body = await request.json();
   } catch {
-    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+    return new Response(JSON.stringify({ error: "Invalid request body" }), {
       status: 400,
     });
   }
@@ -40,7 +37,7 @@ export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => 
   if (!validationResult.success) {
     // Map Zod errors to user-friendly messages
     const fieldErrors = validationResult.error.flatten().fieldErrors;
-    let userMessage = 'Walidacja nie powiodła się';
+    let userMessage = "Walidacja nie powiodła się";
 
     // Get the first error message from any field
     if (fieldErrors.email && fieldErrors.email[0]) {
@@ -55,7 +52,7 @@ export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => 
       JSON.stringify({
         error: userMessage,
       }),
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -77,14 +74,14 @@ export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => 
   // Handle authentication errors
   if (error) {
     // Map Supabase error codes to user-friendly messages
-    let userMessage = 'Błąd rejestracji. Spróbuj ponownie.';
+    let userMessage = "Błąd rejestracji. Spróbuj ponownie.";
 
-    if (error.message.includes('already registered')) {
-      userMessage = 'Konto już istnieje. Zaloguj się lub odzyskaj hasło.';
-    } else if (error.message.includes('weak password')) {
-      userMessage = 'Hasło jest zbyt słabe. Spróbuj silniejszego hasła.';
-    } else if (error.message.includes('invalid email')) {
-      userMessage = 'Podaj prawidłowy adres e-mail.';
+    if (error.message.includes("already registered")) {
+      userMessage = "Konto już istnieje. Zaloguj się lub odzyskaj hasło.";
+    } else if (error.message.includes("weak password")) {
+      userMessage = "Hasło jest zbyt słabe. Spróbuj silniejszego hasła.";
+    } else if (error.message.includes("invalid email")) {
+      userMessage = "Podaj prawidłowy adres e-mail.";
     }
 
     return new Response(JSON.stringify({ error: userMessage }), {
@@ -101,14 +98,14 @@ export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => 
     // Email verification required - return JSON with message
     return new Response(
       JSON.stringify({
-        message: 'Sprawdź e-mail aby potwierdzić konto',
+        message: "Sprawdź e-mail aby potwierdzić konto",
         requiresVerification: true,
       }),
-      { status: 200 },
+      { status: 200 }
     );
   }
 
   // User is logged in - redirect to generator page
   // Server-side redirect ensures cookies are properly set before navigation
-  return redirect('/generate', 303);
+  return redirect("/generate", 303);
 };

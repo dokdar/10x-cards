@@ -1,4 +1,4 @@
-import type { LoginInput, RegisterInput, ForgotPasswordInput, UpdatePasswordInput } from '@/lib/validation/auth.schema';
+import type { LoginInput, RegisterInput, ForgotPasswordInput, UpdatePasswordInput } from "@/lib/validation/auth.schema";
 
 export type AuthResult = {
   ok: boolean;
@@ -10,7 +10,7 @@ export type AuthResult = {
   details?: Array<{ path: (string | number)[]; message: string }>;
 };
 
-const jsonHeaders = { 'Content-Type': 'application/json' } as const;
+const jsonHeaders = { "Content-Type": "application/json" } as const;
 
 async function parseJsonSafe<T = unknown>(res: Response): Promise<T | null> {
   try {
@@ -22,16 +22,16 @@ async function parseJsonSafe<T = unknown>(res: Response): Promise<T | null> {
 
 export async function login(input: LoginInput): Promise<AuthResult> {
   try {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
       headers: jsonHeaders,
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({ email: input.email.trim(), password: input.password }),
     });
 
     if (!res.ok) {
       const data = await parseJsonSafe<{ error?: string }>(res);
-      return { ok: false, error: data?.error || 'Błąd logowania' };
+      return { ok: false, error: data?.error || "Błąd logowania" };
     }
 
     // Server performs redirect on success (303). Fetch follows it, so check redirected
@@ -40,18 +40,18 @@ export async function login(input: LoginInput): Promise<AuthResult> {
     }
 
     // Fallback
-    return { ok: true, redirectUrl: '/generate' };
+    return { ok: true, redirectUrl: "/generate" };
   } catch (_err) {
-    return { ok: false, error: 'Błąd sieci. Spróbuj ponownie.' };
+    return { ok: false, error: "Błąd sieci. Spróbuj ponownie." };
   }
 }
 
 export async function register(input: RegisterInput): Promise<AuthResult> {
   try {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
       headers: jsonHeaders,
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({
         email: input.email.trim(),
         password: input.password,
@@ -61,7 +61,7 @@ export async function register(input: RegisterInput): Promise<AuthResult> {
 
     if (!res.ok) {
       const data = await parseJsonSafe<{ error?: string }>(res);
-      return { ok: false, error: data?.error || 'Błąd rejestracji. Spróbuj ponownie później.' };
+      return { ok: false, error: data?.error || "Błąd rejestracji. Spróbuj ponownie później." };
     }
 
     if (res.redirected) {
@@ -73,39 +73,48 @@ export async function register(input: RegisterInput): Promise<AuthResult> {
       return { ok: true, requiresVerification: true, message: data.message };
     }
 
-    return { ok: true, redirectUrl: '/generate' };
+    return { ok: true, redirectUrl: "/generate" };
   } catch (_err) {
-    return { ok: false, error: 'Błąd sieci. Spróbuj ponownie.' };
+    return { ok: false, error: "Błąd sieci. Spróbuj ponownie." };
   }
 }
 
 export async function forgotPassword(input: ForgotPasswordInput): Promise<AuthResult> {
   try {
-    const res = await fetch('/api/auth/forgot-password', {
-      method: 'POST',
+    const res = await fetch("/api/auth/forgot-password", {
+      method: "POST",
       headers: jsonHeaders,
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({ email: input.email.trim() }),
     });
 
-    const data = await parseJsonSafe<{ error?: string; success?: boolean; message?: string; details?: Array<{ path: (string | number)[]; message: string }> }>(res);
+    const data = await parseJsonSafe<{
+      error?: string;
+      success?: boolean;
+      message?: string;
+      details?: Array<{ path: (string | number)[]; message: string }>;
+    }>(res);
 
     if (!res.ok) {
-      return { ok: false, error: data?.error || 'Nie udało się wysłać e-maila. Spróbuj ponownie.', details: data?.details };
+      return {
+        ok: false,
+        error: data?.error || "Nie udało się wysłać e-maila. Spróbuj ponownie.",
+        details: data?.details,
+      };
     }
 
     return { ok: true, message: data?.message };
   } catch (_err) {
-    return { ok: false, error: 'Błąd sieci. Spróbuj ponownie.' };
+    return { ok: false, error: "Błąd sieci. Spróbuj ponownie." };
   }
 }
 
 export async function updatePassword(input: UpdatePasswordInput & { code: string }): Promise<AuthResult> {
   try {
-    const res = await fetch('/api/auth/update-password', {
-      method: 'POST',
+    const res = await fetch("/api/auth/update-password", {
+      method: "POST",
       headers: jsonHeaders,
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({
         password: input.password,
         confirmPassword: input.confirmPassword,
@@ -116,11 +125,11 @@ export async function updatePassword(input: UpdatePasswordInput & { code: string
     const data = await parseJsonSafe<{ error?: string; success?: boolean; message?: string }>(res);
 
     if (!res.ok) {
-      return { ok: false, error: data?.error || 'Nie udało się zmienić hasła. Spróbuj ponownie.' };
+      return { ok: false, error: data?.error || "Nie udało się zmienić hasła. Spróbuj ponownie." };
     }
 
     return { ok: true, message: data?.message };
   } catch (_err) {
-    return { ok: false, error: 'Błąd sieci. Spróbuj ponownie.' };
+    return { ok: false, error: "Błąd sieci. Spróbuj ponownie." };
   }
 }

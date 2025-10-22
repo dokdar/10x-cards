@@ -9,7 +9,7 @@ Usługa `OpenRouterService` będzie hermetyzować logikę komunikacji z API Open
 Konstruktor klasy `OpenRouterService` będzie inicjalizował usługę, wczytując konfigurację z zmiennych środowiskowych.
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 // Definicja schematu walidacji zmiennych środowiskowych
 const openRouterEnvSchema = z.object({
@@ -45,16 +45,16 @@ Jest to główna metoda publiczna usługi. Przyjmuje parametry generowania i zwr
 
 #### Parametry (`GenerationParams<T>`)
 
--   `systemPrompt` (string): Komunikat systemowy, który instruuje model co do jego roli i zadania.
--   `userPrompt` (string): Komunikat użytkownika, czyli właściwe zapytanie.
--   `schema` (T): Schemat Zod definiujący oczekiwaną strukturę odpowiedzi JSON.
--   `model` (string, opcjonalnie): Nazwa modelu do użycia (np. `anthropic/claude-3-haiku`). Zastępuje domyślny model, jeśli jest zdefiniowany.
--   `params` (ModelParams, opcjonalnie): Dodatkowe parametry modelu, takie jak `temperature` czy `max_tokens`.
+- `systemPrompt` (string): Komunikat systemowy, który instruuje model co do jego roli i zadania.
+- `userPrompt` (string): Komunikat użytkownika, czyli właściwe zapytanie.
+- `schema` (T): Schemat Zod definiujący oczekiwaną strukturę odpowiedzi JSON.
+- `model` (string, opcjonalnie): Nazwa modelu do użycia (np. `anthropic/claude-3-haiku`). Zastępuje domyślny model, jeśli jest zdefiniowany.
+- `params` (ModelParams, opcjonalnie): Dodatkowe parametry modelu, takie jak `temperature` czy `max_tokens`.
 
 #### Przykład Użycia
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 const flashcardSchema = z.object({
   question: z.string(),
@@ -68,29 +68,29 @@ const flashcards = await openRouterService.generateStructuredResponse({
   systemPrompt: "You are an expert flashcard creator.",
   userPrompt: "Create 3 flashcards about TypeScript.",
   schema: flashcardsSchema,
-  model: 'anthropic/claude-3-haiku'
+  model: "anthropic/claude-3-haiku",
 });
 // flashcards będzie teraz tablicą obiektów typu { question: string, answer: string }
 ```
 
 ## 4. Prywatne Metody i Pola
 
--   `private apiKey: string`: Przechowuje klucz API OpenRouter.
--   `private defaultModel?: string`: Przechowuje domyślną nazwę modelu.
--   `private buildRequestPayload(...)`: Metoda pomocnicza do budowania obiektu żądania (payload) na podstawie parametrów przekazanych do metody publicznej. Będzie konwertować schemat Zod na JSON Schema i formatować `messages`.
--   `private sendApiRequest(...)`: Metoda odpowiedzialna za wysyłanie żądania do API OpenRouter przy użyciu `fetch` lub `axios`. Będzie obsługiwać dodawanie nagłówków autoryzacyjnych.
--   `private parseAndValidateResponse<T>(...)`: Metoda, która pobiera odpowiedź z API, próbuje sparsować zawartość jako JSON, a następnie waliduje ją z podanym schematem Zod.
+- `private apiKey: string`: Przechowuje klucz API OpenRouter.
+- `private defaultModel?: string`: Przechowuje domyślną nazwę modelu.
+- `private buildRequestPayload(...)`: Metoda pomocnicza do budowania obiektu żądania (payload) na podstawie parametrów przekazanych do metody publicznej. Będzie konwertować schemat Zod na JSON Schema i formatować `messages`.
+- `private sendApiRequest(...)`: Metoda odpowiedzialna za wysyłanie żądania do API OpenRouter przy użyciu `fetch` lub `axios`. Będzie obsługiwać dodawanie nagłówków autoryzacyjnych.
+- `private parseAndValidateResponse<T>(...)`: Metoda, która pobiera odpowiedź z API, próbuje sparsować zawartość jako JSON, a następnie waliduje ją z podanym schematem Zod.
 
 ## 5. Obsługa Błędów
 
 Usługa będzie implementować niestandardowe klasy błędów w celu zapewnienia przejrzystej i łatwej w debugowaniu obsługi problemów.
 
--   `OpenRouterError`: Bazowa klasa błędu.
--   `ConfigurationError`: Rzucany przez konstruktor, gdy brakuje kluczowych zmiennych środowiskowych.
--   `ApiError`: Rzucany, gdy API OpenRouter zwraca błąd (status 4xx lub 5xx). Będzie zawierał status code i wiadomość z API.
--   `NetworkError`: Rzucany w przypadku problemów z połączeniem sieciowym.
--   `ParsingError`: Rzucany, gdy odpowiedź modelu nie jest poprawnym formatem JSON.
--   `ValidationError`: Rzucany, gdy odpowiedź JSON jest poprawna, ale nie przechodzi walidacji zgodnie ze schematem Zod.
+- `OpenRouterError`: Bazowa klasa błędu.
+- `ConfigurationError`: Rzucany przez konstruktor, gdy brakuje kluczowych zmiennych środowiskowych.
+- `ApiError`: Rzucany, gdy API OpenRouter zwraca błąd (status 4xx lub 5xx). Będzie zawierał status code i wiadomość z API.
+- `NetworkError`: Rzucany w przypadku problemów z połączeniem sieciowym.
+- `ParsingError`: Rzucany, gdy odpowiedź modelu nie jest poprawnym formatem JSON.
+- `ValidationError`: Rzucany, gdy odpowiedź JSON jest poprawna, ale nie przechodzi walidacji zgodnie ze schematem Zod.
 
 Każda metoda publiczna będzie opakowana w blok `try...catch` w celu przechwytywania i ponownego rzucania błędów jako odpowiednie, niestandardowe typy błędów.
 
@@ -118,7 +118,7 @@ W pliku `src/lib/services/openrouter.types.ts` zdefiniuj interfejsy dla parametr
 
 ```typescript
 // src/lib/services/openrouter.types.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export interface ModelParams {
   temperature?: number;

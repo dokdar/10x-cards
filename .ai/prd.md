@@ -1,12 +1,15 @@
 # Dokument wymagań produktu (PRD) - 10xCards MVP
 
 ## 1. Przegląd produktu
+
 10xCards to aplikacja internetowa zaprojektowana w celu usprawnienia procesu tworzenia fiszek edukacyjnych poprzez wykorzystanie sztucznej inteligencji. Aplikacja umożliwia użytkownikom generowanie wysokiej jakości fiszek na podstawie dostarczonego tekstu, a następnie integruje je z gotowym algorytmem powtórek (spaced repetition). Celem MVP jest zminimalizowanie czasu i wysiłku potrzebnego do tworzenia materiałów do nauki, czyniąc efektywną metodę powtórek bardziej dostępną dla szerokiego grona odbiorców.
 
 ## 2. Problem użytkownika
+
 Manualne tworzenie fiszek jest procesem czasochłonnym i pracochłonnym. Użytkownicy, którzy chcą korzystać z metody nauki opartej na powtórkach, często zniechęcają się koniecznością ręcznego przygotowywania dużej liczby materiałów. Ten wysoki próg wejścia stanowi barierę w dostępie do jednej z najskuteczniejszych technik zapamiętywania. 10xCards ma na celu rozwiązanie tego problemu, automatyzując i znacząco przyspieszając etap tworzenia fiszek.
 
 ## 3. Wymagania funkcjonalne
+
 - FR-001: System kont użytkowników oparty na uwierzytelnianiu za pomocą adresu e-mail i hasła.
 - FR-002: Generator fiszek AI, który przyjmuje tekst o długości od 1000 do 10000 znaków i generuje propozycje fiszek przy użyciu modelu OpenAI GPT-4o.
 - FR-003: Proces recenzji wygenerowanych fiszek, umożliwiający użytkownikowi akceptację, edycję lub odrzucenie każdej propozycji przed zapisaniem.
@@ -22,6 +25,7 @@ Manualne tworzenie fiszek jest procesem czasochłonnym i pracochłonnym. Użytko
 ## 4. Granice produktu
 
 ### W zakresie MVP
+
 - Uwierzytelnianie użytkowników (rejestracja, logowanie) za pomocą e-maila i hasła.
 - Generowanie fiszek przez AI na podstawie tekstu wklejonego przez użytkownika.
 - Manualne tworzenie, edycja i usuwanie fiszek.
@@ -30,6 +34,7 @@ Manualne tworzenie fiszek jest procesem czasochłonnym i pracochłonnym. Użytko
 - Aplikacja dostępna wyłącznie w wersji webowej.
 
 ### Poza zakresem MVP
+
 - Zaawansowane algorytmy powtórek (np. własna implementacja w stylu SuperMemo).
 - Import plików w formatach takich jak PDF, DOCX, itp.
 - Funkcje społecznościowe, takie jak współdzielenie zestawów fiszek.
@@ -41,6 +46,7 @@ Manualne tworzenie fiszek jest procesem czasochłonnym i pracochłonnym. Użytko
 ## 5. Historyjki użytkowników
 
 ### Zarządzanie kontem
+
 - ID: US-001
 - Tytuł: Rejestracja nowego użytkownika
 - Opis: Jako nowy użytkownik, chcę móc założyć konto za pomocą adresu e-mail i hasła, aby bezpiecznie przechowywać moje fiszki.
@@ -60,6 +66,7 @@ Manualne tworzenie fiszek jest procesem czasochłonnym i pracochłonnym. Użytko
   3. W przypadku podania błędnych danych, wyświetlany jest odpowiedni komunikat.
 
 ### Generowanie fiszek z AI
+
 - ID: US-003
 - Tytuł: Inicjowanie generowania fiszek
 - Opis: Jako zalogowany użytkownik, chcę wkleić tekst do analizy, aby uruchomić proces generowania fiszek przez AI.
@@ -87,6 +94,7 @@ Manualne tworzenie fiszek jest procesem czasochłonnym i pracochłonnym. Użytko
   2. Na ekranie pojawia się czytelny i pomocny komunikat o błędzie, np. "Nie udało się wygenerować fiszek. Spróbuj ponownie później."
 
 ### Ręczne zarządzanie fiszkami
+
 - ID: US-006
 - Tytuł: Ręczne tworzenie fiszki
 - Opis: Jako użytkownik, chcę móc ręcznie dodać nową fiszkę, aby uzupełnić moją kolekcję o własne materiały.
@@ -134,6 +142,7 @@ Manualne tworzenie fiszek jest procesem czasochłonnym i pracochłonnym. Użytko
   5. Wyniki wyszukiwania obejmują wyłącznie fiszki należące do zalogowanego użytkownika.
 
 ### Doświadczenie użytkownika (UX)
+
 - ID: US-011
 - Tytuł: Widok pustego stanu
 - Opis: Jako nowy użytkownik, po pierwszym zalogowaniu chcę zobaczyć zachętę do podjęcia działania, zamiast pustego ekranu.
@@ -142,6 +151,7 @@ Manualne tworzenie fiszek jest procesem czasochłonnym i pracochłonnym. Użytko
   2. Widok ten zawiera wyraźny przycisk "Call to Action" (np. "Stwórz pierwsze fiszki z AI"), który kieruje go na główną ścieżkę aplikacji.
 
 ## 6. Metryki sukcesu
+
 Sukces MVP będzie mierzony za pomocą dwóch kluczowych wskaźników, które odzwierciedlają przyjęcie głównej funkcjonalności produktu. Pomiar będzie realizowany poprzez analizę danych gromadzonych w dedykowanej tabeli analitycznej w bazie danych.
 
 - Metryka 1: Jakość generowanych fiszek

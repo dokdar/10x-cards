@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export type PkceParams = {
   code?: string;
@@ -16,10 +16,10 @@ export function usePkceParams(): PkceParams {
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
-      const code = params.get('code') || undefined;
-      const errorCode = params.get('error_code') || undefined;
-      const rawError = params.get('error_description') || undefined;
-      const errorDescription = rawError ? rawError.replace(/\+/g, ' ') : undefined;
+      const code = params.get("code") || undefined;
+      const errorCode = params.get("error_code") || undefined;
+      const rawError = params.get("error_description") || undefined;
+      const errorDescription = rawError ? rawError.replace(/\+/g, " ") : undefined;
       setValues({ code, errorCode, errorDescription });
     } catch {
       setValues({});

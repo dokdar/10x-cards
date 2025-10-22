@@ -1,18 +1,18 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { CandidateCard } from '../CandidateCard';
-import type { ReviewCandidateViewModel } from '@/types';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { CandidateCard } from "../CandidateCard";
+import type { ReviewCandidateViewModel } from "@/types";
 
-describe('CandidateCard', () => {
+describe("CandidateCard", () => {
   const mockCandidate: ReviewCandidateViewModel = {
-    id: 'test-id-1',
-    front: 'Pytanie testowe',
-    back: 'Odpowiedź testowa',
-    source: 'ai-full',
-    status: 'pending',
-    originalFront: 'Pytanie testowe',
-    originalBack: 'Odpowiedź testowa',
+    id: "test-id-1",
+    front: "Pytanie testowe",
+    back: "Odpowiedź testowa",
+    source: "ai-full",
+    status: "pending",
+    originalFront: "Pytanie testowe",
+    originalBack: "Odpowiedź testowa",
   };
 
   const defaultProps = {
@@ -26,199 +26,199 @@ describe('CandidateCard', () => {
     vi.clearAllMocks();
   });
 
-  it('renderuje kartę fiszki z podstawowymi elementami', () => {
+  it("renderuje kartę fiszki z podstawowymi elementami", () => {
     render(<CandidateCard {...defaultProps} />);
-    
-    expect(screen.getByText('Pytanie testowe')).toBeInTheDocument();
-    expect(screen.getByText('Odpowiedź testowa')).toBeInTheDocument();
-    expect(screen.getByText('Przód fiszki')).toBeInTheDocument();
-    expect(screen.getByText('Tył fiszki')).toBeInTheDocument();
-    expect(screen.getByRole('switch')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /odrzuć/i })).toBeInTheDocument();
+
+    expect(screen.getByText("Pytanie testowe")).toBeInTheDocument();
+    expect(screen.getByText("Odpowiedź testowa")).toBeInTheDocument();
+    expect(screen.getByText("Przód fiszki")).toBeInTheDocument();
+    expect(screen.getByText("Tył fiszki")).toBeInTheDocument();
+    expect(screen.getByRole("switch")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /odrzuć/i })).toBeInTheDocument();
   });
 
   it('wyświetla status "Oczekująca" dla kandydata w stanie pending', () => {
     render(<CandidateCard {...defaultProps} />);
-    
-    expect(screen.getByText('Oczekująca')).toBeInTheDocument();
-    expect(screen.getByRole('switch')).not.toBeChecked();
+
+    expect(screen.getByText("Oczekująca")).toBeInTheDocument();
+    expect(screen.getByRole("switch")).not.toBeChecked();
   });
 
   it('wyświetla status "Zaakceptowana" dla kandydata w stanie accepted', () => {
-    const acceptedCandidate = { ...mockCandidate, status: 'accepted' as const };
+    const acceptedCandidate = { ...mockCandidate, status: "accepted" as const };
     render(<CandidateCard {...defaultProps} candidate={acceptedCandidate} />);
-    
-    expect(screen.getByText('Zaakceptowana')).toBeInTheDocument();
-    expect(screen.getByRole('switch')).toBeChecked();
+
+    expect(screen.getByText("Zaakceptowana")).toBeInTheDocument();
+    expect(screen.getByRole("switch")).toBeChecked();
   });
 
   it('wyświetla status "Zaakceptowana" i znacznik "Edytowana" dla kandydata w stanie edited', () => {
-    const editedCandidate = { ...mockCandidate, status: 'edited' as const };
+    const editedCandidate = { ...mockCandidate, status: "edited" as const };
     render(<CandidateCard {...defaultProps} candidate={editedCandidate} />);
-    
-    expect(screen.getByText('Zaakceptowana')).toBeInTheDocument();
-    expect(screen.getByText('Edytowana')).toBeInTheDocument();
-    expect(screen.getByRole('switch')).toBeChecked();
+
+    expect(screen.getByText("Zaakceptowana")).toBeInTheDocument();
+    expect(screen.getByText("Edytowana")).toBeInTheDocument();
+    expect(screen.getByRole("switch")).toBeChecked();
   });
 
-  it('wywołuje onToggleAccept przy kliknięciu przełącznika', async () => {
+  it("wywołuje onToggleAccept przy kliknięciu przełącznika", async () => {
     const user = userEvent.setup();
     const onToggleAccept = vi.fn();
-    
+
     render(<CandidateCard {...defaultProps} onToggleAccept={onToggleAccept} />);
-    
-    const toggle = screen.getByRole('switch');
+
+    const toggle = screen.getByRole("switch");
     await user.click(toggle);
-    
-    expect(onToggleAccept).toHaveBeenCalledWith('test-id-1');
+
+    expect(onToggleAccept).toHaveBeenCalledWith("test-id-1");
   });
 
-  it('wywołuje onUpdate przy edycji pola przód', async () => {
+  it("wywołuje onUpdate przy edycji pola przód", async () => {
     const user = userEvent.setup();
     const onUpdate = vi.fn();
-    
+
     render(<CandidateCard {...defaultProps} onUpdate={onUpdate} />);
-    
-    const frontTextarea = screen.getByDisplayValue('Pytanie testowe');
-    await user.type(frontTextarea, 'X');
-    
-    expect(onUpdate).toHaveBeenCalledWith('test-id-1', 'front', 'Pytanie testoweX');
+
+    const frontTextarea = screen.getByDisplayValue("Pytanie testowe");
+    await user.type(frontTextarea, "X");
+
+    expect(onUpdate).toHaveBeenCalledWith("test-id-1", "front", "Pytanie testoweX");
   });
 
-  it('wywołuje onUpdate przy edycji pola tył', async () => {
+  it("wywołuje onUpdate przy edycji pola tył", async () => {
     const user = userEvent.setup();
     const onUpdate = vi.fn();
-    
+
     render(<CandidateCard {...defaultProps} onUpdate={onUpdate} />);
-    
-    const backTextarea = screen.getByDisplayValue('Odpowiedź testowa');
-    await user.type(backTextarea, 'X');
-    
-    expect(onUpdate).toHaveBeenCalledWith('test-id-1', 'back', 'Odpowiedź testowaX');
+
+    const backTextarea = screen.getByDisplayValue("Odpowiedź testowa");
+    await user.type(backTextarea, "X");
+
+    expect(onUpdate).toHaveBeenCalledWith("test-id-1", "back", "Odpowiedź testowaX");
   });
 
-  it('wywołuje onReject przy kliknięciu przycisku odrzuć', async () => {
+  it("wywołuje onReject przy kliknięciu przycisku odrzuć", async () => {
     const user = userEvent.setup();
     const onReject = vi.fn();
-    
+
     render(<CandidateCard {...defaultProps} onReject={onReject} />);
-    
-    const rejectButton = screen.getByRole('button', { name: /odrzuć/i });
+
+    const rejectButton = screen.getByRole("button", { name: /odrzuć/i });
     await user.click(rejectButton);
-    
-    expect(onReject).toHaveBeenCalledWith('test-id-1');
+
+    expect(onReject).toHaveBeenCalledWith("test-id-1");
   });
 
-  it('wyświetla stan odrzucony z odpowiednim stylem', () => {
-    const rejectedCandidate = { ...mockCandidate, status: 'rejected' as const };
+  it("wyświetla stan odrzucony z odpowiednim stylem", () => {
+    const rejectedCandidate = { ...mockCandidate, status: "rejected" as const };
     const { container } = render(<CandidateCard {...defaultProps} candidate={rejectedCandidate} />);
-    
+
     const card = container.firstChild as HTMLElement;
-    expect(card).toHaveClass('opacity-50', 'bg-muted/50');
-    expect(screen.getByText('Odrzucona')).toBeInTheDocument(); // Button text changes to "Odrzucona"
+    expect(card).toHaveClass("opacity-50", "bg-muted/50");
+    expect(screen.getByText("Odrzucona")).toBeInTheDocument(); // Button text changes to "Odrzucona"
   });
 
-  it('wyłącza kontrolki dla odrzuconego kandydata', () => {
-    const rejectedCandidate = { ...mockCandidate, status: 'rejected' as const };
+  it("wyłącza kontrolki dla odrzuconego kandydata", () => {
+    const rejectedCandidate = { ...mockCandidate, status: "rejected" as const };
     render(<CandidateCard {...defaultProps} candidate={rejectedCandidate} />);
-    
-    expect(screen.getByRole('switch')).toBeDisabled();
-    expect(screen.getByDisplayValue('Pytanie testowe')).toBeDisabled();
-    expect(screen.getByDisplayValue('Odpowiedź testowa')).toBeDisabled();
-    expect(screen.getByRole('button', { name: /odrzucona/i })).toBeDisabled();
+
+    expect(screen.getByRole("switch")).toBeDisabled();
+    expect(screen.getByDisplayValue("Pytanie testowe")).toBeDisabled();
+    expect(screen.getByDisplayValue("Odpowiedź testowa")).toBeDisabled();
+    expect(screen.getByRole("button", { name: /odrzucona/i })).toBeDisabled();
   });
 
-  it('wyświetla komunikat błędu dla pustych pól', () => {
-    const emptyCandidate = { ...mockCandidate, front: '', back: '' };
+  it("wyświetla komunikat błędu dla pustych pól", () => {
+    const emptyCandidate = { ...mockCandidate, front: "", back: "" };
     render(<CandidateCard {...defaultProps} candidate={emptyCandidate} />);
-    
-    expect(screen.getByText('Oba pola muszą zawierać tekst')).toBeInTheDocument();
+
+    expect(screen.getByText("Oba pola muszą zawierać tekst")).toBeInTheDocument();
   });
 
-  it('wyświetla komunikat błędu gdy tylko przód jest pusty', () => {
-    const emptyFrontCandidate = { ...mockCandidate, front: '' };
+  it("wyświetla komunikat błędu gdy tylko przód jest pusty", () => {
+    const emptyFrontCandidate = { ...mockCandidate, front: "" };
     render(<CandidateCard {...defaultProps} candidate={emptyFrontCandidate} />);
-    
-    expect(screen.getByText('Oba pola muszą zawierać tekst')).toBeInTheDocument();
+
+    expect(screen.getByText("Oba pola muszą zawierać tekst")).toBeInTheDocument();
   });
 
-  it('wyświetla komunikat błędu gdy tylko tył jest pusty', () => {
-    const emptyBackCandidate = { ...mockCandidate, back: '' };
+  it("wyświetla komunikat błędu gdy tylko tył jest pusty", () => {
+    const emptyBackCandidate = { ...mockCandidate, back: "" };
     render(<CandidateCard {...defaultProps} candidate={emptyBackCandidate} />);
-    
-    expect(screen.getByText('Oba pola muszą zawierać tekst')).toBeInTheDocument();
+
+    expect(screen.getByText("Oba pola muszą zawierać tekst")).toBeInTheDocument();
   });
 
-  it('nie wyświetla komunikatu błędu dla odrzuconego kandydata z pustymi polami', () => {
-    const rejectedEmptyCandidate = { 
-      ...mockCandidate, 
-      front: '', 
-      back: '', 
-      status: 'rejected' as const 
+  it("nie wyświetla komunikatu błędu dla odrzuconego kandydata z pustymi polami", () => {
+    const rejectedEmptyCandidate = {
+      ...mockCandidate,
+      front: "",
+      back: "",
+      status: "rejected" as const,
     };
     render(<CandidateCard {...defaultProps} candidate={rejectedEmptyCandidate} />);
-    
-    expect(screen.queryByText('Oba pola muszą zawierać tekst')).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Oba pola muszą zawierać tekst")).not.toBeInTheDocument();
   });
 
-  it('wyłącza przełącznik dla kandydata z pustymi polami', () => {
-    const emptyCandidate = { ...mockCandidate, front: '', back: '' };
+  it("wyłącza przełącznik dla kandydata z pustymi polami", () => {
+    const emptyCandidate = { ...mockCandidate, front: "", back: "" };
     render(<CandidateCard {...defaultProps} candidate={emptyCandidate} />);
-    
-    expect(screen.getByRole('switch')).toBeDisabled();
+
+    expect(screen.getByRole("switch")).toBeDisabled();
   });
 
-  it('wyświetla specjalny styl dla zaakceptowanego kandydata', () => {
-    const acceptedCandidate = { ...mockCandidate, status: 'accepted' as const };
+  it("wyświetla specjalny styl dla zaakceptowanego kandydata", () => {
+    const acceptedCandidate = { ...mockCandidate, status: "accepted" as const };
     const { container } = render(<CandidateCard {...defaultProps} candidate={acceptedCandidate} />);
-    
+
     const card = container.firstChild as HTMLElement;
-    expect(card).toHaveClass('border-primary/50', 'bg-primary/5');
+    expect(card).toHaveClass("border-primary/50", "bg-primary/5");
   });
 
-  it('ustawia aria-invalid dla pustych pól', () => {
-    const emptyCandidate = { ...mockCandidate, front: '', back: '' };
+  it("ustawia aria-invalid dla pustych pól", () => {
+    const emptyCandidate = { ...mockCandidate, front: "", back: "" };
     render(<CandidateCard {...defaultProps} candidate={emptyCandidate} />);
-    
+
     const frontTextarea = screen.getByLabelText(/przód fiszki/i);
     const backTextarea = screen.getByLabelText(/tył fiszki/i);
-    
-    expect(frontTextarea).toHaveAttribute('aria-invalid', 'true');
-    expect(backTextarea).toHaveAttribute('aria-invalid', 'true');
+
+    expect(frontTextarea).toHaveAttribute("aria-invalid", "true");
+    expect(backTextarea).toHaveAttribute("aria-invalid", "true");
   });
 
-  it('nie ustawia aria-invalid dla wypełnionych pól', () => {
+  it("nie ustawia aria-invalid dla wypełnionych pól", () => {
     render(<CandidateCard {...defaultProps} />);
-    
+
     const frontTextarea = screen.getByLabelText(/przód fiszki/i);
     const backTextarea = screen.getByLabelText(/tył fiszki/i);
-    
-    expect(frontTextarea).toHaveAttribute('aria-invalid', 'false');
-    expect(backTextarea).toHaveAttribute('aria-invalid', 'false');
+
+    expect(frontTextarea).toHaveAttribute("aria-invalid", "false");
+    expect(backTextarea).toHaveAttribute("aria-invalid", "false");
   });
 
-  it('ma odpowiednie aria-label dla przełącznika', () => {
+  it("ma odpowiednie aria-label dla przełącznika", () => {
     render(<CandidateCard {...defaultProps} />);
-    
-    const toggle = screen.getByRole('switch');
-    expect(toggle).toHaveAttribute('aria-label', 'Accept flashcard');
+
+    const toggle = screen.getByRole("switch");
+    expect(toggle).toHaveAttribute("aria-label", "Accept flashcard");
   });
 
-  it('ma odpowiednie id i htmlFor dla etykiet', () => {
+  it("ma odpowiednie id i htmlFor dla etykiet", () => {
     render(<CandidateCard {...defaultProps} />);
-    
-    const frontLabel = screen.getByText('Przód fiszki');
-    const backLabel = screen.getByText('Tył fiszki');
-    const frontTextarea = screen.getByDisplayValue('Pytanie testowe');
-    const backTextarea = screen.getByDisplayValue('Odpowiedź testowa');
-    
-    expect(frontLabel).toHaveAttribute('for', 'front-test-id-1');
-    expect(backLabel).toHaveAttribute('for', 'back-test-id-1');
-    expect(frontTextarea).toHaveAttribute('id', 'front-test-id-1');
-    expect(backTextarea).toHaveAttribute('id', 'back-test-id-1');
+
+    const frontLabel = screen.getByText("Przód fiszki");
+    const backLabel = screen.getByText("Tył fiszki");
+    const frontTextarea = screen.getByDisplayValue("Pytanie testowe");
+    const backTextarea = screen.getByDisplayValue("Odpowiedź testowa");
+
+    expect(frontLabel).toHaveAttribute("for", "front-test-id-1");
+    expect(backLabel).toHaveAttribute("for", "back-test-id-1");
+    expect(frontTextarea).toHaveAttribute("id", "front-test-id-1");
+    expect(backTextarea).toHaveAttribute("id", "back-test-id-1");
   });
 
-  it('snapshot test - stan domyślny (pending)', () => {
+  it("snapshot test - stan domyślny (pending)", () => {
     const { container } = render(<CandidateCard {...defaultProps} />);
     expect(container.firstChild).toMatchInlineSnapshot(`
       <div
@@ -318,8 +318,8 @@ describe('CandidateCard', () => {
     `);
   });
 
-  it('snapshot test - stan zaakceptowany z edycją', () => {
-    const editedCandidate = { ...mockCandidate, status: 'edited' as const };
+  it("snapshot test - stan zaakceptowany z edycją", () => {
+    const editedCandidate = { ...mockCandidate, status: "edited" as const };
     const { container } = render(<CandidateCard {...defaultProps} candidate={editedCandidate} />);
     expect(container.firstChild).toMatchInlineSnapshot(`
       <div
@@ -424,8 +424,8 @@ describe('CandidateCard', () => {
     `);
   });
 
-  it('snapshot test - stan odrzucony', () => {
-    const rejectedCandidate = { ...mockCandidate, status: 'rejected' as const };
+  it("snapshot test - stan odrzucony", () => {
+    const rejectedCandidate = { ...mockCandidate, status: "rejected" as const };
     const { container } = render(<CandidateCard {...defaultProps} candidate={rejectedCandidate} />);
     expect(container.firstChild).toMatchInlineSnapshot(`
       <div

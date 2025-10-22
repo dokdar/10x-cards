@@ -24,8 +24,8 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   console.log("[LOGOUT API] Incoming cookies:", incomingCookies ? "YES" : "NO");
   if (incomingCookies) {
     // Log all cookie names (not values for security)
-    const cookieNames = incomingCookies.split(';').map(c => c.trim().split('=')[0]);
-    console.log("[LOGOUT API] Cookie names:", cookieNames.join(', '));
+    const cookieNames = incomingCookies.split(";").map((c) => c.trim().split("=")[0]);
+    console.log("[LOGOUT API] Cookie names:", cookieNames.join(", "));
   }
 
   // Create server-side Supabase client

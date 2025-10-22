@@ -14,16 +14,16 @@ Wszystkie tabele aplikacji znajdują się w schemacie `public` (standardowym dla
 
 Przechowuje fiszki stworzone przez użytkowników.
 
-| Nazwa kolumny   | Typ danych    | Ograniczenia                                                                    | Opis                                                                                        |
-| --------------- | ------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `id`            | `uuid`        | `PRIMARY KEY`, `DEFAULT gen_random_uuid()`                                      | Unikalny identyfikator fiszki.                                                              |
-| `user_id`       | `uuid`        | `NOT NULL`, `FOREIGN KEY REFERENCES auth.users(id) ON DELETE CASCADE`           | Identyfikator użytkownika, do którego należy fiszka.                                        |
-| `generation_id` | `uuid`        | `NULL`, `FOREIGN KEY REFERENCES public.generations(id) ON DELETE SET NULL`      | Opcjonalny identyfikator sesji AI, która wygenerowała fiszkę.                               |
-| `front`         | `VARCHAR(200)`| `NOT NULL`                                                                      | Treść przedniej strony fiszki.                                                              |
-| `back`          | `VARCHAR(500)`| `NOT NULL`                                                                      | Treść tylnej strony fiszki.                                                                 |
-| `source`        | `VARCHAR(20)` | `NOT NULL`, `CHECK (source IN ('ai-full', 'ai-edited', 'manual'))`              | Źródło pochodzenia fiszki.                                                                  |
-| `created_at`    | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()`                                                     | Czas utworzenia rekordu.                                                                    |
-| `updated_at`    | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT now()`                                                     | Czas ostatniej aktualizacji rekordu (zarządzany przez trigger).                             |
+| Nazwa kolumny   | Typ danych     | Ograniczenia                                                               | Opis                                                            |
+| --------------- | -------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `id`            | `uuid`         | `PRIMARY KEY`, `DEFAULT gen_random_uuid()`                                 | Unikalny identyfikator fiszki.                                  |
+| `user_id`       | `uuid`         | `NOT NULL`, `FOREIGN KEY REFERENCES auth.users(id) ON DELETE CASCADE`      | Identyfikator użytkownika, do którego należy fiszka.            |
+| `generation_id` | `uuid`         | `NULL`, `FOREIGN KEY REFERENCES public.generations(id) ON DELETE SET NULL` | Opcjonalny identyfikator sesji AI, która wygenerowała fiszkę.   |
+| `front`         | `VARCHAR(200)` | `NOT NULL`                                                                 | Treść przedniej strony fiszki.                                  |
+| `back`          | `VARCHAR(500)` | `NOT NULL`                                                                 | Treść tylnej strony fiszki.                                     |
+| `source`        | `VARCHAR(20)`  | `NOT NULL`, `CHECK (source IN ('ai-full', 'ai-edited', 'manual'))`         | Źródło pochodzenia fiszki.                                      |
+| `created_at`    | `TIMESTAMPTZ`  | `NOT NULL`, `DEFAULT now()`                                                | Czas utworzenia rekordu.                                        |
+| `updated_at`    | `TIMESTAMPTZ`  | `NOT NULL`, `DEFAULT now()`                                                | Czas ostatniej aktualizacji rekordu (zarządzany przez trigger). |
 
 ---
 
@@ -31,20 +31,20 @@ Przechowuje fiszki stworzone przez użytkowników.
 
 Loguje metadane pomyślnych sesji generowania fiszek przez AI w celu zbierania metryk.
 
-| Nazwa kolumny                | Typ danych      | Ograniczenia                                                                   | Opis                                                                                                          |
-| ---------------------------- | --------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| `id`                         | `uuid`          | `PRIMARY KEY`, `DEFAULT gen_random_uuid()`                                     | Unikalny identyfikator sesji generowania.                                                                     |
-| `user_id`                    | `uuid`          | `NOT NULL`, `FOREIGN KEY REFERENCES auth.users(id) ON DELETE CASCADE`          | Identyfikator użytkownika, który zainicjował generowanie.                                                     |
-| `model`                      | `VARCHAR(100)`  | `NULL`                                                                         | Nazwa modelu AI użytego do generowania.                                                                       |
-| `source_text_hash`           | `VARCHAR(100)`  | `NOT NULL`                                                                     | Skrót (hash) tekstu źródłowego, używany do identyfikacji unikalności tekstu bez przechowywania go.            |
-| `source_text_length`         | `INTEGER`       | `NOT NULL, CHECK (source_text_length >= 1000 AND source_text_length <= 10000)` | Długość (liczba znaków) tekstu źródłowego.                                                                    |
-| `generated_count`            | `INTEGER`       | `NOT NULL`                                                                     | Całkowita liczba fiszek-kandydatów wygenerowanych przez AI.                                                   |
-| `accepted_unedited_count`    | `INTEGER`       | `NULL`                                                                         | Liczba fiszek zaakceptowanych przez użytkownika bez edycji.                                                   |
-| `accepted_edited_count`      | `INTEGER`       | `NULL`                                                                         | Liczba fiszek zaakceptowanych przez użytkownika po edycji.                                                    |
-| `rejected_count`             | `INTEGER`       | `NOT NULL`                                                                     | Liczba fiszek odrzuconych przez użytkownika.                                                                  |
-| `generation_duration`        | `INTEGER`       | `NOT NULL`                                                                     | Czas trwania procesu generowania fiszek (w milisekundach).                                                    |
-| `created_at`                 | `TIMESTAMPTZ`   | `NOT NULL`, `DEFAULT now()`                                                    | Czas utworzenia rekordu.                                                                                      |
-| `updated_at`                 | `TIMESTAMPTZ`   | `NOT NULL`, `DEFAULT now()`                                                    | Czas ostatniej aktualizacji rekordu (zarządzany przez trigger).                                               |
+| Nazwa kolumny             | Typ danych     | Ograniczenia                                                                   | Opis                                                                                               |
+| ------------------------- | -------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `id`                      | `uuid`         | `PRIMARY KEY`, `DEFAULT gen_random_uuid()`                                     | Unikalny identyfikator sesji generowania.                                                          |
+| `user_id`                 | `uuid`         | `NOT NULL`, `FOREIGN KEY REFERENCES auth.users(id) ON DELETE CASCADE`          | Identyfikator użytkownika, który zainicjował generowanie.                                          |
+| `model`                   | `VARCHAR(100)` | `NULL`                                                                         | Nazwa modelu AI użytego do generowania.                                                            |
+| `source_text_hash`        | `VARCHAR(100)` | `NOT NULL`                                                                     | Skrót (hash) tekstu źródłowego, używany do identyfikacji unikalności tekstu bez przechowywania go. |
+| `source_text_length`      | `INTEGER`      | `NOT NULL, CHECK (source_text_length >= 1000 AND source_text_length <= 10000)` | Długość (liczba znaków) tekstu źródłowego.                                                         |
+| `generated_count`         | `INTEGER`      | `NOT NULL`                                                                     | Całkowita liczba fiszek-kandydatów wygenerowanych przez AI.                                        |
+| `accepted_unedited_count` | `INTEGER`      | `NULL`                                                                         | Liczba fiszek zaakceptowanych przez użytkownika bez edycji.                                        |
+| `accepted_edited_count`   | `INTEGER`      | `NULL`                                                                         | Liczba fiszek zaakceptowanych przez użytkownika po edycji.                                         |
+| `rejected_count`          | `INTEGER`      | `NOT NULL`                                                                     | Liczba fiszek odrzuconych przez użytkownika.                                                       |
+| `generation_duration`     | `INTEGER`      | `NOT NULL`                                                                     | Czas trwania procesu generowania fiszek (w milisekundach).                                         |
+| `created_at`              | `TIMESTAMPTZ`  | `NOT NULL`, `DEFAULT now()`                                                    | Czas utworzenia rekordu.                                                                           |
+| `updated_at`              | `TIMESTAMPTZ`  | `NOT NULL`, `DEFAULT now()`                                                    | Czas ostatniej aktualizacji rekordu (zarządzany przez trigger).                                    |
 
 ---
 
@@ -52,16 +52,16 @@ Loguje metadane pomyślnych sesji generowania fiszek przez AI w celu zbierania m
 
 Loguje informacje o nieudanych próbach generowania fiszek przez AI w celach diagnostycznych.
 
-| Nazwa kolumny        | Typ danych      | Ograniczenia                                                               | Opis                                                                  |
-| -------------------- | --------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `id`                 | `uuid`          | `PRIMARY KEY`, `DEFAULT gen_random_uuid()`                                 | Unikalny identyfikator logu błędu.                                    |
-| `user_id`            | `uuid`          | `NOT NULL`, `FOREIGN KEY REFERENCES auth.users(id) ON DELETE CASCADE`      | Identyfikator użytkownika, którego dotyczył błąd.                     |
-| `model`              | `VARCHAR(100)`  | `NULL`                                                                     | Nazwa modelu AI, jeśli była dostępna w momencie błędu.                |
-| `source_text_hash`   | `VARCHAR(100)`  | `NULL`                                                                     | Skrót tekstu źródłowego, jeśli był dostępny w momencie błędu.         |
-| `source_text_length` | `INTEGER`       | `NULL, CHECK (source_text_length >= 1000 AND source_text_length <= 10000)` | Długość tekstu źródłowego, jeśli była dostępna w momencie błędu.      |
-| `error_code`         | `TEXT`          | `NULL`                                                                     | Kod błędu zwrócony przez API lub system.                              |
-| `error_message`      | `TEXT`          | `NOT NULL`                                                                 | Pełna treść komunikatu błędu.                                         |
-| `created_at`         | `TIMESTAMPTZ`   | `NOT NULL`, `DEFAULT now()`                                                | Czas wystąpienia błędu.                                               |
+| Nazwa kolumny        | Typ danych     | Ograniczenia                                                               | Opis                                                             |
+| -------------------- | -------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `id`                 | `uuid`         | `PRIMARY KEY`, `DEFAULT gen_random_uuid()`                                 | Unikalny identyfikator logu błędu.                               |
+| `user_id`            | `uuid`         | `NOT NULL`, `FOREIGN KEY REFERENCES auth.users(id) ON DELETE CASCADE`      | Identyfikator użytkownika, którego dotyczył błąd.                |
+| `model`              | `VARCHAR(100)` | `NULL`                                                                     | Nazwa modelu AI, jeśli była dostępna w momencie błędu.           |
+| `source_text_hash`   | `VARCHAR(100)` | `NULL`                                                                     | Skrót tekstu źródłowego, jeśli był dostępny w momencie błędu.    |
+| `source_text_length` | `INTEGER`      | `NULL, CHECK (source_text_length >= 1000 AND source_text_length <= 10000)` | Długość tekstu źródłowego, jeśli była dostępna w momencie błędu. |
+| `error_code`         | `TEXT`         | `NULL`                                                                     | Kod błędu zwrócony przez API lub system.                         |
+| `error_message`      | `TEXT`         | `NOT NULL`                                                                 | Pełna treść komunikatu błędu.                                    |
+| `created_at`         | `TIMESTAMPTZ`  | `NOT NULL`, `DEFAULT now()`                                                | Czas wystąpienia błędu.                                          |
 
 ---
 
@@ -94,10 +94,10 @@ EXECUTE PROCEDURE public.handle_updated_at();
 
 ## 2. Relacje między tabelami
 
--   **`auth.users` <-> `public.flashcards` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele fiszek. Usunięcie użytkownika powoduje usunięcie wszystkich jego fiszek (`ON DELETE CASCADE`).
--   **`auth.users` <-> `public.generations` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele logów generacji. Usunięcie użytkownika powoduje usunięcie wszystkich jego logów (`ON DELETE CASCADE`).
--   **`auth.users` <-> `public.generation_error_logs` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele logów błędów. Usunięcie użytkownika powoduje usunięcie wszystkich jego logów błędów (`ON DELETE CASCADE`).
--   **`public.generations` <-> `public.flashcards` (Jeden-do-wielu)**: Jedna sesja generowania może stworzyć wiele fiszek. Usunięcie logu generacji nie usuwa fiszek, a jedynie zeruje pole `generation_id` w powiązanych fiszkach (`ON DELETE SET NULL`).
+- **`auth.users` <-> `public.flashcards` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele fiszek. Usunięcie użytkownika powoduje usunięcie wszystkich jego fiszek (`ON DELETE CASCADE`).
+- **`auth.users` <-> `public.generations` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele logów generacji. Usunięcie użytkownika powoduje usunięcie wszystkich jego logów (`ON DELETE CASCADE`).
+- **`auth.users` <-> `public.generation_error_logs` (Jeden-do-wielu)**: Jeden użytkownik może mieć wiele logów błędów. Usunięcie użytkownika powoduje usunięcie wszystkich jego logów błędów (`ON DELETE CASCADE`).
+- **`public.generations` <-> `public.flashcards` (Jeden-do-wielu)**: Jedna sesja generowania może stworzyć wiele fiszek. Usunięcie logu generacji nie usuwa fiszek, a jedynie zeruje pole `generation_id` w powiązanych fiszkach (`ON DELETE SET NULL`).
 
 ## 3. Indeksy
 

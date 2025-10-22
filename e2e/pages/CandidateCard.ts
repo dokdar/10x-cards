@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test';
+import type { Page, Locator } from "@playwright/test";
 
 export class CandidateCard {
   readonly page: Page;
@@ -62,7 +62,7 @@ export class CandidateCard {
   }
 
   async waitForVisible() {
-    await this.card.waitFor({ state: 'visible' });
+    await this.card.waitFor({ state: "visible" });
   }
 
   async focus() {
@@ -74,14 +74,14 @@ export class CandidateCard {
   }
 
   async getAriaLabel() {
-    return await this.card.getAttribute('aria-label');
+    return await this.card.getAttribute("aria-label");
   }
 
   async getSwitchAriaLabel() {
-    return await this.acceptSwitch.getAttribute('aria-label');
+    return await this.acceptSwitch.getAttribute("aria-label");
   }
 
   async getRejectButtonAriaLabel() {
-    return await this.rejectButton.getAttribute('aria-label');
+    return await this.rejectButton.getAttribute("aria-label");
   }
 }

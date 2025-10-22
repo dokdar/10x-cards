@@ -13,6 +13,7 @@ Głównym celem testów jest zapewnienie, że aplikacja 10xCards jest niezawodna
 ### 1.3. Zakres testów
 
 Testy obejmą następujące obszary funkcjonalne i niefunkcjonalne:
+
 - **Uwierzytelnianie:** Rejestracja, logowanie, wylogowywanie, odzyskiwanie hasła.
 - **Generowanie fiszek:** Tworzenie nowego zadania generowania, monitorowanie statusu, obsługa wyników.
 - **Przeglądanie fiszek:** Wyświetlanie, ocenianie i zarządzanie sesją nauki.
@@ -116,7 +117,7 @@ Testy obejmą następujące obszary funkcjonalne i niefunkcjonalne:
 
 ### 4.2. Testy integracyjne
 
-- **Punkty końcowe API (`src/pages/api/**/*.ts`):**
+- **Punkty końcowe API (`src/pages/api/**/\*.ts`):\*\*
   - **`auth`:** Testowanie `login`, `register`, `logout` poprzez wysyłanie żądań HTTP i weryfikację odpowiedzi (status, ciało, nagłówki, cookies). Użycie MSW do mockowania odpowiedzi Supabase.
   - **`generations.ts`:** Weryfikacja procesu tworzenia zadania generowania, sprawdzania statusu. MSW do mockowania OpenRouter API.
   - **`flashcards.ts`:** Testowanie pobierania fiszek dla zalogowanego użytkownika z użyciem lokalnej instancji Supabase.
@@ -173,11 +174,11 @@ Testy obejmą następujące obszary funkcjonalne i niefunkcjonalne:
   - **Bundle Size Analysis:** Monitorowanie rozmiaru paczek JavaScript/CSS.
     - Alert przy wzroście > 10% w PR.
     - Analiza tree-shaking i code splitting.
-  - **Playwright Performance API:** 
+  - **Playwright Performance API:**
     - Pomiar czasu ładowania krytycznych komponentów.
     - Test wydajności długich list fiszek (> 100 elementów).
     - Pomiar czasu odpowiedzi UI na interakcje użytkownika.
-  - **Memory Leaks:** 
+  - **Memory Leaks:**
     - Testy wykrywające wycieki pamięci w długotrwałych sesjach.
     - Monitoring użycia pamięci podczas generowania fiszek.
 - **Bezpieczeństwo:**
@@ -209,11 +210,11 @@ Testy obejmą następujące obszary funkcjonalne i niefunkcjonalne:
 
 ## 5. Środowisko testowe
 
-- **Środowisko lokalne:** 
+- **Środowisko lokalne:**
   - Uruchamianie testów jednostkowych i integracyjnych lokalnie przez deweloperów.
   - Lokalna instancja Supabase za pomocą Docker lub Supabase CLI.
   - MSW dla mockowania zewnętrznych API (OpenRouter).
-- **Środowisko CI (GitHub Actions):** 
+- **Środowisko CI (GitHub Actions):**
   - Dedykowane środowisko do automatycznego uruchamiania wszystkich testów.
   - Kontener PostgreSQL dla testów integracyjnych z bazą danych.
   - Paralelizacja testów dla szybszego wykonania.
@@ -227,17 +228,17 @@ Testy obejmą następujące obszary funkcjonalne i niefunkcjonalne:
 
 ## 6. Harmonogram i zasoby
 
-- **Faza 1 (Setup):** 
+- **Faza 1 (Setup):**
   - Konfiguracja Vitest, React Testing Library, Playwright, MSW, axe-core w projekcie.
   - Setup lokalnej instancji Supabase dla testów.
   - Konfiguracja GitHub Actions CI/CD.
   - (Szacowany czas: 12-16 godzin)
-- **Faza 2 (Implementacja - Unit/Integration):** 
+- **Faza 2 (Implementacja - Unit/Integration):**
   - Pisanie testów jednostkowych dla komponentów, serwisów, walidacji.
   - Testy integracyjne API z MSW i lokalną bazą.
   - Testy dostępności z vitest-axe.
   - (Szacowany czas: 50-70 godzin)
-- **Faza 3 (Implementacja - E2E):** 
+- **Faza 3 (Implementacja - E2E):**
   - Implementacja kluczowych scenariuszy E2E z Playwright.
   - Testy dostępności E2E z axe-core.
   - Setup testów wizualnych.
@@ -306,28 +307,28 @@ Testy obejmą następujące obszary funkcjonalne i niefunkcjonalne:
 
 ```typescript
 // vitest.config.ts
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'happy-dom',
-    setupFiles: ['./src/test/setup.ts'],
+    environment: "happy-dom",
+    setupFiles: ["./src/test/setup.ts"],
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      include: ['src/lib/**', 'src/pages/api/**'],
-      exclude: ['**/*.test.ts', '**/*.spec.ts', '**/node_modules/**'],
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      include: ["src/lib/**", "src/pages/api/**"],
+      exclude: ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**"],
       thresholds: {
         lines: 80,
         functions: 80,
         branches: 80,
-        statements: 80
-      }
-    }
-  }
+        statements: 80,
+      },
+    },
+  },
 });
 ```
 
@@ -335,33 +336,33 @@ export default defineConfig({
 
 ```typescript
 // src/test/mocks/handlers.ts
-import { http, HttpResponse } from 'msw';
+import { http, HttpResponse } from "msw";
 
 export const handlers = [
   // Mock Supabase Auth
-  http.post('*/auth/v1/token', () => {
+  http.post("*/auth/v1/token", () => {
     return HttpResponse.json({
-      access_token: 'mock-token',
-      user: { id: 'test-user-id', email: 'test@example.com' }
+      access_token: "mock-token",
+      user: { id: "test-user-id", email: "test@example.com" },
     });
   }),
-  
+
   // Mock OpenRouter API
-  http.post('https://openrouter.ai/api/v1/chat/completions', () => {
+  http.post("https://openrouter.ai/api/v1/chat/completions", () => {
     return HttpResponse.json({
-      choices: [{ message: { content: 'Mock flashcard data' } }]
+      choices: [{ message: { content: "Mock flashcard data" } }],
     });
-  })
+  }),
 ];
 
 // src/test/setup.ts
-import '@testing-library/jest-dom';
-import { setupServer } from 'msw/node';
-import { handlers } from './mocks/handlers';
+import "@testing-library/jest-dom";
+import { setupServer } from "msw/node";
+import { handlers } from "./mocks/handlers";
 
 export const server = setupServer(...handlers);
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 ```
@@ -370,39 +371,39 @@ afterAll(() => server.close());
 
 ```typescript
 // playwright.config.ts
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  testDir: './e2e',
+  testDir: "./e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: "html",
   use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure'
+    baseURL: "http://localhost:3000",
+    trace: "on-first-retry",
+    screenshot: "only-on-failure",
   },
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] }
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] }
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
     },
     {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 13'] }
-    }
+      name: "Mobile Safari",
+      use: { ...devices["iPhone 13"] },
+    },
   ],
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI
-  }
+    command: "npm run dev",
+    url: "http://localhost:3000",
+    reuseExistingServer: !process.env.CI,
+  },
 });
 ```
 
@@ -410,15 +411,15 @@ export default defineConfig({
 
 ```typescript
 // e2e/accessibility.spec.ts
-import { test, expect } from '@playwright/test';
-import { injectAxe, checkA11y } from '@axe-core/playwright';
+import { test, expect } from "@playwright/test";
+import { injectAxe, checkA11y } from "@axe-core/playwright";
 
-test('login page should not have accessibility violations', async ({ page }) => {
-  await page.goto('/login');
+test("login page should not have accessibility violations", async ({ page }) => {
+  await page.goto("/login");
   await injectAxe(page);
   await checkA11y(page, null, {
     detailedReport: true,
-    detailedReportOptions: { html: true }
+    detailedReportOptions: { html: true },
   });
 });
 ```
@@ -427,12 +428,12 @@ test('login page should not have accessibility violations', async ({ page }) => 
 
 ```typescript
 // e2e/visual.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('login page visual regression', async ({ page }) => {
-  await page.goto('/login');
-  await expect(page).toHaveScreenshot('login-page.png', {
-    maxDiffPixels: 100
+test("login page visual regression", async ({ page }) => {
+  await page.goto("/login");
+  await expect(page).toHaveScreenshot("login-page.png", {
+    maxDiffPixels: 100,
   });
 });
 ```
@@ -508,11 +509,11 @@ test('login page visual regression', async ({ page }) => {
 
 ```typescript
 // e2e/performance.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('measure Core Web Vitals', async ({ page }) => {
-  await page.goto('/generate');
-  
+test("measure Core Web Vitals", async ({ page }) => {
+  await page.goto("/generate");
+
   // Mierzenie LCP
   const lcp = await page.evaluate(() => {
     return new Promise((resolve) => {
@@ -520,37 +521,37 @@ test('measure Core Web Vitals', async ({ page }) => {
         const entries = list.getEntries();
         const lastEntry = entries[entries.length - 1];
         resolve(lastEntry.renderTime || lastEntry.loadTime);
-      }).observe({ entryTypes: ['largest-contentful-paint'] });
+      }).observe({ entryTypes: ["largest-contentful-paint"] });
     });
   });
-  
+
   expect(lcp).toBeLessThan(2500);
 });
 
-test('measure page load time', async ({ page }) => {
+test("measure page load time", async ({ page }) => {
   const startTime = Date.now();
-  await page.goto('/');
-  await page.waitForLoadState('networkidle');
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
   const loadTime = Date.now() - startTime;
-  
+
   expect(loadTime).toBeLessThan(3000);
 });
 
-test('test performance with large flashcard list', async ({ page }) => {
+test("test performance with large flashcard list", async ({ page }) => {
   // Setup: Wygeneruj 100 fiszek w bazie
-  await page.goto('/review');
-  
+  await page.goto("/review");
+
   const startTime = Date.now();
   await page.waitForSelector('[data-testid="flashcard-list"]');
   const renderTime = Date.now() - startTime;
-  
+
   expect(renderTime).toBeLessThan(1000);
-  
+
   // Test scroll performance
   await page.evaluate(() => {
     window.scrollTo(0, document.body.scrollHeight);
   });
-  
+
   // CLS nie powinno wzrosnąć
   const cls = await page.evaluate(() => {
     return new Promise((resolve) => {
@@ -562,43 +563,39 @@ test('test performance with large flashcard list', async ({ page }) => {
           }
         }
         resolve(clsValue);
-      }).observe({ entryTypes: ['layout-shift'] });
-      
+      }).observe({ entryTypes: ["layout-shift"] });
+
       setTimeout(() => resolve(clsValue), 1000);
     });
   });
-  
+
   expect(cls).toBeLessThan(0.1);
 });
 
-test('detect memory leaks in generation process', async ({ page }) => {
-  await page.goto('/generate');
-  
+test("detect memory leaks in generation process", async ({ page }) => {
+  await page.goto("/generate");
+
   // Pobierz baseline pamięci
-  const initialMemory = await page.evaluate(() => 
-    (performance as any).memory?.usedJSHeapSize || 0
-  );
-  
+  const initialMemory = await page.evaluate(() => (performance as any).memory?.usedJSHeapSize || 0);
+
   // Wykonaj 10 cykli generowania
   for (let i = 0; i < 10; i++) {
-    await page.fill('[data-testid="source-text"]', 'Test content for flashcard generation');
+    await page.fill('[data-testid="source-text"]', "Test content for flashcard generation");
     await page.click('[data-testid="generate-button"]');
     await page.waitForSelector('[data-testid="generation-complete"]');
     await page.click('[data-testid="clear-button"]');
   }
-  
+
   // Wymuś garbage collection (wymaga --expose-gc w Node)
   await page.evaluate(() => {
     if (global.gc) global.gc();
   });
-  
-  const finalMemory = await page.evaluate(() => 
-    (performance as any).memory?.usedJSHeapSize || 0
-  );
-  
+
+  const finalMemory = await page.evaluate(() => (performance as any).memory?.usedJSHeapSize || 0);
+
   const memoryIncrease = finalMemory - initialMemory;
   const memoryIncreaseMB = memoryIncrease / 1024 / 1024;
-  
+
   // Wzrost pamięci nie powinien przekraczać 10MB
   expect(memoryIncreaseMB).toBeLessThan(10);
 });
@@ -623,35 +620,35 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      
+          node-version: "20"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build
         run: npm run build
-      
+
       - name: Run Lighthouse CI
         run: |
           npm install -g @lhci/cli
           lhci autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-  
+
   bundle-size:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      
+          node-version: "20"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build
         run: npm run build
-      
+
       - name: Check bundle size
         run: npm run test:size
 ```
@@ -679,41 +676,41 @@ jobs:
 
 ```typescript
 // src/types.test-d.ts
-import { expectType, expectError, expectAssignable } from 'tsd';
-import type { User, Flashcard, Generation, GenerationStatus } from './types';
+import { expectType, expectError, expectAssignable } from "tsd";
+import type { User, Flashcard, Generation, GenerationStatus } from "./types";
 
 // Test User type
 expectType<User>({
-  id: '123',
-  email: 'test@example.com',
-  created_at: '2024-01-01'
+  id: "123",
+  email: "test@example.com",
+  created_at: "2024-01-01",
 });
 
 // Powinien zwrócić błąd dla niepoprawnego typu
 expectError<User>({
   id: 123, // Błąd: id powinno być string
-  email: 'test@example.com'
+  email: "test@example.com",
 });
 
 // Test Flashcard type
 expectType<Flashcard>({
-  id: '1',
-  front: 'Question',
-  back: 'Answer',
-  user_id: 'user-123',
-  generation_id: 'gen-456',
-  created_at: '2024-01-01'
+  id: "1",
+  front: "Question",
+  back: "Answer",
+  user_id: "user-123",
+  generation_id: "gen-456",
+  created_at: "2024-01-01",
 });
 
 // Test GenerationStatus type (literal union)
-expectType<GenerationStatus>('pending');
-expectType<GenerationStatus>('processing');
-expectType<GenerationStatus>('completed');
-expectType<GenerationStatus>('failed');
-expectError<GenerationStatus>('invalid'); // Błąd: niepoprawny status
+expectType<GenerationStatus>("pending");
+expectType<GenerationStatus>("processing");
+expectType<GenerationStatus>("completed");
+expectType<GenerationStatus>("failed");
+expectError<GenerationStatus>("invalid"); // Błąd: niepoprawny status
 
 // Test type narrowing w funkcjach
-import { isSuccessResponse, isErrorResponse } from './lib/utils/api-response';
+import { isSuccessResponse, isErrorResponse } from "./lib/utils/api-response";
 
 declare const response: { success: true; data: string } | { success: false; error: string };
 
@@ -728,41 +725,41 @@ if (isErrorResponse(response)) {
 }
 
 // Test generics
-import type { ApiResponse } from './types';
+import type { ApiResponse } from "./types";
 
 expectType<ApiResponse<string>>({
   success: true,
-  data: 'test'
+  data: "test",
 });
 
 expectType<ApiResponse<Flashcard>>({
   success: true,
   data: {
-    id: '1',
-    front: 'Q',
-    back: 'A',
-    user_id: 'u1',
-    generation_id: 'g1',
-    created_at: '2024-01-01'
-  }
+    id: "1",
+    front: "Q",
+    back: "A",
+    user_id: "u1",
+    generation_id: "g1",
+    created_at: "2024-01-01",
+  },
 });
 
 // Test utility types
-import type { CreateFlashcardDTO, UpdateFlashcardDTO } from './types';
+import type { CreateFlashcardDTO, UpdateFlashcardDTO } from "./types";
 
 expectAssignable<CreateFlashcardDTO>({
-  front: 'Question',
-  back: 'Answer',
-  generation_id: 'gen-123'
+  front: "Question",
+  back: "Answer",
+  generation_id: "gen-123",
 });
 
 // UpdateFlashcardDTO powinno mieć wszystkie pola opcjonalne
 expectAssignable<UpdateFlashcardDTO>({
-  front: 'Updated Question'
+  front: "Updated Question",
 });
 
 expectAssignable<UpdateFlashcardDTO>({
-  back: 'Updated Answer'
+  back: "Updated Answer",
 });
 ```
 
@@ -779,7 +776,7 @@ on:
     branches: [master]
   schedule:
     # Full scan co tydzień
-    - cron: '0 2 * * 0'
+    - cron: "0 2 * * 0"
 
 jobs:
   zap-baseline:
@@ -787,29 +784,29 @@ jobs:
     name: OWASP ZAP Baseline Scan
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      
+          node-version: "20"
+
       - name: Install and Build
         run: |
           npm ci
           npm run build
-      
+
       - name: Start Application
         run: |
           npm run preview &
           sleep 10
-      
+
       - name: ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.12.0
         with:
-          target: 'http://localhost:4173'
-          rules_file_name: '.zap/rules.tsv'
-          cmd_options: '-a'
-      
+          target: "http://localhost:4173"
+          rules_file_name: ".zap/rules.tsv"
+          cmd_options: "-a"
+
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         if: always()
@@ -824,29 +821,29 @@ jobs:
     name: OWASP ZAP Full Scan
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      
+          node-version: "20"
+
       - name: Install and Build
         run: |
           npm ci
           npm run build
-      
+
       - name: Start Application
         run: |
           npm run preview &
           sleep 10
-      
+
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
-          target: 'http://localhost:4173'
-          rules_file_name: '.zap/rules.tsv'
-          cmd_options: '-a -j'
-      
+          target: "http://localhost:4173"
+          rules_file_name: ".zap/rules.tsv"
+          cmd_options: "-a -j"
+
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         if: always()
@@ -858,14 +855,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
-      
+
       - name: Upload Snyk report
         uses: github/codeql-action/upload-sarif@v3
         if: always()
@@ -904,12 +901,7 @@ jobs:
   "ignore": {},
   "patch": {},
   "exclude": {
-    "global": [
-      "dist/**",
-      "node_modules/**",
-      "**/*.test.ts",
-      "**/*.spec.ts"
-    ]
+    "global": ["dist/**", "node_modules/**", "**/*.test.ts", "**/*.spec.ts"]
   }
 }
 ```
@@ -930,86 +922,84 @@ jobs:
 
 ```typescript
 // e2e/security.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('should have security headers', async ({ page }) => {
-  const response = await page.goto('/');
-  
-  expect(response?.headers()['x-frame-options']).toBeTruthy();
-  expect(response?.headers()['x-content-type-options']).toBe('nosniff');
-  expect(response?.headers()['strict-transport-security']).toBeTruthy();
-  expect(response?.headers()['content-security-policy']).toBeTruthy();
+test("should have security headers", async ({ page }) => {
+  const response = await page.goto("/");
+
+  expect(response?.headers()["x-frame-options"]).toBeTruthy();
+  expect(response?.headers()["x-content-type-options"]).toBe("nosniff");
+  expect(response?.headers()["strict-transport-security"]).toBeTruthy();
+  expect(response?.headers()["content-security-policy"]).toBeTruthy();
 });
 
-test('should not expose API keys in client code', async ({ page }) => {
-  await page.goto('/');
-  
-  const scripts = await page.$$eval('script', (scripts) => 
-    scripts.map(s => s.textContent || '')
-  );
-  
-  const allScripts = scripts.join('\n');
-  
+test("should not expose API keys in client code", async ({ page }) => {
+  await page.goto("/");
+
+  const scripts = await page.$$eval("script", (scripts) => scripts.map((s) => s.textContent || ""));
+
+  const allScripts = scripts.join("\n");
+
   // Sprawdź czy nie ma wycieków kluczy
-  expect(allScripts).not.toContain('sk_'); // Stripe keys
-  expect(allScripts).not.toContain('SUPABASE_SERVICE_ROLE_KEY');
-  expect(allScripts).not.toContain('OPENROUTER_API_KEY');
+  expect(allScripts).not.toContain("sk_"); // Stripe keys
+  expect(allScripts).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
+  expect(allScripts).not.toContain("OPENROUTER_API_KEY");
 });
 
-test('should prevent XSS attacks', async ({ page }) => {
-  await page.goto('/generate');
-  
+test("should prevent XSS attacks", async ({ page }) => {
+  await page.goto("/generate");
+
   const xssPayload = '<script>alert("XSS")</script>';
-  
+
   await page.fill('[data-testid="source-text"]', xssPayload);
   await page.click('[data-testid="generate-button"]');
-  
+
   // Sprawdź czy script nie został wykonany
   const alerts = [];
-  page.on('dialog', dialog => {
+  page.on("dialog", (dialog) => {
     alerts.push(dialog.message());
     dialog.dismiss();
   });
-  
+
   await page.waitForTimeout(2000);
   expect(alerts).toHaveLength(0);
-  
+
   // Sprawdź czy payload jest properly escaped
-  const content = await page.textContent('body');
-  expect(content).not.toContain('<script>');
+  const content = await page.textContent("body");
+  expect(content).not.toContain("<script>");
 });
 
-test('should require authentication for protected routes', async ({ page }) => {
+test("should require authentication for protected routes", async ({ page }) => {
   // Bez logowania
-  await page.goto('/generate');
-  
+  await page.goto("/generate");
+
   // Powinno przekierować na login
-  await page.waitForURL('**/login');
-  expect(page.url()).toContain('/login');
+  await page.waitForURL("**/login");
+  expect(page.url()).toContain("/login");
 });
 
-test('should have CSRF protection', async ({ page, context }) => {
+test("should have CSRF protection", async ({ page, context }) => {
   // Zaloguj się
-  await page.goto('/login');
-  await page.fill('[name="email"]', 'test@example.com');
-  await page.fill('[name="password"]', 'password123');
+  await page.goto("/login");
+  await page.fill('[name="email"]', "test@example.com");
+  await page.fill('[name="password"]', "password123");
   await page.click('[type="submit"]');
-  
+
   // Pobierz cookies
   const cookies = await context.cookies();
-  
+
   // Spróbuj wykonać request bez proper origin
   const response = await page.evaluate(async () => {
-    return fetch('/api/flashcards', {
-      method: 'POST',
+    return fetch("/api/flashcards", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Origin': 'https://evil-site.com'
+        "Content-Type": "application/json",
+        Origin: "https://evil-site.com",
       },
-      body: JSON.stringify({ front: 'test', back: 'test' })
+      body: JSON.stringify({ front: "test", back: "test" }),
     });
   });
-  
+
   // Powinno być zablokowane przez CORS
   expect(response).toBeTruthy();
 });

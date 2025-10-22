@@ -8,10 +8,7 @@ export const generateFlashcardsSchema = z.object({
     .string()
     .min(1000, "Tekst źródłowy musi mieć co najmniej 1000 znaków")
     .max(10000, "Tekst źródłowy nie może przekroczyć 10000 znaków"),
-  use_ai: z
-    .boolean()
-    .optional()
-    .default(false),
+  use_ai: z.boolean().optional().default(false),
 });
 
 /**

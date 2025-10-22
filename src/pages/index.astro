@@ -8,23 +8,23 @@ const user = Astro.locals.user as any;
 const isAuthenticated = !!user;
 
 // Check if this is an email confirmation or password recovery redirect from Supabase
-const confirmationCode = Astro.url.searchParams.get('code');
-const confirmationType = Astro.url.searchParams.get('type');
-const error = Astro.url.searchParams.get('error');
-const errorCode = Astro.url.searchParams.get('error_code');
+const confirmationCode = Astro.url.searchParams.get("code");
+const confirmationType = Astro.url.searchParams.get("type");
+const error = Astro.url.searchParams.get("error");
+const errorCode = Astro.url.searchParams.get("error_code");
 
 // Debug logging
-console.log('[INDEX PAGE] URL:', Astro.url.href);
-console.log('[INDEX PAGE] code:', confirmationCode);
-console.log('[INDEX PAGE] type:', confirmationType);
-console.log('[INDEX PAGE] error:', error);
-console.log('[INDEX PAGE] error_code:', errorCode);
-console.log('[INDEX PAGE] isAuthenticated:', isAuthenticated);
+console.log("[INDEX PAGE] URL:", Astro.url.href);
+console.log("[INDEX PAGE] code:", confirmationCode);
+console.log("[INDEX PAGE] type:", confirmationType);
+console.log("[INDEX PAGE] error:", error);
+console.log("[INDEX PAGE] error_code:", errorCode);
+console.log("[INDEX PAGE] isAuthenticated:", isAuthenticated);
 
 // Handle errors from Supabase (expired token, etc.)
 if (error || errorCode) {
   // Redirect to appropriate error page based on context
-  if (errorCode === 'otp_expired') {
+  if (errorCode === "otp_expired") {
     // Expired confirmation/recovery link
     return Astro.redirect(`/login?error=link_expired`);
   }
@@ -35,12 +35,12 @@ if (error || errorCode) {
 if (confirmationCode) {
   // Check if this is recovery (already has reset-password in additional_redirect_urls)
   // For signup confirmation, redirect to success page
-  if (confirmationType === 'recovery') {
-    console.log('[INDEX PAGE] Redirecting to /reset-password (recovery)');
+  if (confirmationType === "recovery") {
+    console.log("[INDEX PAGE] Redirecting to /reset-password (recovery)");
     return Astro.redirect(`/reset-password?code=${confirmationCode}`);
   } else {
     // Default: treat as email confirmation (signup)
-    console.log('[INDEX PAGE] Redirecting to /email-confirmed (signup)');
+    console.log("[INDEX PAGE] Redirecting to /email-confirmed (signup)");
     return Astro.redirect("/email-confirmed");
   }
 }
@@ -69,29 +69,31 @@ if (confirmationCode) {
           </div>
 
           <div class="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-            {isAuthenticated ? (
-              <a
-                href="/generate"
-                class="inline-flex items-center justify-center px-6 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
-              >
-                Przejdź do generatora
-              </a>
-            ) : (
-              <>
+            {
+              isAuthenticated ? (
                 <a
-                  href="/register"
+                  href="/generate"
                   class="inline-flex items-center justify-center px-6 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
                 >
-                  Zacznij za darmo
+                  Przejdź do generatora
                 </a>
-                <a
-                  href="/login"
-                  class="inline-flex items-center justify-center px-6 py-3 text-base font-medium border bg-background text-foreground rounded-md hover:bg-accent transition-colors"
-                >
-                  Zaloguj się
-                </a>
-              </>
-            )}
+              ) : (
+                <>
+                  <a
+                    href="/register"
+                    class="inline-flex items-center justify-center px-6 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
+                  >
+                    Zacznij za darmo
+                  </a>
+                  <a
+                    href="/login"
+                    class="inline-flex items-center justify-center px-6 py-3 text-base font-medium border bg-background text-foreground rounded-md hover:bg-accent transition-colors"
+                  >
+                    Zaloguj się
+                  </a>
+                </>
+              )
+            }
           </div>
         </div>
 
@@ -108,9 +110,7 @@ if (confirmationCode) {
           <div class="space-y-3 p-6 rounded-lg border bg-card">
             <div class="text-3xl">📚</div>
             <h3 class="text-lg font-semibold">Ucz Się Efektywnie</h3>
-            <p class="text-muted-foreground text-sm">
-              System powtórek spowoduje, że nauczysz się materiału na długo.
-            </p>
+            <p class="text-muted-foreground text-sm">System powtórek spowoduje, że nauczysz się materiału na długo.</p>
           </div>
 
           <div class="space-y-3 p-6 rounded-lg border bg-card">
@@ -121,22 +121,22 @@ if (confirmationCode) {
         </div>
 
         {/* CTA */}
-        {!isAuthenticated && (
-          <div
-            class="space-y-6 text-center py-6 px-6 rounded-lg border bg-gradient-to-br from-secondary to-secondary/50"
-          >
-            <h2 class="text-2xl sm:text-3xl font-bold">Gotowy do nauki?</h2>
-            <p class="text-muted-foreground max-w-lg mx-auto">
-              Dołącz do tysięcy studentów, którzy już korzystają z 10x Cards do nauki.
-            </p>
-            <a
-              href="/register"
-              class="inline-flex items-center justify-center px-8 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
-            >
-              Zarejestruj się teraz
-            </a>
-          </div>
-        )}
+        {
+          !isAuthenticated && (
+            <div class="space-y-6 text-center py-6 px-6 rounded-lg border bg-gradient-to-br from-secondary to-secondary/50">
+              <h2 class="text-2xl sm:text-3xl font-bold">Gotowy do nauki?</h2>
+              <p class="text-muted-foreground max-w-lg mx-auto">
+                Dołącz do tysięcy studentów, którzy już korzystają z 10x Cards do nauki.
+              </p>
+              <a
+                href="/register"
+                class="inline-flex items-center justify-center px-8 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
+              >
+                Zarejestruj się teraz
+              </a>
+            </div>
+          )
+        }
       </div>
     </div>
   </main>

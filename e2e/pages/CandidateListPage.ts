@@ -1,5 +1,5 @@
-import type { Page, Locator } from '@playwright/test';
-import { CandidateCard } from './CandidateCard';
+import type { Page, Locator } from "@playwright/test";
+import { CandidateCard } from "./CandidateCard";
 
 export class CandidateListPage {
   readonly page: Page;
@@ -34,14 +34,17 @@ export class CandidateListPage {
 
   async waitForLoad() {
     // Upewnij się, że DOM jest załadowany
-    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForLoadState("domcontentloaded");
     // Poczekaj na network idle dla stabilności
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState("networkidle");
     // Poczekaj aż pojawi się jakikolwiek stan listy (empty lub filled) lub stan błędu
-    await this.page.waitForSelector('[data-test-id="empty-state"], [data-test-id="candidates-list"], [role="alert"], [data-testid="return-home-button"]', { 
-      state: 'visible',
-      timeout: 10000 
-    });
+    await this.page.waitForSelector(
+      '[data-test-id="empty-state"], [data-test-id="candidates-list"], [role="alert"], [data-testid="return-home-button"]',
+      {
+        state: "visible",
+        timeout: 10000,
+      }
+    );
   }
 
   async isEmptyStateVisible() {
@@ -66,7 +69,7 @@ export class CandidateListPage {
 
   async getCandidateCards() {
     const cardElements = await this.page.locator('[data-test-id="candidate-card"]').all();
-    return cardElements.map(element => new CandidateCard(this.page, element));
+    return cardElements.map((element) => new CandidateCard(this.page, element));
   }
 
   async getCandidateCard(index: number) {
@@ -91,10 +94,10 @@ export class CandidateListPage {
   }
 
   async waitForSaveSuccess() {
-    await this.page.waitForURL('/');
+    await this.page.waitForURL("/");
   }
 
   async isLoadingVisible() {
-    return await this.page.locator('text=Ładowanie...').isVisible();
+    return await this.page.locator("text=Ładowanie...").isVisible();
   }
 }

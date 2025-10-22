@@ -21,8 +21,8 @@ OPENROUTER_DEFAULT_MODEL=openai/gpt-4o-mini
 ### Podstawowy Przykład
 
 ```typescript
-import { z } from 'zod';
-import { OpenRouterService } from '@/lib/services/openrouter.service';
+import { z } from "zod";
+import { OpenRouterService } from "@/lib/services/openrouter.service";
 
 // Definicja schematu odpowiedzi
 const flashcardSchema = z.object({
@@ -37,8 +37,8 @@ const openRouter = new OpenRouterService();
 
 // Generowanie odpowiedzi
 const flashcards = await openRouter.generateStructuredResponse({
-  systemPrompt: 'You are an expert flashcard creator.',
-  userPrompt: 'Create 3 flashcards about TypeScript.',
+  systemPrompt: "You are an expert flashcard creator.",
+  userPrompt: "Create 3 flashcards about TypeScript.",
   schema: flashcardsSchema,
 });
 
@@ -54,13 +54,13 @@ console.log(flashcards);
 
 ```typescript
 const result = await openRouter.generateStructuredResponse({
-  systemPrompt: 'You are a helpful assistant.',
-  userPrompt: 'Explain quantum computing.',
+  systemPrompt: "You are a helpful assistant.",
+  userPrompt: "Explain quantum computing.",
   schema: z.object({
     summary: z.string(),
-    complexity: z.enum(['beginner', 'intermediate', 'advanced']),
+    complexity: z.enum(["beginner", "intermediate", "advanced"]),
   }),
-  model: 'anthropic/claude-3-opus', // Nadpisuje domyślny model
+  model: "anthropic/claude-3-opus", // Nadpisuje domyślny model
 });
 ```
 
@@ -68,12 +68,12 @@ const result = await openRouter.generateStructuredResponse({
 
 ```typescript
 const result = await openRouter.generateStructuredResponse({
-  systemPrompt: 'You are a creative writer.',
-  userPrompt: 'Write a short story.',
+  systemPrompt: "You are a creative writer.",
+  userPrompt: "Write a short story.",
   schema: z.object({ story: z.string() }),
   params: {
-    temperature: 0.8,      // Większa kreatywność
-    max_tokens: 500,       // Limit tokenów
+    temperature: 0.8, // Większa kreatywność
+    max_tokens: 500, // Limit tokenów
     top_p: 0.9,
   },
 });
@@ -86,7 +86,7 @@ const result = await openRouter.generateStructuredResponse({
 #### Konstruktor
 
 ```typescript
-constructor()
+constructor();
 ```
 
 Inicjalizuje serwis, wczytując i walidując zmienne środowiskowe.
@@ -115,6 +115,7 @@ Główna metoda generująca ustrukturyzowaną odpowiedź z API.
 **Zwraca:** `Promise<T>` - Zwalidowana odpowiedź zgodna ze schematem
 
 **Rzuca:**
+
 - `ConfigurationError` - błędna konfiguracja
 - `ApiError` - błąd API (4xx, 5xx)
 - `NetworkError` - błąd sieci
@@ -173,28 +174,28 @@ Pełna lista: [OpenRouter Models](https://openrouter.ai/models)
 
 ```typescript
 // src/pages/api/generate.ts
-import type { APIRoute } from 'astro';
-import { OpenRouterService } from '@/lib/services/openrouter.service';
-import { flashcardsSchema } from '@/lib/validation/flashcards.schema';
+import type { APIRoute } from "astro";
+import { OpenRouterService } from "@/lib/services/openrouter.service";
+import { flashcardsSchema } from "@/lib/validation/flashcards.schema";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const { text } = await request.json();
-    
+
     const openRouter = new OpenRouterService();
     const flashcards = await openRouter.generateStructuredResponse({
-      systemPrompt: 'You are an expert flashcard creator.',
+      systemPrompt: "You are an expert flashcard creator.",
       userPrompt: `Generate flashcards from: ${text}`,
       schema: flashcardsSchema,
     });
 
     return new Response(JSON.stringify(flashcards), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error('Generation failed:', error);
-    return new Response(JSON.stringify({ error: 'Generation failed' }), {
+    console.error("Generation failed:", error);
+    return new Response(JSON.stringify({ error: "Generation failed" }), {
       status: 500,
     });
   }
@@ -205,8 +206,8 @@ export const POST: APIRoute = async ({ request }) => {
 
 ```typescript
 // src/lib/services/flashcard-generation.service.ts
-import { OpenRouterService } from './openrouter.service';
-import { flashcardsSchema } from '@/lib/validation/flashcards.schema';
+import { OpenRouterService } from "./openrouter.service";
+import { flashcardsSchema } from "@/lib/validation/flashcards.schema";
 
 export class FlashcardGenerationService {
   private openRouter: OpenRouterService;
@@ -217,7 +218,7 @@ export class FlashcardGenerationService {
 
   async generateFromText(text: string) {
     return this.openRouter.generateStructuredResponse({
-      systemPrompt: 'You are an expert flashcard creator...',
+      systemPrompt: "You are an expert flashcard creator...",
       userPrompt: `Create flashcards from: ${text}`,
       schema: flashcardsSchema,
       params: {
@@ -228,4 +229,3 @@ export class FlashcardGenerationService {
   }
 }
 ```
-

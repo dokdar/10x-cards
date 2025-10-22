@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { ThemeToggle } from './ThemeToggle';
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface MobileMenuProps {
   isAuthenticated?: boolean;
@@ -19,13 +19,7 @@ export function MobileMenu({ isAuthenticated = false, userEmail, onLogout, isLog
   return (
     <div className="md:hidden">
       {/* Hamburger Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={toggleMenu}
-        aria-label="Toggle menu"
-        aria-expanded={isOpen}
-      >
+      <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label="Toggle menu" aria-expanded={isOpen}>
         {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
       </Button>
 
@@ -33,25 +27,21 @@ export function MobileMenu({ isAuthenticated = false, userEmail, onLogout, isLog
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/20 z-40" 
-            onClick={closeMenu}
-            aria-hidden="true"
-          />
-          
+          <div className="fixed inset-0 bg-black/20 z-40" onClick={closeMenu} aria-hidden="true" />
+
           {/* Menu Panel */}
           <div className="fixed top-14 right-0 left-0 bg-background border-b shadow-lg z-50 animate-in slide-in-from-top-2 duration-200">
             <nav className="container mx-auto px-4 py-4 space-y-4">
               {isAuthenticated && (
                 <>
-                  <a 
-                    href="/generate" 
+                  <a
+                    href="/generate"
                     className="block text-lg font-medium transition-colors hover:text-primary py-2"
                     onClick={closeMenu}
                   >
                     Generator
                   </a>
-                  
+
                   {/* User Info */}
                   <div className="border-t pt-4">
                     <p className="text-sm text-muted-foreground mb-3">
@@ -65,7 +55,7 @@ export function MobileMenu({ isAuthenticated = false, userEmail, onLogout, isLog
                       }}
                       disabled={isLoggingOut}
                     >
-                      {isLoggingOut ? 'Wylogowywanie...' : 'Wyloguj'}
+                      {isLoggingOut ? "Wylogowywanie..." : "Wyloguj"}
                     </button>
                   </div>
                 </>
@@ -73,8 +63,8 @@ export function MobileMenu({ isAuthenticated = false, userEmail, onLogout, isLog
 
               {!isAuthenticated && (
                 <div className="space-y-3">
-                  <a 
-                    href="/login" 
+                  <a
+                    href="/login"
                     className="block text-lg font-medium transition-colors hover:text-primary py-2"
                     onClick={closeMenu}
                   >
