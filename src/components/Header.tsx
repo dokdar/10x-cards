@@ -1,5 +1,15 @@
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { User, LogOut } from "lucide-react";
 
 export function Header({ isAuthenticated, userEmail }: { isAuthenticated: boolean; userEmail?: string }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -30,19 +40,42 @@ export function Header({ isAuthenticated, userEmail }: { isAuthenticated: boolea
                 <a href="/generate" className="text-sm font-medium transition-colors hover:text-primary">
                   Generator
                 </a>
-                <div className="flex items-center gap-2 px-2">
-                  <span className="text-sm text-muted-foreground truncate max-w-[150px]" title={userEmail}>
-                    {userEmail}
-                  </span>
-                </div>
-                <button
-                  className="text-sm font-medium transition-colors hover:text-primary disabled:opacity-50"
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  aria-busy={isLoggingOut}
-                >
-                  {isLoggingOut ? "Wylogowywanie..." : "Wyloguj"}
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <User className="h-4 w-4" />
+                      <span className="truncate max-w-[150px]" title={userEmail}>
+                        {userEmail}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">Moje konto</p>
+                        <p className="text-xs leading-none text-muted-foreground truncate" title={userEmail}>
+                          {userEmail}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <a href="/profile" className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Profil</span>
+                      </a>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive cursor-pointer"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>{isLoggingOut ? "Wylogowywanie..." : "Wyloguj się"}</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             )}
 
