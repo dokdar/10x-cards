@@ -1,4 +1,4 @@
-# 10xCards
+# 10xCards by DB
 
 **10xCards** is a web application designed to streamline the process of creating educational flashcards using artificial intelligence. The application enables users to generate high-quality flashcards from provided text and then integrates them with a ready-made spaced repetition algorithm. The MVP goal is to minimize the time and effort needed to create learning materials.
 
