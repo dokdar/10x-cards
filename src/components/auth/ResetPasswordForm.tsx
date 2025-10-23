@@ -52,6 +52,7 @@ export default function ResetPasswordForm() {
       return;
     }
 
+    // eslint-disable-next-line react-compiler/react-compiler -- window.location.href in async handler is safe
     window.location.href = "/password-changed";
   };
 

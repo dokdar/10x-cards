@@ -66,6 +66,7 @@ const description = "Wybierz sesję recenzji fiszek do kontynuowania";
   </div>
 
   <script>
+    /* eslint-disable prettier/prettier */
     // Check for active review sessions in sessionStorage
     function findActiveSessions() {
       const sessions = [];
@@ -163,5 +164,6 @@ const description = "Wybierz sesję recenzji fiszek do kontynuowania";
       // Small delay to ensure everything is loaded
       setTimeout(displaySessions, 100);
     });
+    /* eslint-enable prettier/prettier */
   </script>
 </Layout>

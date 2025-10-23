@@ -74,11 +74,11 @@ export function ProfileView({ user }: ProfileViewProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Adres email</label>
+                <div className="text-sm font-medium text-muted-foreground">Adres email</div>
                 <p className="text-sm font-mono bg-muted px-3 py-2 rounded-md mt-1">{user.email}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-muted-foreground">ID użytkownika</label>
+                <div className="text-sm font-medium text-muted-foreground">ID użytkownika</div>
                 <p className="text-xs font-mono bg-muted px-3 py-2 rounded-md mt-1 break-all">{user.id}</p>
               </div>
             </CardContent>

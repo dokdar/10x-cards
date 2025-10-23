@@ -3,7 +3,7 @@ import type { ApiError, ValidationApiError } from "@/types";
 /**
  * Create a standardized API error response
  */
-export function createApiError(error: string, message: string, details?: Record<string, any>): ApiError {
+export function createApiError(error: string, message: string, details?: Record<string, unknown>): ApiError {
   return {
     error,
     message,
@@ -28,7 +28,7 @@ export function createValidationError(
 /**
  * Create a JSON response with proper headers
  */
-export function createJsonResponse(data: any, status = 200, headers: HeadersInit = {}): Response {
+export function createJsonResponse(data: unknown, status = 200, headers: HeadersInit = {}): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {

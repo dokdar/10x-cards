@@ -2,24 +2,6 @@ import { defineMiddleware } from "astro:middleware";
 import { createSupabaseServerInstance } from "../db/supabase.client";
 
 /**
- * Public paths - accessible to all users (authenticated and unauthenticated)
- * Includes auth pages and their API endpoints
- */
-const PUBLIC_PATHS = [
-  "/login",
-  "/register",
-  "/forgot-password",
-  "/reset-password",
-  "/email-confirmed",
-  "/password-changed",
-  "/api/auth/login",
-  "/api/auth/register",
-  "/api/auth/forgot-password",
-  "/api/auth/update-password",
-  "/api/auth/logout",
-];
-
-/**
  * Protected paths - require authentication
  * Unauthenticated users will be redirected to /login
  */

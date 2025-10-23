@@ -1,14 +1,14 @@
 import type { LoginInput, RegisterInput, ForgotPasswordInput, UpdatePasswordInput } from "@/lib/validation/auth.schema";
 
-export type AuthResult = {
+export interface AuthResult {
   ok: boolean;
   error?: string;
   message?: string;
   requiresVerification?: boolean;
   redirectUrl?: string;
   /** Optional field-specific validation issues returned by API */
-  details?: Array<{ path: (string | number)[]; message: string }>;
-};
+  details?: { path: (string | number)[]; message: string }[];
+}
 
 const jsonHeaders = { "Content-Type": "application/json" } as const;
 
@@ -41,7 +41,7 @@ export async function login(input: LoginInput): Promise<AuthResult> {
 
     // Fallback
     return { ok: true, redirectUrl: "/generate" };
-  } catch (_err) {
+  } catch {
     return { ok: false, error: "Błąd sieci. Spróbuj ponownie." };
   }
 }
@@ -74,7 +74,7 @@ export async function register(input: RegisterInput): Promise<AuthResult> {
     }
 
     return { ok: true, redirectUrl: "/generate" };
-  } catch (_err) {
+  } catch {
     return { ok: false, error: "Błąd sieci. Spróbuj ponownie." };
   }
 }
@@ -92,7 +92,7 @@ export async function forgotPassword(input: ForgotPasswordInput): Promise<AuthRe
       error?: string;
       success?: boolean;
       message?: string;
-      details?: Array<{ path: (string | number)[]; message: string }>;
+      details?: { path: (string | number)[]; message: string }[];
     }>(res);
 
     if (!res.ok) {
@@ -104,7 +104,7 @@ export async function forgotPassword(input: ForgotPasswordInput): Promise<AuthRe
     }
 
     return { ok: true, message: data?.message };
-  } catch (_err) {
+  } catch {
     return { ok: false, error: "Błąd sieci. Spróbuj ponownie." };
   }
 }
@@ -129,7 +129,7 @@ export async function updatePassword(input: UpdatePasswordInput & { code: string
     }
 
     return { ok: true, message: data?.message };
-  } catch (_err) {
+  } catch {
     return { ok: false, error: "Błąd sieci. Spróbuj ponownie." };
   }
 }

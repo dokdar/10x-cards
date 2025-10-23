@@ -79,7 +79,7 @@ export default function ForgotPasswordForm() {
       setSuccessMessage(data.message);
       setEmail("");
       setIsLoading(false);
-    } catch (err) {
+    } catch {
       // Handle network errors
       setError("Błąd sieci. Spróbuj ponownie.");
       setIsLoading(false);

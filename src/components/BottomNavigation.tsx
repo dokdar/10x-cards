@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 interface BottomNavigationProps {
   currentPath: string;
-  user?: any;
+  user?: { id: string; email: string; aud: string };
 }
 
 interface NavItem {
@@ -14,20 +14,21 @@ interface NavItem {
   requiresAuth?: boolean;
 }
 
+// Navigation items - defined outside component since they're constant
+const NAV_ITEMS: NavItem[] = [
+  { id: "home", label: "Home", icon: Home, path: "/" },
+  { id: "generator", label: "Generator", icon: Zap, path: "/generate", requiresAuth: true },
+  { id: "review", label: "Review", icon: BookOpen, path: "/review", requiresAuth: true },
+  { id: "profile", label: "Profil", icon: User, path: "/profile", requiresAuth: true },
+  { id: "login", label: "Zaloguj", icon: LogIn, path: "/login" },
+];
+
 export function BottomNavigation({ currentPath, user }: BottomNavigationProps) {
   const [activeView, setActiveView] = useState("home");
 
-  const navItems: NavItem[] = [
-    { id: "home", label: "Home", icon: Home, path: "/" },
-    { id: "generator", label: "Generator", icon: Zap, path: "/generate", requiresAuth: true },
-    { id: "review", label: "Review", icon: BookOpen, path: "/review", requiresAuth: true },
-    { id: "profile", label: "Profil", icon: User, path: "/profile", requiresAuth: true },
-    { id: "login", label: "Zaloguj", icon: LogIn, path: "/login" },
-  ];
-
   useEffect(() => {
     // Determine active view based on current path
-    const current = navItems.find((item) => {
+    const current = NAV_ITEMS.find((item) => {
       if (item.path === "/") {
         return currentPath === "/";
       }
@@ -40,8 +41,8 @@ export function BottomNavigation({ currentPath, user }: BottomNavigationProps) {
 
   const isAuthenticated = !!user;
   const visibleItems = isAuthenticated
-    ? navItems.filter((item) => item.id !== "login")
-    : navItems.filter((item) => ["home", "login"].includes(item.id));
+    ? NAV_ITEMS.filter((item) => item.id !== "login")
+    : NAV_ITEMS.filter((item) => ["home", "login"].includes(item.id));
 
   return (
     <nav className="bottom-nav md:hidden" role="navigation" aria-label="Main navigation">

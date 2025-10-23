@@ -18,5 +18,5 @@ const description = "Przejrzyj i zaakceptuj wygenerowane fiszki";
 ---
 
 <Layout title={title} description={description}>
-  <ReviewView client:idle generationId={id} />
+  <ReviewView client:load generationId={id} />
 </Layout>

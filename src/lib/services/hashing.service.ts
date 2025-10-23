@@ -2,7 +2,9 @@ import { createHash } from "node:crypto";
 
 /**
  * Service for generating consistent hashes of source texts
+ * This is a utility class with only static methods
  */
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class HashingService {
   /**
    * Generate MD5 hash of source text

@@ -2,7 +2,13 @@ import { test, expect } from "@playwright/test";
 import { LoginPage, CandidateListPage } from "./pages";
 
 // Test data helpers
-const createMockGenerationData = (candidates: any[] = []) => ({
+interface MockCandidate {
+  front: string;
+  back: string;
+  source_excerpt?: string;
+}
+
+const createMockGenerationData = (candidates: MockCandidate[] = []) => ({
   generation_id: "test-generation-id",
   model: "openai/gpt-4o-mini",
   source_text_hash: "test-hash",

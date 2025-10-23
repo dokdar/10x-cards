@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-export type PkceParams = {
+export interface PkceParams {
   code?: string;
   errorCode?: string;
   errorDescription?: string;
-};
+}
 
 /**
  * Reads PKCE-related params from the current URL's query string.

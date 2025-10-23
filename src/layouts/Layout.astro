@@ -12,7 +12,7 @@ const { title = "10x Cards", description = "Aplikacja do nauki z fiszkami" } = A
 
 // Placeholder dla danych sesji z middleware
 // W przyszłości będzie pobierane z Astro.locals
-const user = Astro.locals.user as any;
+const user = Astro.locals.user as { id: string; email: string; aud: string } | undefined;
 const isAuthenticated = !!user;
 const userEmail = user?.email;
 const currentPath = Astro.url.pathname;
@@ -28,6 +28,7 @@ const currentPath = Astro.url.pathname;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <script is:inline>
+      /* eslint-disable prettier/prettier */
       // Prevent flash of unstyled content (FOUC) by setting theme before page renders
       (function () {
         const getTheme = () => {
@@ -42,6 +43,7 @@ const currentPath = Astro.url.pathname;
           document.documentElement.classList.add("dark");
         }
       })();
+      /* eslint-enable prettier/prettier */
     </script>
   </head>
   <body class="min-h-screen flex flex-col">

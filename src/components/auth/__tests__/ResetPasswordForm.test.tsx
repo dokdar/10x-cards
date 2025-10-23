@@ -112,7 +112,7 @@ describe("ResetPasswordForm", () => {
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: false,
       json: () => Promise.resolve({ error: "Nowe hasło musi być inne niż poprzednie." }),
-    } as any);
+    } as unknown as Response);
 
     render(<ResetPasswordForm />);
 
@@ -145,7 +145,7 @@ describe("ResetPasswordForm", () => {
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve({ success: true, message: "Hasło zostało zmienione. Zaloguj się z nowym hasłem." }),
-    } as any);
+    } as unknown as Response);
 
     render(<ResetPasswordForm />);
 
@@ -171,10 +171,10 @@ describe("ResetPasswordForm", () => {
             resolve({
               ok: true,
               json: () => Promise.resolve({ success: true, message: "Hasło zmienione" }),
-            });
+            } as unknown as Response);
           }, 100);
         })
-    ) as any;
+    );
 
     render(<ResetPasswordForm />);
 

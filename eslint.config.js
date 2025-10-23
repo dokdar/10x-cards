@@ -56,11 +56,30 @@ const reactConfig = tseslint.config({
   },
 });
 
+// Disable prettier for .astro files due to parsing issues with inline scripts
+const astroOverrides = {
+  files: ["**/*.astro"],
+  rules: {
+    "prettier/prettier": "off",
+  },
+};
+
+// Relax rules for test files (pragmatic approach for testing code)
+const testOverrides = {
+  files: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "e2e/**/*.ts"],
+  rules: {
+    "@typescript-eslint/no-non-null-assertion": "off", // Allow non-null assertions in tests
+    "@typescript-eslint/no-explicit-any": "warn", // Allow 'any' in test mocks (warn instead of error)
+  },
+};
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
   jsxA11yConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
-  eslintPluginPrettier
+  eslintPluginPrettier,
+  astroOverrides,
+  testOverrides
 );

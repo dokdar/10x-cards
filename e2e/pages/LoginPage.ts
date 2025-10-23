@@ -1,4 +1,4 @@
-import { expect, type Page, type Locator } from "@playwright/test";
+import { type Page, type Locator } from "@playwright/test";
 
 export class LoginPage {
   readonly page: Page;
@@ -88,7 +88,7 @@ export class LoginPage {
         return await this.errorMessage.textContent();
       }
       return null;
-    } catch (error) {
+    } catch {
       return null;
     }
   }

@@ -8,7 +8,7 @@ import type { FlashcardCandidate, ReviewCandidateViewModel, CreateFlashcardComma
 export function useReviewSession(initialCandidates: FlashcardCandidate[]) {
   // Initialize candidates with UI state
   const [candidates, setCandidates] = useState<ReviewCandidateViewModel[]>(() =>
-    initialCandidates.map((candidate, index) => ({
+    initialCandidates.map((candidate) => ({
       ...candidate,
       id: crypto.randomUUID(),
       status: "pending" as const,

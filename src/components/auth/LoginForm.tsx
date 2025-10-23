@@ -35,6 +35,7 @@ export default function LoginForm() {
     }
 
     if (result.redirectUrl) {
+      // eslint-disable-next-line react-compiler/react-compiler -- window.location.href in async handler is safe
       window.location.href = result.redirectUrl;
       return;
     }

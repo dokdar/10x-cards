@@ -158,6 +158,7 @@ describe("CandidateList", () => {
     });
 
     it("nie wyświetla przycisku dodawania gdy onAddManualCard nie jest podane", () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { onAddManualCard, ...propsWithoutCallback } = defaultProps;
       render(<CandidateList {...propsWithoutCallback} candidates={[]} />);
 
