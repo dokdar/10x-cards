@@ -18,10 +18,10 @@
 
 ### Frontend
 
-- **Astro** - Framework for building static sites with islands of interactivity
-- **React** - Library for building user interfaces
-- **TypeScript** - Typed JavaScript for better code quality
-- **Tailwind CSS** - Utility-first CSS framework with responsive design utilities
+- **Astro 5.13** - Framework for building static sites with islands of interactivity
+- **React 19** - Library for building user interfaces
+- **TypeScript 5** - Typed JavaScript for better code quality
+- **Tailwind CSS 4** - Utility-first CSS framework with responsive design utilities
 - **Shadcn/ui** - UI components built on Radix UI and Tailwind CSS
 - **Lucide React** - Icon library for consistent iconography across desktop and mobile
 
@@ -74,14 +74,15 @@
 - Accept or reject individual flashcards
 - Save accepted flashcards to database
 
-#### Responsive Design & Mobile Navigation
+#### Responsive Design & Navigation
 
 - Fully responsive design for desktop, tablet, and mobile devices
-- Mobile-first bottom navigation with auth-aware items (guest: Home, Log In; auth: Home, Generate, Review, Profile)
-- Adaptive header that hides on mobile when bottom navigation is active
+- **Desktop Navigation:** User dropdown menu in header with profile access and logout
+- **Mobile Navigation:** Bottom navigation bar with auth-aware items (guest: Home, Log In; auth: Home, Generate, Review, Profile)
+- Adaptive header that adjusts based on screen size and authentication status
 - Touch-friendly interface optimized for mobile interactions
 
-### 🚧 In Progress
+### 📋 Planned
 
 #### Flashcard Dashboard
 
@@ -143,24 +144,19 @@ src/
   - `/review/[id]` - Review specific generation with flashcard candidates, editor, acceptance actions
 - **Components:** `ReviewView`, `CandidateList`, `CandidateCard`, `ReviewActions`
 
-#### 4. **Dashboard** (`/dashboard`) - _in progress_
-
-- **Goal:** Manage saved flashcards
-- **Key Information:** Flashcard list, search, pagination
-- **Components:** `FlashcardList`, `SearchBar`, `Pagination`
-
-#### 5. **Profile** (`/profile`)
+#### 4. **Profile** (`/profile`)
 
 - **Goal:** User profile management
 - **Key Information:** User account details and settings
 - **Components:** `ProfileView`
 
-#### Mobile Navigation
+#### Navigation
 
-- **Bottom Navigation Bar:** Responsive navigation component that appears on mobile devices
+- **Desktop Navigation:** User dropdown menu in header with email display, profile link, and logout button
+- **Mobile Bottom Navigation:** Responsive navigation bar that appears on mobile devices
 - **Navigation Items (authenticated):** Home (`/`), Generate (`/generate`), Review (`/review`), Profile (`/profile`)
 - **Navigation Items (guest):** Home (`/`), Log In (`/login`)
-- **Adaptive Behavior:** Automatically shows/hides based on screen size and user authentication status
+- **Adaptive Behavior:** Automatically adjusts based on screen size and user authentication status
 
 ## Getting Started Locally
 
@@ -295,8 +291,8 @@ npx playwright test generate.spec.ts
 - **Mobile applications** (iOS, Android)
 - **Monetization and subscription systems**
 - **Third-party authentication providers** (Google, Facebook, etc.)
-- **Full flashcard CRUD** - currently in implementation phase
-- **Dashboard with pagination and search** - currently in implementation phase
+- **Full flashcard CRUD** - planned for future release
+- **Dashboard with pagination and search** - planned for future release
 
 ## Project Status
 
@@ -307,11 +303,12 @@ The project is currently in the **MVP development phase**.
 - ✅ **Authentication** - fully implemented
 - ✅ **AI Generator** - fully implemented
 - ✅ **Review View** - fully implemented
+- ✅ **Desktop & Mobile Navigation** - fully implemented with responsive design
+- ✅ **Profile View** - fully implemented with user settings
 - ✅ **E2E Tests** - comprehensive coverage of main flows
 - ✅ **Unit Tests** - coverage of components and services
-- 🚧 **Flashcard Dashboard** - in progress
-- 🚧 **Spaced Repetition Algorithm** - planned
-- 🚧 **API endpoints** - partially implemented
+- 📋 **Flashcard Dashboard** - planned
+- 📋 **Spaced Repetition Algorithm** - planned
 
 ## License
 
