@@ -8,12 +8,17 @@ import { createApiError, createJsonResponse, createValidationError, HTTP_STATUS 
 import { generateFlashcardsSchema } from "@/lib/validation/generations.schema";
 import type { FlashcardCandidate, GenerationResponse } from "@/types";
 import type { SupabaseClient } from "@/db/supabase.client";
+import { requireFeature } from "@/features";
 
 /**
  * POST /api/generations
  * Generate flashcard candidates using AI
  */
 export const POST: APIRoute = async ({ request, locals }) => {
+  // Guard: Check if generations feature is enabled
+  const featureCheck = requireFeature("generations", "Generowanie fiszek AI");
+  if (featureCheck) return featureCheck;
+
   const startTime = Date.now();
   let sourceTextHash: string | null = null;
   let sourceTextLength: number | null = null;

@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { registerSchema } from "@/lib/validation/auth.schema";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
+import { requireFeature } from "@/features";
 
 /**
  * POST /api/auth/register
@@ -10,6 +11,10 @@ import { createSupabaseServerInstance } from "@/db/supabase.client";
  * Supabase automatically sets auth cookies and sends verification email
  */
 export const POST: APIRoute = async ({ request, cookies, locals, redirect }) => {
+  // Guard: Check if auth feature is enabled
+  const featureCheck = requireFeature("auth", "Autoryzacja");
+  if (featureCheck) return featureCheck;
+
   // Guard: Ensure request method is POST
   if (request.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {

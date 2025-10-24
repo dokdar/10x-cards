@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { forgotPasswordSchema } from "@/lib/validation/auth.schema";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
+import { requireFeature } from "@/features";
 
 /**
  * POST /api/auth/forgot-password
@@ -10,6 +11,10 @@ import { createSupabaseServerInstance } from "@/db/supabase.client";
  * Supabase automatically handles email sending and link generation
  */
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
+  // Guard: Check if auth feature is enabled
+  const featureCheck = requireFeature("auth", "Autoryzacja");
+  if (featureCheck) return featureCheck;
+
   // Guard: Ensure request method is POST
   if (request.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {

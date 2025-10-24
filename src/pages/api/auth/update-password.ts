@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
+import { requireFeature } from "@/features";
 
 /**
  * POST /api/auth/update-password
@@ -10,6 +11,10 @@ import { createSupabaseServerInstance } from "@/db/supabase.client";
  */
 export const POST: APIRoute = async ({ request, cookies }) => {
   console.log("[UPDATE PASSWORD] Starting password update");
+
+  // Guard: Check if auth feature is enabled
+  const featureCheck = requireFeature("auth", "Autoryzacja");
+  if (featureCheck) return featureCheck;
 
   // Guard: Ensure request method is POST
   if (request.method !== "POST") {

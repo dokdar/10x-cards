@@ -5,12 +5,17 @@ import { createFlashcards } from "@/lib/services/flashcard-database.service";
 import { createApiError, createJsonResponse, createValidationError, HTTP_STATUS } from "@/lib/utils/api-response";
 import { CreateFlashcardsRequestSchema } from "@/lib/validation/flashcards.schema";
 import type { CreateFlashcardCommand, FlashcardDTO } from "@/types";
+import { requireFeature } from "@/features";
 
 /**
  * POST /api/flashcards
  * Creates one or multiple flashcards for the authenticated user
  */
 export const POST: APIRoute = async ({ request, locals }) => {
+  // Guard: Check if flashcards feature is enabled
+  const featureCheck = requireFeature("flashcards", "Fiszki");
+  if (featureCheck) return featureCheck;
+
   try {
     // Guard: Check if user is authenticated
     if (!locals.user) {
