@@ -161,8 +161,11 @@ describe("LoginForm", () => {
     expect(screen.getByRole("button")).toBeDisabled();
 
     // Czekaj na zakończenie operacji asynchronicznej
-    await waitFor(() => {
-      expect(window.location.href).toBe("/generate");
-    }, { timeout: 200 });
+    await waitFor(
+      () => {
+        expect(window.location.href).toBe("/generate");
+      },
+      { timeout: 200 }
+    );
   });
 });
