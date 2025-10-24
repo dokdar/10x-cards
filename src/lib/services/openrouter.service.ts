@@ -2,13 +2,7 @@ import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { GenerationParams, OpenRouterResponse, OpenRouterErrorResponse } from "./openrouter.types";
 import { ConfigurationError, ApiError, NetworkError, ParsingError, ValidationError } from "./openrouter.errors";
-
-// Schema walidacji zmiennych środowiskowych
-const openRouterEnvSchema = z.object({
-  OPENROUTER_API_KEY: z.string().min(1, "OPENROUTER_API_KEY is required."),
-  OPENROUTER_API_URL: z.string().url().optional(),
-  OPENROUTER_DEFAULT_MODEL: z.string().optional(),
-});
+import { getSecret } from "astro:env/server";
 
 export class OpenRouterService {
   private readonly apiKey: string;
@@ -16,17 +10,17 @@ export class OpenRouterService {
   private readonly defaultModel?: string;
 
   constructor() {
-    const env = openRouterEnvSchema.safeParse(import.meta.env);
+    const apiKey = getSecret("OPENROUTER_API_KEY");
+    const apiUrl = getSecret("OPENROUTER_API_URL");
+    const defaultModel = getSecret("OPENROUTER_DEFAULT_MODEL");
 
-    if (!env.success) {
-      throw new ConfigurationError("Invalid environment variables for OpenRouterService.", {
-        cause: env.error.flatten().fieldErrors,
-      });
+    if (!apiKey) {
+      throw new ConfigurationError("Invalid environment variables for OpenRouterService.");
     }
 
-    this.apiKey = env.data.OPENROUTER_API_KEY;
-    this.apiUrl = env.data.OPENROUTER_API_URL || "https://openrouter.ai/api/v1/chat/completions";
-    this.defaultModel = env.data.OPENROUTER_DEFAULT_MODEL;
+    this.apiKey = apiKey;
+    this.apiUrl = apiUrl || "https://openrouter.ai/api/v1/chat/completions";
+    this.defaultModel = defaultModel || undefined;
   }
 
   /**

@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
+import { OPENROUTER_DEFAULT_MODEL } from "astro:env/server";
 
 import { createAIGenerationService } from "@/lib/services/ai-generation.service";
 import { GenerationDatabaseService } from "@/lib/services/generation-database.service";
@@ -51,7 +52,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // If AI generation is requested, use model from environment
     if (use_ai) {
-      model = import.meta.env.OPENROUTER_DEFAULT_MODEL || "openai/gpt-4o-mini";
+      model = OPENROUTER_DEFAULT_MODEL || "openai/gpt-4o-mini";
     }
 
     // 2. Prepare data - generate hash and measure length
