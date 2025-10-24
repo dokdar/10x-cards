@@ -8,6 +8,7 @@
 - [Features](#features)
 - [Application Architecture](#application-architecture)
 - [Getting Started Locally](#getting-started-locally)
+- [Docker Support](#docker-support)
 - [Available Scripts](#available-scripts)
 - [Testing](#testing)
 - [Project Scope](#project-scope)
@@ -46,8 +47,10 @@
 
 ### CI/CD and Hosting
 
-- **Github Actions** - CI/CD automation
-- **Cloudflare Pages** - Application hosting with edge functions
+- **Github Actions** - CI/CD automation with workflows for testing, linting, and deployment
+- **Cloudflare Pages** - Primary application hosting with edge functions
+- **Docker** - Containerization with multi-stage builds for alternative deployment options
+- **GitHub Container Registry (GHCR)** - Docker image registry for container-based deployments
 
 ## Features
 
@@ -198,7 +201,131 @@ To run a local copy of the application, follow the steps below.
    ```
 
 5. **Open the application:**
-   Navigate to [http://localhost:4321](http://localhost:4321) in your browser.
+   Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Docker Support
+
+The application includes full Docker support with multi-stage builds optimized for production deployments.
+
+### Docker Configuration
+
+- **Dockerfile** - Multi-stage build with Alpine Linux base image
+- **docker-compose.yml** - Complete setup for local development
+- **.dockerignore** - Optimized build context
+- **GitHub Actions Workflow** - Automated Docker builds and pushes to GHCR (template)
+
+### Quick Start with Docker
+
+#### Prerequisites
+
+- **Docker** (version 20.10 or newer)
+- **Docker Compose** (version 2.0 or newer)
+- **.env file** - Copy `.env.example` to `.env` and configure
+
+#### Using Docker Compose (Recommended)
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd 10x-cards
+
+# Create and configure .env file
+cp .env.example .env
+# Edit .env with your credentials
+
+# Build and start the container
+docker-compose up --build
+
+# Or run in detached mode (background)
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f
+
+# Stop the container
+docker-compose down
+```
+
+Access the application at: [http://localhost:8080](http://localhost:8080)
+
+#### Using Docker CLI
+
+```bash
+# Build the image
+docker build -t 10x-cards:latest .
+
+# Run the container
+docker run -d \
+  --name 10x-cards-app \
+  -p 8080:8080 \
+  --env-file .env \
+  10x-cards:latest
+
+# View logs
+docker logs -f 10x-cards-app
+
+# Stop and remove
+docker stop 10x-cards-app
+docker rm 10x-cards-app
+```
+
+### Docker Configuration Details
+
+#### Environment Variables
+
+The Docker setup uses `PUBLIC_ENV_NAME` to control the application environment:
+
+- `local` - Local development (default)
+- `integration` - Integration/staging environment
+- `prod` - Production environment
+
+Configure in your `.env` file:
+```bash
+PUBLIC_ENV_NAME=local
+```
+
+Or override at build time:
+```bash
+docker-compose build --build-arg PUBLIC_ENV_NAME=prod
+```
+
+#### Image Details
+
+- **Base Image:** Node.js 24 Alpine Linux
+- **Build Type:** Multi-stage (builder + runtime)
+- **Image Size:** Optimized with production dependencies only
+- **Security:** Runs as non-root user
+- **Health Check:** Built-in HTTP health monitoring
+- **Port:** 8080 (configurable via environment)
+
+### CI/CD with Docker
+
+The repository includes a GitHub Actions workflow template (`.github/workflows/.master-docker.yml`) for automated Docker builds:
+
+- Lint and test code
+- Build Docker image
+- Tag with commit SHA
+- Push to GitHub Container Registry (GHCR)
+- Ready for deployment to cloud platforms
+
+**To enable the workflow:**
+1. Rename `.master-docker.yml` to `master-docker.yml`
+2. Configure GitHub repository secrets
+3. Uncomment the trigger section
+
+### Deployment Options
+
+#### Option 1: Cloudflare Pages (Current Default)
+- Serverless deployment
+- Edge functions
+- Automatic scaling
+- Configured in `astro.config.mjs`
+
+#### Option 2: Docker Container
+- Flexible deployment to any container platform
+- Self-hosted or cloud (AWS ECS, GCP Cloud Run, Azure Container Instances)
+- Full control over infrastructure
+- Horizontal scaling with orchestration (Kubernetes, Docker Swarm)
 
 ## Available Scripts
 
