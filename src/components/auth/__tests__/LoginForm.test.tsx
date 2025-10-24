@@ -13,6 +13,12 @@ describe("LoginForm", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     global.fetch = vi.fn();
+    // Mock window.location for redirect tests
+    global.window = Object.create(window);
+    Object.defineProperty(window, "location", {
+      value: { href: "" },
+      writable: true,
+    });
   });
 
   it("renderuje formularz logowania z wszystkimi polami", () => {
@@ -153,5 +159,13 @@ describe("LoginForm", () => {
     // Sprawdź czy przycisk pokazuje stan ładowania
     expect(screen.getByRole("button", { name: /logowanie/i })).toBeInTheDocument();
     expect(screen.getByRole("button")).toBeDisabled();
+
+    // Czekaj na zakończenie operacji asynchronicznej
+    await waitFor(
+      () => {
+        expect(window.location.href).toBe("/generate");
+      },
+      { timeout: 200 }
+    );
   });
 });
