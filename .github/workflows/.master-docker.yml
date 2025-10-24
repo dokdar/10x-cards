@@ -1,0 +1,163 @@
+# =============================================================================
+# Docker Build & Push to GitHub Container Registry - CI/CD Pipeline
+# =============================================================================
+#
+# This workflow is DISABLED (prefixed with dot) and serves as a TEMPLATE.
+# To enable: rename file to 'master-docker.yml' and uncomment trigger section.
+#
+# Purpose:
+# - Lint and test code quality
+# - Build Docker image from Dockerfile
+# - Tag with commit SHA
+# - Push to GitHub Container Registry (ghcr.io/dbudynek/10x-cards)
+# - Prepared for DigitalOcean App Platform deployment (commented out)
+#
+# =============================================================================
+
+name: Docker CI/CD Pipeline
+
+# TRIGGERS - Uncomment to enable
+# on:
+#   pull_request:
+#     types: [closed]
+#     branches: [master]
+#   workflow_dispatch:
+
+on:
+  workflow_dispatch: # Manual trigger only (for testing)
+
+jobs:
+  # ===========================================================================
+  # Job 1: Lint Code
+  # ===========================================================================
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    # if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+  # ===========================================================================
+  # Job 2: Unit Tests
+  # ===========================================================================
+  unit-test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    # if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        run: npm run test:coverage
+
+  # ===========================================================================
+  # Job 3: Build Docker Image & Push to GHCR
+  # ===========================================================================
+  build-docker:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test]
+    # if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    environment: production
+    permissions:
+      contents: read
+      packages: write # Required for pushing to GHCR
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: dbudynek/10x-cards
+      PUBLIC_ENV_NAME: ${{ secrets.PUBLIC_ENV_NAME }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Login to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Extract metadata (tags, labels) for Docker
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=,format=long
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      # Build and push Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true # Set to 'false' for dry-run (build only, no push)
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            PUBLIC_ENV_NAME=${{ env.PUBLIC_ENV_NAME }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+
+      - name: Image digest
+        run: echo "Image pushed with digest ${{ steps.meta.outputs.digest }}"
+
+  # ===========================================================================
+  # Job 4: Deploy to DigitalOcean App Platform (COMMENTED OUT)
+  # ===========================================================================
+  # deploy-digitalocean:
+  #   name: Deploy to DigitalOcean App Platform
+  #   runs-on: ubuntu-latest
+  #   needs: build-docker
+  #   if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+  #   environment: production
+  #   env:
+  #     DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+  #     APP_NAME: 10x-cards
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v5
+  #
+  #     - name: Install doctl
+  #       uses: digitalocean/action-doctl@v2
+  #       with:
+  #         token: ${{ env.DIGITALOCEAN_ACCESS_TOKEN }}
+  #
+  #     - name: Deploy to DigitalOcean App Platform
+  #       run: |
+  #         doctl apps create-deployment ${{ secrets.DIGITALOCEAN_APP_ID }} --wait
+  #
+  #     - name: Get deployment URL
+  #       run: |
+  #         doctl apps get ${{ secrets.DIGITALOCEAN_APP_ID }} --format LiveURL
