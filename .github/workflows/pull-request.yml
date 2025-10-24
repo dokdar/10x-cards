@@ -58,6 +58,7 @@ jobs:
     needs: lint
     environment: integration
     env:
+      PUBLIC_ENV_NAME: integration
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
       SUPABASE_SITE_URL: ${{ secrets.SUPABASE_SITE_URL }}
