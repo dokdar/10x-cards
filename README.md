@@ -47,7 +47,7 @@
 ### CI/CD and Hosting
 
 - **Github Actions** - CI/CD automation
-- **DigitalOcean** - Application hosting
+- **Cloudflare Pages** - Application hosting with edge functions
 
 ## Features
 
@@ -164,7 +164,7 @@ To run a local copy of the application, follow the steps below.
 
 ### Prerequisites
 
-- **Node.js** (version 18 or newer)
+- **Node.js** (version 24 or newer - see `.nvmrc`)
 - **npm** or **yarn**
 - **Supabase Account** - for database and authentication
 - **OpenRouter API Key** - for AI flashcard generation
