@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { forgotPasswordSchema } from "@/lib/validation/auth.schema";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
 import { requireFeature } from "@/features";
+import { SUPABASE_SITE_URL } from "astro:env/server";
 
 /**
  * POST /api/auth/forgot-password
@@ -59,7 +60,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
 
   // Send password reset email with redirect to reset-password page
   // Supabase will append token to URL for verification
-  const resetUrl = `${import.meta.env.SUPABASE_SITE_URL}/reset-password`;
+  const resetUrl = `${SUPABASE_SITE_URL}/reset-password`;
   console.log("[FORGOT PASSWORD] Sending reset link to:", email);
   console.log("[FORGOT PASSWORD] Reset URL:", resetUrl);
 

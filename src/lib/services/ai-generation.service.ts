@@ -1,4 +1,5 @@
 import type { FlashcardCandidate } from "../../types";
+import { getSecret, OPENROUTER_API_URL, AI_GENERATION_TIMEOUT, AI_MAX_RETRIES } from "astro:env/server";
 
 /**
  * Configuration for AI generation service
@@ -216,10 +217,10 @@ Generate the flashcards now. Return ONLY the JSON array, no additional text.`;
  * Factory function to create AI generation service with environment config
  */
 export function createAIGenerationService(): AIGenerationService {
-  const apiKey = import.meta.env.OPENROUTER_API_KEY || "";
-  const apiUrl = import.meta.env.OPENROUTER_API_URL || "https://openrouter.ai/api/v1/chat/completions";
-  const timeout = Number(import.meta.env.AI_GENERATION_TIMEOUT) || 60000;
-  const maxRetries = Number(import.meta.env.AI_MAX_RETRIES) || 3;
+  const apiKey = getSecret("OPENROUTER_API_KEY") || "";
+  const apiUrl = OPENROUTER_API_URL || "https://openrouter.ai/api/v1/chat/completions";
+  const timeout = Number(AI_GENERATION_TIMEOUT ?? "60000") || 60000;
+  const maxRetries = Number(AI_MAX_RETRIES ?? "3") || 3;
 
   return new AIGenerationService({
     apiKey,

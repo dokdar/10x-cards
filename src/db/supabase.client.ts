@@ -1,13 +1,38 @@
 import { createClient } from "@supabase/supabase-js";
 import { createServerClient, type CookieOptionsWithName } from "@supabase/ssr";
 import type { AstroCookies } from "astro";
+import { getSecret } from "astro:env/server";
 
 import type { Database } from "./database.types.ts";
 
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
+// Lazy initialization for Cloudflare Workers compatibility
+let _supabaseClient: ReturnType<typeof createClient<Database>> | null = null;
 
-export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
+function getSupabaseCredentials() {
+  const supabaseUrl = getSecret("SUPABASE_URL");
+  const supabaseAnonKey = getSecret("SUPABASE_KEY");
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error("SUPABASE_URL and SUPABASE_KEY must be set");
+  }
+
+  return { supabaseUrl, supabaseAnonKey };
+}
+
+export const getSupabaseClient = () => {
+  if (!_supabaseClient) {
+    const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials();
+    _supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
+  }
+  return _supabaseClient;
+};
+
+// For backward compatibility
+export const supabaseClient = new Proxy({} as ReturnType<typeof createClient<Database>>, {
+  get(target, prop) {
+    return getSupabaseClient()[prop as keyof ReturnType<typeof createClient<Database>>];
+  },
+});
 
 export type SupabaseClient = typeof supabaseClient;
 
@@ -46,6 +71,7 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
  * @returns Configured Supabase client for server-side use
  */
 export const createSupabaseServerInstance = (context: { headers: Headers; cookies: AstroCookies }) => {
+  const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials();
   const supabase = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
     cookieOptions,
     cookies: {
