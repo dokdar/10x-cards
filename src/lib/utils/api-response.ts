@@ -1,4 +1,5 @@
 import type { ApiError, ValidationApiError } from "@/types";
+import type { ZodError } from "zod";
 
 /**
  * Create a standardized API error response
@@ -19,10 +20,22 @@ export function createValidationError(
   validationErrors: { field: string; message: string }[]
 ): ValidationApiError {
   return {
-    error: "Validation Error",
+    error: "validation_error",
     message,
     validation_errors: validationErrors,
   };
+}
+
+/**
+ * Convert Zod validation error to ValidationApiError
+ */
+export function createValidationErrorFromZod(zodError: ZodError): ValidationApiError {
+  const validationErrors = zodError.errors.map((err) => ({
+    field: err.path.join("."),
+    message: err.message,
+  }));
+
+  return createValidationError("Request validation failed", validationErrors);
 }
 
 /**
