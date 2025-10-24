@@ -10,9 +10,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { User, LogOut } from "lucide-react";
+import { useFeature } from "@/features";
 
 export function Header({ isAuthenticated, userEmail }: { isAuthenticated: boolean; userEmail?: string }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const isAuthEnabled = useFeature("auth");
+  const isGenerationsEnabled = useFeature("generations");
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -35,11 +38,13 @@ export function Header({ isAuthenticated, userEmail }: { isAuthenticated: boolea
         <nav className="flex items-center gap-4">
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
-            {isAuthenticated && (
+            {isAuthenticated && isAuthEnabled && (
               <>
-                <a href="/generate" className="text-sm font-medium transition-colors hover:text-primary">
-                  Generator
-                </a>
+                {isGenerationsEnabled && (
+                  <a href="/generate" className="text-sm font-medium transition-colors hover:text-primary">
+                    Generator
+                  </a>
+                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="gap-2">
@@ -79,7 +84,7 @@ export function Header({ isAuthenticated, userEmail }: { isAuthenticated: boolea
               </>
             )}
 
-            {!isAuthenticated && (
+            {!isAuthenticated && isAuthEnabled && (
               <>
                 <a href="/login" className="text-sm font-medium transition-colors hover:text-primary">
                   Zaloguj się

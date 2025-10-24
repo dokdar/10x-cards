@@ -1,6 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import AIGeneratorView from "../components/views/AIGeneratorView";
+import { isFeatureAvailable } from "@/features/astro";
+
+// Check if generations feature is enabled
+const isGenerationsEnabled = isFeatureAvailable("generations");
+if (!isGenerationsEnabled) {
+  return Astro.redirect("/");
+}
 
 // Server-side authentication guard
 const { user } = Astro.locals;

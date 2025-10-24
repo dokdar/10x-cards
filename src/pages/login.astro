@@ -2,8 +2,15 @@
 import AuthLayout from "@/layouts/AuthLayout.astro";
 import LoginForm from "@/components/auth/LoginForm";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { isFeatureAvailable } from "@/features/astro";
 
 export const prerender = false;
+
+// Check if auth feature is enabled
+const isAuthEnabled = isFeatureAvailable("auth");
+if (!isAuthEnabled) {
+  return Astro.redirect("/");
+}
 
 // Redirect authenticated users to home page
 const { user } = Astro.locals;

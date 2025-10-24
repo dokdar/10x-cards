@@ -1,12 +1,17 @@
 ---
 import type { User } from "@supabase/supabase-js";
 import Layout from "../layouts/Layout.astro";
+import { isFeatureAvailable } from "@/features/astro";
 
 export const prerender = false;
 
 // Check if user is authenticated
 const user = Astro.locals.user as User | null;
 const isAuthenticated = !!user;
+
+// Check feature flags
+const isAuthEnabled = isFeatureAvailable("auth");
+const isGenerationsEnabled = isFeatureAvailable("generations");
 
 // Check if this is an email confirmation or password recovery redirect from Supabase
 const confirmationCode = Astro.url.searchParams.get("code");
@@ -61,14 +66,14 @@ if (confirmationCode) {
 
           <div class="flex flex-col sm:flex-row gap-3 justify-center pt-4">
             {
-              isAuthenticated ? (
+              isAuthenticated && isGenerationsEnabled ? (
                 <a
                   href="/generate"
                   class="inline-flex items-center justify-center px-6 py-3 text-base font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm"
                 >
                   Przejdź do generatora
                 </a>
-              ) : (
+              ) : !isAuthenticated && isAuthEnabled ? (
                 <>
                   <a
                     href="/register"
@@ -83,7 +88,7 @@ if (confirmationCode) {
                     Zaloguj się
                   </a>
                 </>
-              )
+              ) : null
             }
           </div>
         </div>
@@ -113,7 +118,7 @@ if (confirmationCode) {
 
         {/* CTA */}
         {
-          !isAuthenticated && (
+          !isAuthenticated && isAuthEnabled && (
             <div class="space-y-6 text-center py-6 px-6 rounded-lg border bg-gradient-to-br from-secondary to-secondary/50">
               <h2 class="text-2xl sm:text-3xl font-bold">Gotowy do nauki?</h2>
               <p class="text-muted-foreground max-w-lg mx-auto">

@@ -30,6 +30,7 @@ interface ImportMetaEnv {
   readonly AI_GENERATION_TIMEOUT?: string;
   readonly AI_MAX_RETRIES?: string;
   readonly SUPABASE_SITE_URL: string;
+  readonly PUBLIC_ENV_NAME?: string;
 }
 
 interface ImportMeta {

@@ -1,7 +1,14 @@
 ---
 import AuthLayout from "@/layouts/AuthLayout.astro";
+import { isFeatureAvailable } from "@/features/astro";
 
 export const prerender = false;
+
+// Check if auth feature is enabled
+const isAuthEnabled = isFeatureAvailable("auth");
+if (!isAuthEnabled) {
+  return Astro.redirect("/");
+}
 
 // This page is shown after user confirms their email via link
 // User is NOT logged in yet - they need to go to login page

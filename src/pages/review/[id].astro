@@ -1,8 +1,15 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { ReviewView } from "../../components/views/ReviewView";
+import { isFeatureAvailable } from "@/features/astro";
 
 export const prerender = false;
+
+// Check if flashcards feature is enabled
+const isFlashcardsEnabled = isFeatureAvailable("flashcards");
+if (!isFlashcardsEnabled) {
+  return Astro.redirect("/");
+}
 
 // Server-side authentication guard
 const { user } = Astro.locals;

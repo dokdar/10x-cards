@@ -1,8 +1,15 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { ProfileView } from "../components/views/ProfileView.tsx";
+import { isFeatureAvailable } from "@/features/astro";
 
 export const prerender = false;
+
+// Check if auth feature is enabled
+const isAuthEnabled = isFeatureAvailable("auth");
+if (!isAuthEnabled) {
+  return Astro.redirect("/");
+}
 
 // Get user from middleware (set in Astro.locals)
 const user = Astro.locals.user;
