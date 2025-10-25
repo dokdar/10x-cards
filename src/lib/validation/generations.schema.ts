@@ -15,3 +15,12 @@ export const generateFlashcardsSchema = z.object({
  * Type inferred from validation schema
  */
 export type GenerateFlashcardsInput = z.infer<typeof generateFlashcardsSchema>;
+
+/**
+ * Validation schema for updating generation log with review session results
+ */
+export const updateGenerationSchema = z.object({
+  accepted_unedited_count: z.number().int().nonnegative(),
+  accepted_edited_count: z.number().int().nonnegative(),
+  rejected_count: z.number().int().nonnegative(),
+});
