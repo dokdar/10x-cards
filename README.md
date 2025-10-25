@@ -95,6 +95,13 @@
 - Row-level security (RLS) ensuring users can only access their own flashcards
 - 211 comprehensive tests (33 schema validation + 17 service + 25 API integration + 20 E2E)
 
+#### Generation Metrics Tracking
+
+- Securely tracks the results of a user's review session.
+- Records how many flashcards were accepted as-is, accepted after editing, and rejected.
+- Validates metrics to ensure data integrity (e.g., counts must match the total number of generated cards).
+- Endpoint (`PATCH /api/generations/{id}`) is protected and ensures users can only update their own data.
+
 ### 📋 Planned
 
 #### Spaced Repetition Algorithm
