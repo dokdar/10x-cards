@@ -14,9 +14,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  adapter: cloudflare({
-    mode: "directory",
-  }),
+  adapter: cloudflare(),
   env: {
     schema: {
       // Supabase (server-only secrets)

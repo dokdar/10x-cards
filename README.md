@@ -85,13 +85,17 @@
 - Adaptive header that adjusts based on screen size and authentication status
 - Touch-friendly interface optimized for mobile interactions
 
+#### Flashcard CRUD API
+
+- Complete REST API for flashcard management (GET, POST, PATCH, DELETE)
+- List flashcards with pagination (default: 20 per page, max: 100)
+- Full-text search across front and back of flashcards (case-insensitive)
+- Bulk flashcard creation (single or batch operations)
+- Comprehensive validation and error handling
+- Row-level security (RLS) ensuring users can only access their own flashcards
+- 211 comprehensive tests (33 schema validation + 17 service + 25 API integration + 20 E2E)
+
 ### 📋 Planned
-
-#### Flashcard Dashboard
-
-- Display all user flashcards
-- Pagination and text search
-- Basic CRUD operations on flashcards
 
 #### Spaced Repetition Algorithm
 
@@ -377,6 +381,10 @@ npm run test:watch
 - User registration and login
 - AI flashcard generation
 - Review and saving process
+- **Flashcard CRUD operations** (create, read, update, delete)
+- **Pagination and search functionality**
+- **Bulk flashcard creation**
+- **Error handling and validation**
 - Navigation between views
 
 **Execution examples:**
@@ -406,6 +414,7 @@ npx playwright test generate.spec.ts
 - **User Authentication:** Secure user registration and login via email and password
 - **AI Flashcard Generation:** Generate flashcards from user-provided text (1000-10000 characters)
 - **Review Process:** Review, edit and accept generated flashcards before saving
+- **Flashcard Management:** Complete CRUD API with pagination, search, and bulk operations
 - **Validation and UX:** Form validation, loading indicators, error messages
 - **Platform:** Web application only
 
@@ -418,8 +427,8 @@ npx playwright test generate.spec.ts
 - **Mobile applications** (iOS, Android)
 - **Monetization and subscription systems**
 - **Third-party authentication providers** (Google, Facebook, etc.)
-- **Full flashcard CRUD** - planned for future release
-- **Dashboard with pagination and search** - planned for future release
+- **Flashcard collections/tags** - grouping flashcards into decks
+- **Export/Import functionality** - sharing flashcard sets
 
 ## Project Status
 
@@ -427,14 +436,14 @@ The project is currently in the **MVP development phase**.
 
 ### Implementation Progress
 
-- ✅ **Authentication** - fully implemented
-- ✅ **AI Generator** - fully implemented
-- ✅ **Review View** - fully implemented
+- ✅ **Authentication** - fully implemented with secure sessions
+- ✅ **AI Generator** - fully implemented with multiple AI models
+- ✅ **Review View** - fully implemented with edit and accept/reject functionality
 - ✅ **Desktop & Mobile Navigation** - fully implemented with responsive design
 - ✅ **Profile View** - fully implemented with user settings
-- ✅ **E2E Tests** - comprehensive coverage of main flows
-- ✅ **Unit Tests** - coverage of components and services
-- 📋 **Flashcard Dashboard** - planned
+- ✅ **Flashcard CRUD API** - fully implemented with pagination, search, and bulk operations
+- ✅ **Comprehensive Testing** - 211 tests covering unit, integration, and E2E scenarios
+- 📋 **Flashcard Dashboard UI** - planned (API ready, UI in progress)
 - 📋 **Spaced Repetition Algorithm** - planned
 
 ## License
