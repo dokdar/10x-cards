@@ -9,7 +9,7 @@ export default getViteConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    exclude: ["node_modules", "dist", ".astro", "e2e"],
+    exclude: ["node_modules", "dist", ".astro", "e2e", "astro.config.test.mjs"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
