@@ -1,113 +1,81 @@
 import type { APIRoute } from "astro";
-import { z } from "zod";
 import { updateGenerationSchema } from "@/lib/validation/generations.schema";
-import { GenerationService } from "@/lib/services/generation.service.ts";
-import type { GenerationLogDTO } from "@/types";
+import { GenerationService, GenerationError } from "@/lib/services/generation.service";
+import {
+  createApiError,
+  createJsonResponse,
+  createValidationErrorFromZod,
+  HTTP_STATUS,
+} from "@/lib/utils/api-response";
+import { isUUID } from "@/lib/utils/validation";
+import { requireFeature } from "@/features";
 
 export const prerender = false;
 
-const idSchema = z.string().uuid();
-
+/**
+ * PATCH /api/generations/[id]
+ * Updates a generation log with review session results for the authenticated user
+ */
 export const PATCH: APIRoute = async ({ request, locals, params }) => {
-  const session = await locals.auth.getSession();
-  if (!session?.user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  const { id } = params;
-  const idValidation = idSchema.safeParse(id);
-
-  if (!idValidation.success) {
-    return new Response(
-      JSON.stringify({
-        error: "Bad Request",
-        message: "Invalid generation ID format.",
-      }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
-
-  const generationId = idValidation.data;
+  // Guard: Check if generations feature is enabled
+  const featureCheck = requireFeature("generations", "Generowanie");
+  if (featureCheck) return featureCheck;
 
   try {
+    // Guard: Check if user is authenticated
+    if (!locals.user) {
+      return createJsonResponse(
+        createApiError("unauthorized", "Musisz być zalogowany aby aktualizować logi generowania"),
+        HTTP_STATUS.UNAUTHORIZED
+      );
+    }
+
+    // 1. Validate ID parameter
+    const id = params.id;
+    if (!id || !isUUID(id)) {
+      return createJsonResponse(
+        createApiError("bad_request", "Nieprawidłowe ID logu generowania"),
+        HTTP_STATUS.BAD_REQUEST
+      );
+    }
+
+    // 2. Parse and validate request body
     const body = await request.json();
     const validation = updateGenerationSchema.safeParse(body);
 
     if (!validation.success) {
-      return new Response(
-        JSON.stringify({
-          error: "Bad Request",
-          message: "Invalid request body.",
-          details: validation.error.flatten(),
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      return createJsonResponse(createValidationErrorFromZod(validation.error), HTTP_STATUS.BAD_REQUEST);
     }
 
-    const command = validation.data;
-    const generationService = new GenerationService(locals.supabase);
+    // 3. Update generation stats using service
+    const service = new GenerationService(locals.supabase);
+    const updatedGeneration = await service.updateGenerationStats(locals.user.id, id, validation.data);
 
-    const updatedGeneration = await generationService.updateGenerationStats(session.user.id, generationId, command);
+    // 4. Convert entity to DTO (removes user_id)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { user_id, ...responseDto } = updatedGeneration;
 
-    const responseDto: GenerationLogDTO = {
-      id: updatedGeneration.id,
-      model: updatedGeneration.model,
-      source_text_hash: updatedGeneration.source_text_hash,
-      source_text_length: updatedGeneration.source_text_length,
-      generated_count: updatedGeneration.generated_count,
-      accepted_unedited_count: updatedGeneration.accepted_unedited_count,
-      accepted_edited_count: updatedGeneration.accepted_edited_count,
-      rejected_count: updatedGeneration.rejected_count,
-      generation_duration: updatedGeneration.generation_duration,
-      created_at: updatedGeneration.created_at,
-      updated_at: updatedGeneration.updated_at,
-    };
-
-    return new Response(JSON.stringify(responseDto), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    // 5. Return success response
+    return createJsonResponse(responseDto, HTTP_STATUS.OK);
   } catch (error) {
-    if (error instanceof Error) {
-      if (error.message.includes("Generation not found")) {
-        return new Response(
-          JSON.stringify({
-            error: "Not Found",
-            message: "Generation log not found.",
-          }),
-          {
-            status: 404,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+    console.error("[GENERATIONS API] Error updating generation stats:", error);
+
+    if (error instanceof GenerationError) {
+      if (error.code === "not_found") {
+        return createJsonResponse(createApiError("not_found", error.message), HTTP_STATUS.NOT_FOUND);
       }
-      if (error.name === "ValidationError") {
-        return new Response(JSON.stringify({ error: "Bad Request", message: error.message }), {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        });
+      if (error.code === "validation_error") {
+        return createJsonResponse(createApiError("bad_request", error.message), HTTP_STATUS.BAD_REQUEST);
       }
+      if (error.code === "forbidden") {
+        return createJsonResponse(createApiError("forbidden", error.message), HTTP_STATUS.FORBIDDEN);
+      }
+      return createJsonResponse(createApiError(error.code, error.message), HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 
-    console.error("Error updating generation stats:", error);
-    return new Response(
-      JSON.stringify({
-        error: "Internal Server Error",
-        message: "An unexpected error occurred.",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+    return createJsonResponse(
+      createApiError("internal_error", "Wystąpił nieoczekiwany błąd serwera"),
+      HTTP_STATUS.INTERNAL_SERVER_ERROR
     );
   }
 };

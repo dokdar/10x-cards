@@ -1,7 +1,24 @@
-import type { UpdateGenerationCommand } from "@/types";
+import type { UpdateGenerationCommand, GenerationLogDTO, GenerationEntity } from "@/types";
 import { GenerationDatabaseService } from "./generation-database.service";
 import { SupabaseClient } from "@/db/supabase.client";
 
+/**
+ * Custom error class for generation operations
+ */
+export class GenerationError extends Error {
+  constructor(
+    message: string,
+    public code: "not_found" | "forbidden" | "validation_error" | "internal_error"
+  ) {
+    super(message);
+    this.name = "GenerationError";
+  }
+}
+
+/**
+ * Service for managing generation operations
+ * Handles generation log updates with proper error handling and data transformation
+ */
 export class GenerationService {
   private dbService: GenerationDatabaseService;
 
@@ -9,27 +26,58 @@ export class GenerationService {
     this.dbService = new GenerationDatabaseService(supabase);
   }
 
+  /**
+   * Update generation log with review session results
+   * @param userId - ID of the authenticated user
+   * @param generationId - ID of the generation to update
+   * @param command - Review session statistics
+   * @returns Updated generation entity
+   */
   async updateGenerationStats(userId: string, generationId: string, command: UpdateGenerationCommand) {
     const existingGeneration = await this.dbService.getGenerationById(generationId, userId);
 
     if (!existingGeneration) {
-      // This will be handled as a 404 in the API layer
-      throw new Error("Generation not found or user does not have access.");
+      throw new GenerationError("Log generowania nie został znaleziony", "not_found");
     }
 
     const newCountsSum = command.accepted_unedited_count + command.accepted_edited_count + command.rejected_count;
 
     if (newCountsSum !== existingGeneration.generated_count) {
-      // This will be handled as a 400 in the API layer
-      const validationError = new Error(
-        `The sum of counts (${newCountsSum}) does not match the number of generated flashcards (${existingGeneration.generated_count}).`
+      throw new GenerationError(
+        `Suma liczników (${newCountsSum}) nie zgadza się z liczbą wygenerowanych fiszek (${existingGeneration.generated_count}).`,
+        "validation_error"
       );
-      validationError.name = "ValidationError";
-      throw validationError;
     }
 
     const updatedGeneration = await this.dbService.updateGenerationReviewCounts(generationId, userId, command);
 
     return updatedGeneration;
+  }
+
+  /**
+   * Convert GenerationEntity to GenerationLogDTO (removes sensitive user_id)
+   * @param entity - Generation entity from database
+   * @returns Generation DTO for API response
+   */
+  private toDTO(entity: GenerationEntity): GenerationLogDTO {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { user_id, ...dto } = entity;
+    return dto;
+  }
+
+  /**
+   * Get generation DTO by ID
+   * @param userId - ID of the authenticated user
+   * @param generationId - ID of the generation to retrieve
+   * @returns Generation DTO
+   */
+  async getGenerationDTO(userId: string, generationId: string): Promise<GenerationLogDTO> {
+    const generation = await this.dbService.getGenerationById(generationId, userId);
+
+    if (!generation) {
+      throw new GenerationError("Log generowania nie został znaleziony", "not_found");
+    }
+
+    return this.toDTO(generation);
   }
 }

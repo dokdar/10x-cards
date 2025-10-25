@@ -4,10 +4,21 @@ import { setupServer } from "msw/node";
 import { handlers } from "./mocks/handlers";
 import { cleanup } from "@testing-library/react";
 
-// Mock 'astro:env/server' to prevent errors in test environment
+// Mock dla astro:env/server - moduł dostępny tylko po stronie serwera
 vi.mock("astro:env/server", () => ({
-  // Add any properties you need to mock here
-  // For now, an empty object should suffice
+  getSecret: vi.fn((key: string) => {
+    const secrets: Record<string, string> = {
+      SUPABASE_URL: "https://test.supabase.co",
+      SUPABASE_KEY: "test-key",
+      OPENROUTER_API_KEY: "test-api-key",
+    };
+    return secrets[key] || "";
+  }),
+  OPENROUTER_DEFAULT_MODEL: "test-model",
+  SUPABASE_SITE_URL: "http://localhost:3000",
+  OPENROUTER_API_URL: "https://openrouter.ai/api/v1",
+  AI_GENERATION_TIMEOUT: "30000",
+  AI_MAX_RETRIES: "3",
 }));
 
 // Konfiguracja MSW (Mock Service Worker)

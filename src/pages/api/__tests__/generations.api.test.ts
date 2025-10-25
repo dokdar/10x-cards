@@ -7,14 +7,19 @@ import { GenerationDatabaseService } from "@/lib/services/generation-database.se
 // Mock the entire database service module
 vi.mock("@/lib/services/generation-database.service");
 
+// Mock feature flags
+vi.mock("@/features", () => ({
+  requireFeature: vi.fn(() => null), // Feature is enabled by default
+}));
+
 // Helper to create a mock API context
 const createMockContext = (
   overrides: Partial<APIContext> & {
     body?: object;
-    mockUser?: { id: string } | null;
+    mockUser?: { id: string; email: string } | null;
   } = {}
 ): APIContext => {
-  const { body = {}, mockUser = { id: "test-user-123" } } = overrides;
+  const { body = {}, mockUser = { id: "test-user-123", email: "test@example.com" } } = overrides;
 
   const defaultContext = {
     params: { id: "550e8400-e29b-41d4-a716-446655440000" },
@@ -27,9 +32,7 @@ const createMockContext = (
       }
     ),
     locals: {
-      auth: {
-        getSession: vi.fn().mockResolvedValue(mockUser ? { user: mockUser } : null),
-      },
+      user: mockUser,
       supabase: {} as unknown, // Supabase client is passed to the service constructor
     },
     // Add other necessary properties with default mocks
@@ -77,7 +80,8 @@ describe("PATCH /api/generations/[id]", () => {
     const data = await response.json();
 
     expect(response.status).toBe(401);
-    expect(data.error).toBe("Unauthorized");
+    expect(data.error).toBe("unauthorized");
+    expect(data.message).toBe("Musisz być zalogowany aby aktualizować logi generowania");
   });
 
   it("should return 400 for an invalid UUID", async () => {
@@ -86,7 +90,8 @@ describe("PATCH /api/generations/[id]", () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.message).toBe("Invalid generation ID format.");
+    expect(data.error).toBe("bad_request");
+    expect(data.message).toBe("Nieprawidłowe ID logu generowania");
   });
 
   it("should return 400 for an invalid request body", async () => {
@@ -97,7 +102,8 @@ describe("PATCH /api/generations/[id]", () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.message).toBe("Invalid request body.");
+    expect(data.error).toBe("validation_error");
+    expect(data.message).toBe("Request validation failed");
   });
 
   it("should return 404 if generation is not found", async () => {
@@ -113,7 +119,8 @@ describe("PATCH /api/generations/[id]", () => {
     const data = await response.json();
 
     expect(response.status).toBe(404);
-    expect(data.message).toBe("Generation log not found.");
+    expect(data.error).toBe("not_found");
+    expect(data.message).toBe("Log generowania nie został znaleziony");
   });
 
   it("should return 400 if sum of counts does not match", async () => {
@@ -129,7 +136,8 @@ describe("PATCH /api/generations/[id]", () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.message).toContain("The sum of counts (17) does not match the number of generated flashcards (18).");
+    expect(data.error).toBe("bad_request");
+    expect(data.message).toContain("Suma liczników (17) nie zgadza się z liczbą wygenerowanych fiszek (18).");
   });
 
   it("should return 200 and the updated generation on success", async () => {

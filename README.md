@@ -97,10 +97,18 @@
 
 #### Generation Metrics Tracking
 
-- Securely tracks the results of a user's review session.
-- Records how many flashcards were accepted as-is, accepted after editing, and rejected.
-- Validates metrics to ensure data integrity (e.g., counts must match the total number of generated cards).
-- Endpoint (`PATCH /api/generations/{id}`) is protected and ensures users can only update their own data.
+- **REST API for Generation Logs** (`PATCH /api/generations/{id}`)
+- Securely tracks the results of a user's review session
+- Records how many flashcards were:
+  - Accepted without editing (`accepted_unedited_count`)
+  - Accepted after editing (`accepted_edited_count`)
+  - Rejected (`rejected_count`)
+- **Data Integrity Validation:** Ensures sum of counts matches total generated flashcards
+- **Row-Level Security:** Users can only update their own generation logs
+- **Comprehensive Error Handling:** Standardized error responses with proper HTTP status codes
+- **Custom Error Classes:** Type-safe error handling with `GenerationError`
+- **Feature Flags Support:** Integrates with application-wide feature flag system
+- **Full Test Coverage:** 9 tests (3 service unit tests + 6 API integration tests)
 
 ### 📋 Planned
 
@@ -449,7 +457,8 @@ The project is currently in the **MVP development phase**.
 - ✅ **Desktop & Mobile Navigation** - fully implemented with responsive design
 - ✅ **Profile View** - fully implemented with user settings
 - ✅ **Flashcard CRUD API** - fully implemented with pagination, search, and bulk operations
-- ✅ **Comprehensive Testing** - 211 tests covering unit, integration, and E2E scenarios
+- ✅ **Generation Metrics API** - fully implemented with validation and security
+- ✅ **Comprehensive Testing** - 200+ tests covering unit, integration, and E2E scenarios
 - 📋 **Flashcard Dashboard UI** - planned (API ready, UI in progress)
 - 📋 **Spaced Repetition Algorithm** - planned
 

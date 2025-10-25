@@ -49,7 +49,7 @@ describe("GenerationService", () => {
 
     // Act & Assert
     await expect(generationService.updateGenerationStats(userId, generationId, command)).rejects.toThrow(
-      "Generation not found or user does not have access."
+      "Log generowania nie został znaleziony"
     );
   });
 
@@ -65,7 +65,7 @@ describe("GenerationService", () => {
 
     // Act & Assert
     await expect(generationService.updateGenerationStats(userId, generationId, command)).rejects.toThrow(
-      "The sum of counts (19) does not match the number of generated flashcards (20)."
+      "Suma liczników (19) nie zgadza się z liczbą wygenerowanych fiszek (20)."
     );
   });
 
